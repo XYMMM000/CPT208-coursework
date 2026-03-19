@@ -12,7 +12,7 @@
 <body>
   <div id="root"></div>
   <script type="text/babel" data-presets="react">
-    const { useMemo, useState } = React;
+    const { useMemo, useState, useRef, useEffect } = React;
 
     const USER = {
       name: "Luna",
@@ -216,6 +216,10 @@
       const [arGuideOn, setArGuideOn] = useState(true);
       const [arStoryReady, setArStoryReady] = useState(false);
       const [arStorySaved, setArStorySaved] = useState(false);
+      const [cameraOn, setCameraOn] = useState(false);
+      const [cameraError, setCameraError] = useState("");
+      const videoRef = useRef(null);
+      const streamRef = useRef(null);
 
       const { completed, totalPoints, progress } = useMemo(() => calculateProgress(quests), [quests]);
       const dimensions = useMemo(() => calculateDimensions(completed), [completed]);
@@ -240,6 +244,49 @@
       const toggleQuest = (id) => {
         setQuests((prev) => prev.map((q) => (q.id === id ? { ...q, done: !q.done } : q)));
       };
+
+      const stopCamera = () => {
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach((track) => track.stop());
+          streamRef.current = null;
+        }
+        if (videoRef.current) {
+          videoRef.current.srcObject = null;
+        }
+        setCameraOn(false);
+      };
+
+      const startCamera = async () => {
+        setCameraError("");
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          setCameraError("Current browser does not support camera API.");
+          return;
+        }
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: "environment" } },
+            audio: false,
+          });
+          streamRef.current = stream;
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+          setCameraOn(true);
+        } catch (error) {
+          setCameraError("Camera permission denied or unavailable. Use HTTPS and allow camera access.");
+          setCameraOn(false);
+        }
+      };
+
+      useEffect(() => {
+        if (tab !== "ar" && cameraOn) {
+          stopCamera();
+        }
+      }, [tab, cameraOn]);
+
+      useEffect(() => {
+        return () => stopCamera();
+      }, []);
 
       return (
         <div className="min-h-screen bg-gradient-to-b from-slate-100 via-cyan-50 to-emerald-50 text-slate-900 p-4 md:p-8">
@@ -478,7 +525,23 @@
                           {arGuideOn ? "Guide On" : "Guide Off"}
                         </button>
                       </div>
+                      <div className="mt-2 grid grid-cols-2 gap-2">
+                        <button onClick={startCamera} className="rounded-lg bg-cyan-600 text-white py-2 text-xs font-semibold">
+                          Start Camera AR
+                        </button>
+                        <button onClick={stopCamera} className="rounded-lg border border-cyan-300/40 text-cyan-100 py-2 text-xs font-semibold">
+                          Stop Camera
+                        </button>
+                      </div>
+                      {cameraError && (
+                        <div className="mt-2 rounded-lg bg-rose-500/15 border border-rose-300/30 text-rose-100 px-3 py-2 text-xs">
+                          {cameraError}
+                        </div>
+                      )}
                       <div className="mt-3 relative h-48 rounded-xl bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 border border-white/10 overflow-hidden">
+                        {cameraOn ? (
+                          <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover" />
+                        ) : null}
                         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_30%,#67e8f9_0_6px,transparent_7px),radial-gradient(circle_at_50%_55%,#5eead4_0_7px,transparent_8px),radial-gradient(circle_at_75%_25%,#22d3ee_0_6px,transparent_7px)]" />
                         {arGuideOn && (
                           <>
