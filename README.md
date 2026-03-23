@@ -53,5 +53,6 @@ The current version uses a sporty, climbing-themed visual style:
 
 - GitHub Repo: https://github.com/YimingXie040914/CPT208-coursework
 
+The link is：https://xymmm000.github.io/CPT208-coursework/
 testing 3.16
 gzy
