@@ -34,88 +34,100 @@
     <div class="container">
       <div class="section-heading">
         <p class="section-label">User Requirements</p>
-        <h2>Personas, Journey, and Needs</h2>
+        <h2>User Personas </h2>
       </div>
 
-      <div class="grid-2">
-        <div class="card">
-          <h3>Primary Persona: Amy</h3>
-          <p><strong>Age:</strong> 21</p>
-          <p><strong>Profile:</strong> Beginner indoor climber</p>
-          <p><strong>Goals:</strong> Find suitable routes, feel less intimidated, and understand how to improve.</p>
-          <p><strong>Frustrations:</strong> Confusing route choices, lack of confidence, and difficulty knowing what to do next after failure.</p>
+      <!-- <div class="card">
+        <p>Coverage rule for this project: 10% edge users + 80% mainstream users + 10% advanced users.</p>
+      </div> -->
+
+      <article class="card persona-magazine" style="margin-top: 24px;">
+        <div class="persona-magazine-cover">
+          <p class="persona-kicker">Featured Persona</p>
+          <img class="persona-pic virtual-avatar magazine-avatar" src="https://api.dicebear.com/9.x/notionists/svg?seed=Rin&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf" alt="Virtual avatar for Rin" />
+          <!-- <h3>Rin Zhao · Mainstream 80%</h3> -->
+          <p class="persona-quote">“If I can clearly see the next route challenge, I feel motivated to come back every week.”</p>
         </div>
 
-        <div class="card">
-          <h3>Secondary Persona: Jason</h3>
-          <p><strong>Age:</strong> 28</p>
-          <p><strong>Profile:</strong> Part-time coach / experienced climber</p>
-          <p><strong>Goals:</strong> Give fast, helpful advice and keep beginners motivated without disrupting gym flow.</p>
-          <p><strong>Frustrations:</strong> No lightweight tool to organise route recommendations and coaching feedback onsite.</p>
+        <div class="persona-magazine-body">
+          <div class="persona-chip-row">
+            <span class="persona-chip">Age 22</span>
+            <span class="persona-chip">University Student</span>
+            <span class="persona-chip">Indoor Climbing Beginner</span>
+          </div>
+          <p><strong>Name:</strong> Rin Zhao</p>
+          <p><strong>Background:</strong> Rin climbs 1-2 times per week and mostly uses mobile tools inside the gym to track progress.</p>
+
+          <div class="persona-columns">
+            <section class="persona-panel">
+              <h4>Goals</h4>
+              <ul>
+                <li>Choose routes that match current level without hesitation</li>
+                <li>See visible progress after each session</li>
+                <li>Build confidence through clear milestones</li>
+              </ul>
+            </section>
+
+            <section class="persona-panel">
+              <h4>Pain Points</h4>
+              <ul>
+                <li>Route difficulty labels feel inconsistent for beginners</li>
+                <li>After failure, next steps are not obvious</li>
+                <li>Feedback is fragmented and hard to remember</li>
+              </ul>
+            </section>
+          </div>
+
+          <section class="persona-panel persona-highlight">
+            <h4>Design Opportunity</h4>
+            <p>Provide a playful “next best route” recommendation with confidence cues, mini-achievements, and coach-ready feedback cards in one view.</p>
+          </section>
         </div>
-      </div>
+      </article>
 
-      <div class="card" style="margin-top: 24px;">
-        <h3>User Journey Map</h3>
-        <p><strong>Before climbing:</strong> User arrives at gym unsure which route to try.</p>
-        <p><strong>During climbing:</strong> User attempts routes, fails, retries, and needs feedback and encouragement.</p>
-        <p><strong>After climbing:</strong> User wants to reflect, record progress, and decide what to improve next time.</p>
-      </div>
-
-      <div class="grid-2" style="margin-top: 24px;">
-        <div class="card">
-          <h3>Main Pain Points</h3>
-          <ul>
-            <li>Difficulty selecting an appropriate route level</li>
-            <li>Lack of confidence after repeated failed attempts</li>
-            <li>No structured sense of progress during a session</li>
-            <li>Feedback from coaches is inconsistent or hard to remember</li>
-            <li>Motivation drops without playful or social reinforcement</li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <h3>Design Opportunities</h3>
-          <ul>
-            <li>Create route recommendations based on user level</li>
-            <li>Provide playful milestones and visual progress</li>
-            <li>Support quick coaching feedback cards</li>
-            <li>Encourage repeat use through badges and session achievements</li>
-            <li>Keep the system simple and mobile-friendly for onsite use</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="section-heading" style="margin-top: 50px;">
-        <p class="section-label">Must-Have Features</p>
-        <h2>Three Core Playful Requirements</h2>
-      </div>
-
-      <div class="grid-3">
-        <div class="card feature-card">
-          <h3>Route Quest</h3>
-          <p>
-            A personalised route challenge system that recommends suitable climbing
-            tasks based on the user’s level and confidence.
-          </p>
+      <article class="card persona-magazine" style="margin-top: 24px;">
+        <div class="persona-magazine-cover">
+          <p class="persona-kicker">Edge Persona</p>
+          <img class="persona-pic virtual-avatar magazine-avatar" src="https://api.dicebear.com/9.x/notionists/svg?seed=Leo&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf" alt="Virtual avatar for Leo" />
+          <!-- <h3>Leo Sun · Edge 10%</h3> -->
+          <p class="persona-quote">“I only climb occasionally, so I need very clear guidance and fast feedback every single time.”</p>
         </div>
 
-        <div class="card feature-card">
-          <h3>Progress Badges</h3>
-          <p>
-            A playful reward layer that visualises achievements, improvement, and
-            climbing consistency across sessions.
-          </p>
-        </div>
+        <div class="persona-magazine-body">
+          <div class="persona-chip-row">
+            <span class="persona-chip">Age 27</span>
+            <span class="persona-chip">Working Professional</span>
+            <span class="persona-chip">Low-frequency Visitor</span>
+          </div>
+          <p><strong>Name:</strong> Leo Sun</p>
+          <p><strong>Background:</strong> Leo visits the gym once or twice a month and often feels unfamiliar with route choices after a long break.</p>
 
-        <div class="card feature-card">
-          <h3>Coach Feedback Cards</h3>
-          <p>
-            Short feedback notes from coaches or experienced climbers to support
-            reflection and learning.
-          </p>
+          <div class="persona-columns">
+            <section class="persona-panel">
+              <h4>Goals</h4>
+              <ul>
+                <li>Get a quick route suggestion based on current condition</li>
+                <li>Avoid spending time guessing what to try first</li>
+                <li>Leave each session with at least one small achievement</li>
+              </ul>
+            </section>
+
+            <section class="persona-panel">
+              <h4>Pain Points</h4>
+              <ul>
+                <li>Forgets previous progress between sessions</li>
+                <li>Feels lost when route labels are too technical</li>
+                <li>Needs lightweight guidance without complex setup</li>
+              </ul>
+            </section>
+          </div>
+
+          <section class="persona-panel persona-highlight">
+            <h4>Design Opportunity</h4>
+            <p>Add a “returning climber mode” that restores past progress, suggests one starter route, and gives a one-screen action plan.</p>
+          </section>
         </div>
-      </div>
+      </article>
     </div>
   </main>
 

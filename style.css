@@ -396,6 +396,13 @@ h3,
   grid-template-columns: repeat(3, 1fr);
 }
 
+.member-grid,
+.persona-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px;
+}
+
 .feature-card h3 {
   color: #0f766e;
 }
@@ -471,6 +478,238 @@ main {
   border-top: 1px dashed #dbe3ec;
 }
 
+.member-card,
+.persona-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.member-card h3::before,
+.persona-card h3::before {
+  content: none;
+}
+
+.climb-card {
+  border-top: 5px solid #22c55e;
+}
+
+.grade-v1 {
+  border-top-color: #22c55e;
+}
+
+.grade-v3 {
+  border-top-color: #f59e0b;
+}
+
+.grade-v4 {
+  border-top-color: #0ea5e9;
+}
+
+.grade-v5 {
+  border-top-color: #ef4444;
+}
+
+.climb-badge {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0f172a;
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+}
+
+.summit-board h3::before {
+  content: none;
+}
+
+.route-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #dbe3ec;
+}
+
+.route-item:last-child {
+  border-bottom: none;
+}
+
+.route-item p {
+  margin: 0;
+}
+
+.route-tag {
+  min-width: 78px;
+  text-align: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #115e59;
+  background: #d1fae5;
+  border: 1px solid #99f6e4;
+}
+
+.profile-pic,
+.persona-pic {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #dbe3ec;
+  margin-bottom: 14px;
+  background: #f8fafc;
+}
+
+.virtual-avatar {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto 14px;
+  border: 3px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.persona-magazine {
+  display: grid;
+  grid-template-columns: 0.95fr 1.45fr;
+  gap: 24px;
+  align-items: stretch;
+  border: 1px solid #cbd5e1;
+  background: linear-gradient(125deg, #fff7ed 0%, #ffffff 34%, #eff6ff 100%);
+}
+
+.persona-magazine .persona-magazine-cover {
+  background: linear-gradient(180deg, #111827 0%, #1f2937 100%);
+  border-radius: 14px;
+  padding: 20px;
+  color: #f8fafc;
+  text-align: center;
+}
+
+.persona-magazine h3::before {
+  content: none;
+}
+
+.persona-kicker {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: #0f172a;
+  background: #fde68a;
+}
+
+.magazine-avatar {
+  width: 150px;
+  height: 150px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 12px;
+}
+
+.persona-quote {
+  margin-top: 12px;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.persona-magazine-body {
+  padding: 8px 2px;
+}
+
+.persona-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.persona-chip {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #155e75;
+  background: #e0f2fe;
+  border: 1px solid #bae6fd;
+}
+
+.persona-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.persona-panel {
+  border: 1px solid #dbe3ec;
+  border-radius: 12px;
+  padding: 14px;
+  background: #ffffff;
+}
+
+.persona-panel h4 {
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.persona-panel ul {
+  list-style: none;
+  padding: 0;
+}
+
+.persona-panel ul li + li {
+  margin-top: 8px;
+}
+
+.persona-highlight {
+  margin-top: 14px;
+  border-color: #99f6e4;
+  background: #f0fdfa;
+}
+
+.profile-pic {
+  width: 160px;
+  height: 160px;
+  max-width: 100%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.member-overlay {
+  text-align: center;
+  padding-top: 14px;
+}
+
+.member-overlay .avatar-wrap {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(135deg, #f97316, #0ea5e9);
+}
+
+.member-overlay .profile-pic {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ffffff;
+}
+
 .card ul {
   list-style: none;
   padding-left: 0;
@@ -527,6 +766,14 @@ main {
   .hero-grid,
   .grid-2,
   .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .persona-magazine {
+    grid-template-columns: 1fr;
+  }
+
+  .persona-columns {
     grid-template-columns: 1fr;
   }
 

@@ -49,10 +49,22 @@ The current version uses a sporty, climbing-themed visual style:
 - Climbing wall texture and climbing-hold background elements
 - Route numbering and difficulty-style visual language in headings and cards
 
+## Team and Persona Images
+
+The portfolio now includes image placeholders for team members and personas.
+Replace these files with your real images (keep the same filenames), or update the paths in HTML:
+
+- Team profile images:
+  - `assets/team/member-1.svg`
+  - `assets/team/member-2.svg`
+  - `assets/team/member-3.svg`
+  - `assets/team/member-4.svg`
+- Persona images:
+  - `assets/personas/persona-amy.svg`
+  - `assets/personas/persona-jason.svg`
+
 ## Repository
 
 - GitHub Repo: https://github.com/YimingXie040914/CPT208-coursework
 
 The link is：https://xymmm000.github.io/CPT208-coursework/
-testing 3.16
-gzy
