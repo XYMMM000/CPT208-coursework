@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClimbQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Orbitron:wght@500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="wab-theme">
+  <div class="top-bar">
+    <div class="greenbow-logo">
+      <a href="#greenbow">ClimbQuest</a>
+    </div>
+    <div class="menu">
+      <button class="menu-button" aria-label="Toggle menu">
+        <div class="menu-button-item"></div>
+        <div class="menu-button-item"></div>
+        <div class="menu-button-item"></div>
+      </button>
+      <ul class="menu-list">
+        <li class="menu-item"><a href="#about-us">ABOUT</a></li>
+        <li class="menu-item"><a href="#vision">VISION</a></li>
+        <li class="menu-item"><a href="#mission">MISSION</a></li>
+        <li class="menu-item"><a href="#service">SERVICES</a></li>
+        <li class="menu-item"><a href="#contact">CONTACT</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-indicator"><span id="section-current">01</span>/<span id="section-total">06</span></div>
+
+  <div id="scroll-container">
+    <canvas id="threeCanvas"></canvas>
+    <div class="matter-layer"></div>
+    <div class="input-layer"></div>
+    <canvas id="matterCanvas"></canvas>
+    <canvas id="canvas"></canvas>
+
+    <main id="app">
+      <div id="greenbow">
+        <section class="hero section fp-panel">
+          <div class="hero-section-wrapper section-wrapper">
+            <div class="hero-wrapper">
+              <div class="hero-text-box">
+                <h2 class="hero-sub-title type-target">“From First Try to Next Send”</h2>
+                <h4 class="hero-desc">
+                  ClimbQuest designs a climbing-gym experience that feels playful, confident, and social.
+                  Through route quests, visual progress, and quick coach feedback, each session turns into
+                  a game-like growth journey.
+                </h4>
+              </div>
+              <div class="hero-visual-stage">
+                <div class="hero-prism"></div>
+                <div class="hero-light"></div>
+                <div class="hero-title">CLIMBQUEST</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="about-us" class="about-desc section fp-panel">
+          <div class="about-desc-wrapper section-wrapper">
+            <div class="about-desc-text">
+              <p>
+                Climbing is exciting, but many beginners struggle with route choices, confidence drops, and
+                fragmented feedback. ClimbQuest bridges this gap by combining structured recommendations
+                with playful interaction loops.
+              </p>
+              <p>
+                We focus on one core idea: every attempt should produce clear next actions. Instead of
+                random retries, climbers receive route suggestions, mini milestones, and visible progress
+                that encourage return visits.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="vision" class="vision section fp-panel">
+          <div class="vision-wrapper section-wrapper">
+            <article class="vision-card">
+              <h3 class="type-target">Vision</h3>
+              <p>Build a climbing ecosystem where route discovery, progress confidence, and coaching support become one seamless flow.</p>
+            </article>
+            <article class="vision-card">
+              <h3 class="type-target">Mainstream Persona</h3>
+              <p>Rin Zhao, 22 · needs clear next-route guidance and visible milestones to sustain momentum.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="mission" class="mission section fp-panel">
+          <div class="mission-wrapper section-wrapper">
+            <article class="mission-card">
+              <h3 class="type-target">Mission</h3>
+              <p>Turn climbing sessions into repeatable growth cycles with game-like motivation and minimal cognitive load.</p>
+            </article>
+            <article class="mission-card">
+              <h3 class="type-target">Edge Persona</h3>
+              <p>Leo Sun, 27 · needs a “returning climber mode” with one-screen restart guidance after long breaks.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="service" class="service section fp-panel">
+          <div class="service-wrapper section-wrapper">
+            <article class="service-card">
+              <h3 class="type-target">Route Quest</h3>
+              <p>Adaptive route recommendations by skill and confidence.</p>
+            </article>
+            <article class="service-card">
+              <h3 class="type-target">Progress Badges</h3>
+              <p>Session-level achievements that visualize momentum.</p>
+            </article>
+            <article class="service-card">
+              <h3 class="type-target">Coach Feedback Cards</h3>
+              <p>Fast, actionable notes that convert attempts into learning.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="contact" class="contact section fp-panel">
+          <div class="contact-wrapper section-wrapper">
+            <h2 class="type-target">Explore the full portfolio</h2>
+            <div class="contact-links">
+              <a href="pages/motivation.html">Motivation</a>
+              <a href="pages/research.html">Research</a>
+              <a href="pages/users.html">Users</a>
+              <a href="pages/ideation.html">Ideation</a>
+              <a href="pages/prototype.html">Prototype</a>
+              <a href="pages/evaluation.html">Evaluation</a>
+              <a href="pages/references.html">References</a>
+              <a href="pages/team.html">Team</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script src="immersive.js"></script>
+</body>
+</html>
