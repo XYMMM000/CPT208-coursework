@@ -14,6 +14,12 @@ ClimbQuest 是一个围绕室内攀岩场景的课程项目展示站点，核心
 
 ## 如何进入 portfolio
 
+线上访问地址（最终页面）：
+
+```text
+https://xymmm000.github.io/CPT208-coursework/portfolio/
+```
+
 项目路径：
 
 ```text

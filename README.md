@@ -30,20 +30,22 @@ ClimbQuest 是一个以室内攀岩为场景的课程项目网站。
 
 ## 页面结构
 
-- `index.html`: 首页与沉浸式展示
-- `pages/motivation.html`: 项目动机
-- `pages/research.html`: 研究与分析
-- `pages/users.html`: 用户与需求
-- `pages/ideation.html`: 概念与方案
-- `pages/prototype.html`: 原型与实现
-- `pages/evaluation.html`: 评估与反思
-- `pages/references.html`: 参考资料
-- `pages/team.html`: 团队信息
+- `portfolio/index.html`: 首页与沉浸式展示
+- `portfolio/pages/motivation.html`: 项目动机
+- `portfolio/pages/research.html`: 研究与分析
+- `portfolio/pages/users.html`: 用户与需求
+- `portfolio/pages/ideation.html`: 概念与方案
+- `portfolio/pages/prototype.html`: 原型与实现
+- `portfolio/pages/evaluation.html`: 评估与反思
+- `portfolio/pages/references.html`: 参考资料
+- `portfolio/pages/team.html`: 团队信息
 
 ## 在线地址与仓库
 
 - GitHub Repo: https://github.com/YimingXie040914/CPT208-coursework
-- Live Site: https://xymmm000.github.io/CPT208-coursework/
+- Live Site: https://xymmm000.github.io/CPT208-coursework/portfolio/
+
+请使用上面的 Live Site 链接访问最终 portfolio 页面，不要使用仓库首页地址来代替网页入口。
 
 ## 组员协作教程（下载、运行、编辑、提交 PR）
 
@@ -83,9 +85,10 @@ git remote -v
 
 ### 3) 本地启动并运行项目
 
-在项目根目录执行：
+进入 `portfolio` 目录后执行：
 
 ```bash
+cd portfolio
 python -m http.server 5500
 ```
 
