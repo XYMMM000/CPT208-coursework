@@ -31,7 +31,7 @@
 
 ## 3. Portfolio 在线地址
 
-- Live Portfolio: https://xymmm000.github.io/CPT208-coursework/
+- Live Portfolio: [https://xymmm000.github.io/CPT208-coursework/](https://xymmm000.github.io/CPT208-coursework/)
 - GitHub Repository: https://github.com/YimingXie040914/CPT208-coursework
 
 ## 4. 组员协作教程（GitHub 到本地 / 本地到 GitHub）
