@@ -1,4 +1,4 @@
-# ClimbQuest - CPT208 Coursework Portfolio
+[# ClimbQuest - CPT208 Coursework Portfolio
 
 ## 1. 项目成品是什么
 
@@ -31,7 +31,7 @@
 
 ## 3. Portfolio 在线地址
 
-- Live Portfolio:[ [https://xymmm000.github.io/CPT208-coursework/](https://xymmm000.github.io/CPT208-coursework/)](https://xymmm000.github.io/CPT208-coursework/)
+- Live Portfolio: https://xymmm000.github.io/CPT208-coursework/
 - GitHub Repository: https://github.com/XYMMM000/CPT208-coursework
 
 ## 4. 组员协作教程（GitHub 到本地 / 本地到 GitHub）
@@ -45,3 +45,4 @@
 ```bash
 git clone https://github.com/XYMMM000/CPT208-coursework.git
 cd CPT208-coursework
+](https://xymmm000.github.io/CPT208-coursework/)
