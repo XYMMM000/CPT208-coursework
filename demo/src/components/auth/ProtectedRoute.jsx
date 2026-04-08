@@ -1,0 +1,17 @@
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+
+export default function ProtectedRoute({ children }) {
+  const { currentUser, isAuthLoading } = useAuth();
+
+  // Wait for Firebase auth state before deciding redirect.
+  if (isAuthLoading) {
+    return <p className="cq-auth-loading">Checking session...</p>;
+  }
+
+  if (!currentUser) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}

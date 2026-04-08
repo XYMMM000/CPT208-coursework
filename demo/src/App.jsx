@@ -1,23 +1,34 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import MobileAppLayout from "./components/layout/MobileAppLayout";
 import CommunityPage from "./pages/CommunityPage";
 import CreatePage from "./pages/CreatePage";
 import DiscoverPage from "./pages/DiscoverPage";
 import HomePage from "./pages/HomePage";
 import LandingPage from "./pages/LandingPage";
+import LoginPage from "./pages/LoginPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import ProfilePage from "./pages/ProfilePage";
 import RouteDetailPage from "./pages/RouteDetailPage";
+import SignupPage from "./pages/SignupPage";
 
 export default function App() {
   return (
     <Routes>
       {/* Public pages without bottom tab navigation */}
       <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
       <Route path="/onboarding" element={<OnboardingPage />} />
 
-      {/* Shared app layout for 5 main tab pages */}
-      <Route element={<MobileAppLayout />}>
+      {/* Protected pages: user must be logged in */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <MobileAppLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="/home" element={<HomePage />} />
         <Route path="/discover" element={<DiscoverPage />} />
         <Route path="/create" element={<CreatePage />} />
