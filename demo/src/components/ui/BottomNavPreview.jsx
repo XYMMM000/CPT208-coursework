@@ -9,9 +9,7 @@ const navItems = [
 export default function BottomNavPreview() {
   return (
     <section className="cq-nav-mock" aria-label="Navigation preview">
-      <div className="cq-phone-mock">
-        <div className="cq-phone-notch" aria-hidden="true" />
-
+      <div className="cq-preview-surface">
         <div className="cq-phone-content">
           <div className="cq-phone-widget">
             <p className="cq-phone-widget-label">Today&apos;s challenge</p>
@@ -23,20 +21,20 @@ export default function BottomNavPreview() {
             <p className="cq-phone-widget-title">92% found it fun</p>
           </div>
         </div>
+      </div>
 
-        <div className="cq-phone-nav">
-          {navItems.map((item) => (
-            <div
-              key={item.label}
-              className={`cq-nav-mock-item ${item.isActive ? "cq-nav-mock-item-active" : ""}`}
-            >
-              <span className="cq-nav-mock-icon" aria-hidden="true">
-                {item.icon}
-              </span>
-              <span>{item.label}</span>
-            </div>
-          ))}
-        </div>
+      <div className="cq-phone-nav cq-phone-nav-floating">
+        {navItems.map((item) => (
+          <div
+            key={item.label}
+            className={`cq-nav-mock-item ${item.isActive ? "cq-nav-mock-item-active" : ""}`}
+          >
+            <span className="cq-nav-mock-icon" aria-hidden="true">
+              {item.icon}
+            </span>
+            <span>{item.label}</span>
+          </div>
+        ))}
       </div>
     </section>
   );
