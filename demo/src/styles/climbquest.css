@@ -235,6 +235,114 @@ a {
   box-shadow: none;
 }
 
+/* Community feed page */
+.cq-community-page {
+  display: grid;
+  gap: 12px;
+}
+
+.cq-community-header {
+  background: var(--cq-surface);
+  border: 1px solid var(--cq-border);
+  border-radius: var(--cq-radius-lg);
+  box-shadow: var(--cq-shadow);
+  padding: 18px 16px;
+}
+
+.cq-community-header h2 {
+  margin: 4px 0 0;
+  font-size: 1.35rem;
+}
+
+.cq-community-header p {
+  margin: 8px 0 0;
+  color: var(--cq-text-soft);
+  line-height: 1.5;
+}
+
+.cq-community-search {
+  display: grid;
+  gap: 6px;
+}
+
+.cq-community-search-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.cq-community-search input {
+  width: 100%;
+  border: 1px solid #cddcf0;
+  border-radius: 12px;
+  background: #f8fbff;
+  padding: 10px 11px;
+  font: inherit;
+}
+
+.cq-community-filters {
+  display: grid;
+  gap: 8px;
+}
+
+.cq-community-chip-group {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.cq-community-chip-group::-webkit-scrollbar {
+  height: 6px;
+}
+
+.cq-community-chip-group::-webkit-scrollbar-thumb {
+  background: #d4e1f3;
+  border-radius: 999px;
+}
+
+.cq-community-list {
+  display: grid;
+  gap: 12px;
+}
+
+.cq-community-card {
+  background: var(--cq-surface);
+  border: 1px solid var(--cq-border);
+  border-radius: var(--cq-radius-md);
+  padding: 14px;
+}
+
+.cq-community-meta {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: #506485;
+}
+
+.cq-community-rating {
+  color: #2f4f79;
+  font-weight: 700;
+}
+
+.cq-community-style-row {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cq-community-empty {
+  margin: 0;
+  border: 1px dashed #c8d9f0;
+  border-radius: 12px;
+  background: #f5f9ff;
+  padding: 12px;
+  color: #506485;
+  font-size: 0.84rem;
+}
+
 /* DIY route creation page */
 .cq-create-page {
   display: grid;
@@ -978,6 +1086,10 @@ a {
   }
 
   .cq-route-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cq-community-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
