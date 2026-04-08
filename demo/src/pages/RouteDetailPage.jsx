@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+
+const ROUTE_INTERACTIONS_STORAGE_KEY = "climbquest_route_interactions";
 
 const initialRoute = {
   title: "Blue Slab Balance Route",
@@ -19,6 +21,19 @@ function renderStarLine(value) {
   return "*".repeat(value) + "-".repeat(5 - value);
 }
 
+function readRouteInteractions() {
+  try {
+    const raw = localStorage.getItem(ROUTE_INTERACTIONS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeRouteInteractions(data) {
+  localStorage.setItem(ROUTE_INTERACTIONS_STORAGE_KEY, JSON.stringify(data));
+}
+
 export default function RouteDetailPage() {
   const location = useLocation();
   const routeFromState = location.state?.route;
@@ -31,14 +46,16 @@ export default function RouteDetailPage() {
       ...(routeFromState?.creator || {})
     }
   };
+  const routeKey = `${resolvedInitialRoute.title}::${resolvedInitialRoute.creator.name}`;
+  const savedInteractions = readRouteInteractions()[routeKey];
 
   // Route state is kept in one object so interaction updates are easier to follow.
   const [routeState, setRouteState] = useState({
     ...resolvedInitialRoute,
-    likes: 18,
-    isLiked: false,
-    isSaved: false,
-    isCompleted: false
+    likes: savedInteractions?.likes ?? 18,
+    isLiked: savedInteractions?.isLiked ?? false,
+    isSaved: savedInteractions?.isSaved ?? false,
+    isCompleted: savedInteractions?.isCompleted ?? false
   });
   const [userRating, setUserRating] = useState(0);
   const [commentInput, setCommentInput] = useState("");
@@ -50,6 +67,27 @@ export default function RouteDetailPage() {
   const ratingSummary = useMemo(() => {
     return `${routeState.averageRating.toFixed(1)} (${routeState.ratingCount} ratings)`;
   }, [routeState.averageRating, routeState.ratingCount]);
+
+  function persistInteraction(nextState) {
+    const previous = readRouteInteractions();
+    writeRouteInteractions({
+      ...previous,
+      [routeKey]: {
+        likes: nextState.likes,
+        isLiked: nextState.isLiked,
+        isSaved: nextState.isSaved,
+        isCompleted: nextState.isCompleted
+      }
+    });
+  }
+
+  function updateRouteStateWithPersist(updater) {
+    setRouteState((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      persistInteraction(next);
+      return next;
+    });
+  }
 
   function handleRate(starValue) {
     setUserRating(starValue);
@@ -83,7 +121,7 @@ export default function RouteDetailPage() {
   }
 
   function toggleLike() {
-    setRouteState((prev) => {
+    updateRouteStateWithPersist((prev) => {
       const nextLiked = !prev.isLiked;
       const nextLikes = nextLiked ? prev.likes + 1 : Math.max(prev.likes - 1, 0);
 
@@ -96,14 +134,14 @@ export default function RouteDetailPage() {
   }
 
   function toggleSave() {
-    setRouteState((prev) => ({
+    updateRouteStateWithPersist((prev) => ({
       ...prev,
       isSaved: !prev.isSaved
     }));
   }
 
   function toggleCompleted() {
-    setRouteState((prev) => ({
+    updateRouteStateWithPersist((prev) => ({
       ...prev,
       isCompleted: !prev.isCompleted
     }));
@@ -111,6 +149,10 @@ export default function RouteDetailPage() {
 
   return (
     <section className="cq-detail-page">
+      <Link className="cq-secondary-btn cq-detail-back-btn" to="/community">
+        Back to Community
+      </Link>
+
       <header className="cq-detail-header">
         <p className="cq-page-eyebrow">Route Detail</p>
         <h2>{routeState.title}</h2>

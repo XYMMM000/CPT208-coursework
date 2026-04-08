@@ -357,6 +357,11 @@ a {
   gap: 12px;
 }
 
+.cq-detail-back-btn {
+  width: fit-content;
+  text-decoration: none;
+}
+
 .cq-detail-header,
 .cq-detail-card {
   background: var(--cq-surface);
