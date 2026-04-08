@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const initialRoute = {
   title: "Blue Slab Balance Route",
@@ -19,9 +20,21 @@ function renderStarLine(value) {
 }
 
 export default function RouteDetailPage() {
+  const location = useLocation();
+  const routeFromState = location.state?.route;
+
+  const resolvedInitialRoute = {
+    ...initialRoute,
+    ...routeFromState,
+    creator: {
+      ...initialRoute.creator,
+      ...(routeFromState?.creator || {})
+    }
+  };
+
   // Route state is kept in one object so interaction updates are easier to follow.
   const [routeState, setRouteState] = useState({
-    ...initialRoute,
+    ...resolvedInitialRoute,
     likes: 18,
     isLiked: false,
     isSaved: false,

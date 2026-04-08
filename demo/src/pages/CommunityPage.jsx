@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 
 const mockCommunityRoutes = [
   {
@@ -149,6 +150,27 @@ export default function CommunityPage() {
             </div>
 
             <p className="cq-route-description">{route.description}</p>
+
+            <Link
+              className="cq-secondary-btn cq-community-detail-link"
+              to="/route-detail"
+              state={{
+                route: {
+                  title: route.routeName,
+                  difficulty: route.difficulty,
+                  tags: route.styleTags,
+                  description: route.description,
+                  creator: {
+                    name: route.creatorName,
+                    club: "ClimbQuest Community"
+                  },
+                  averageRating: route.averageRating,
+                  ratingCount: 1
+                }
+              }}
+            >
+              View Detail
+            </Link>
           </article>
         ))}
       </section>

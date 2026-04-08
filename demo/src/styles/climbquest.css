@@ -343,6 +343,14 @@ a {
   font-size: 0.84rem;
 }
 
+.cq-community-detail-link {
+  margin-top: 12px;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+}
+
 /* Route detail page */
 .cq-detail-page {
   display: grid;
