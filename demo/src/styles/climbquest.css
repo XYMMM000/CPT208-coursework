@@ -422,6 +422,30 @@ a {
   flex-wrap: wrap;
 }
 
+.cq-community-source-row {
+  margin-top: 8px;
+}
+
+.cq-community-source-badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.cq-community-source-badge-ai {
+  background: #f3efff;
+  border: 1px solid #d8ccff;
+  color: #5a3da1;
+}
+
+.cq-community-source-badge-community {
+  background: #effdf5;
+  border: 1px solid #caefd9;
+  color: #2d6b52;
+}
+
 .cq-community-empty {
   margin: 0;
   border: 1px dashed #c8d9f0;

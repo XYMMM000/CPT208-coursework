@@ -5,6 +5,45 @@ import { firestoreDb } from "../lib/firebase";
 
 const difficultyChips = ["All", "Easy", "Medium", "Hard"];
 const styleChips = ["All", "Balance", "Power", "Endurance", "Technique"];
+const sourceChips = ["All", "Community", "AI"];
+
+// AI-generated starter routes for inspiration.
+// These keep the feed lively even when user-created routes are still few.
+const aiGeneratedRoutes = [
+  {
+    id: "ai-1",
+    routeName: "Zen Ladder Flow",
+    difficulty: "Easy",
+    styleTags: ["Balance", "Technique"],
+    creatorName: "ClimbQuest AI",
+    averageRating: 4.4,
+    description: "Smooth ladder sequence to practice precise feet and calm pacing.",
+    createdTime: 0,
+    source: "AI"
+  },
+  {
+    id: "ai-2",
+    routeName: "Pulse Power Circuit",
+    difficulty: "Hard",
+    styleTags: ["Power", "Endurance"],
+    creatorName: "ClimbQuest AI",
+    averageRating: 4.2,
+    description: "A compact but intense sequence focused on lock-off strength.",
+    createdTime: 0,
+    source: "AI"
+  },
+  {
+    id: "ai-3",
+    routeName: "Blue Rhythm Traverse",
+    difficulty: "Medium",
+    styleTags: ["Endurance", "Technique"],
+    creatorName: "ClimbQuest AI",
+    averageRating: 4.5,
+    description: "Long traverse with tempo changes to build movement efficiency.",
+    createdTime: 0,
+    source: "AI"
+  }
+];
 
 function formatRating(value) {
   const numericValue = Number(value);
@@ -19,6 +58,7 @@ export default function CommunityPage() {
   const [searchText, setSearchText] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("All");
   const [styleFilter, setStyleFilter] = useState("All");
+  const [sourceFilter, setSourceFilter] = useState("All");
 
   useEffect(() => {
     let isActive = true;
@@ -47,7 +87,8 @@ export default function CommunityPage() {
             averageRating: data.averageRating ?? 4.0,
             description:
               data.description || "No description provided for this route yet.",
-            createdTime: data.createdTime?.seconds || 0
+            createdTime: data.createdTime?.seconds || 0,
+            source: "Community"
           };
         });
 
@@ -55,12 +96,14 @@ export default function CommunityPage() {
         routes.sort((a, b) => b.createdTime - a.createdTime);
 
         if (isActive) {
-          setCommunityRoutes(routes);
+          // Merge user/community routes with AI-generated routes.
+          setCommunityRoutes([...routes, ...aiGeneratedRoutes]);
         }
       } catch (error) {
         console.error("Failed to fetch Firestore routes:", error);
         if (isActive) {
-          setErrorMessage("Could not load community routes. Please try again.");
+          setErrorMessage("Could not load community routes. Showing AI routes only.");
+          setCommunityRoutes(aiGeneratedRoutes);
         }
       } finally {
         if (isActive) {
@@ -88,10 +131,11 @@ export default function CommunityPage() {
         difficultyFilter === "All" || route.difficulty === difficultyFilter;
       const matchesStyle =
         styleFilter === "All" || route.styleTags.includes(styleFilter);
+      const matchesSource = sourceFilter === "All" || route.source === sourceFilter;
 
-      return matchesSearch && matchesDifficulty && matchesStyle;
+      return matchesSearch && matchesDifficulty && matchesStyle && matchesSource;
     });
-  }, [communityRoutes, searchText, difficultyFilter, styleFilter]);
+  }, [communityRoutes, searchText, difficultyFilter, styleFilter, sourceFilter]);
 
   return (
     <section className="cq-community-page">
@@ -139,6 +183,19 @@ export default function CommunityPage() {
             </button>
           ))}
         </div>
+
+        <div className="cq-community-chip-group">
+          {sourceChips.map((chip) => (
+            <button
+              key={chip}
+              type="button"
+              className={`cq-tag-btn ${sourceFilter === chip ? "cq-tag-btn-active" : ""}`}
+              onClick={() => setSourceFilter(chip)}
+            >
+              {chip}
+            </button>
+          ))}
+        </div>
       </div>
 
       {isLoading && (
@@ -166,6 +223,18 @@ export default function CommunityPage() {
                 <span>By {route.creatorName}</span>
                 <span className="cq-community-rating">
                   Rating: {formatRating(route.averageRating)}
+                </span>
+              </div>
+
+              <div className="cq-community-source-row">
+                <span
+                  className={`cq-community-source-badge ${
+                    route.source === "AI"
+                      ? "cq-community-source-badge-ai"
+                      : "cq-community-source-badge-community"
+                  }`}
+                >
+                  {route.source}
                 </span>
               </div>
 
