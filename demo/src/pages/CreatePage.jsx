@@ -3,6 +3,14 @@ import { useMemo, useState } from "react";
 const CREATED_ROUTES_STORAGE_KEY = "climbquest_created_routes";
 const styleTagOptions = ["Balance", "Power", "Endurance", "Technique"];
 const levelOptions = ["Beginner", "Intermediate", "Advanced"];
+const holdTypeOptions = ["Hand", "Foot", "Start", "Finish"];
+
+function getHoldLabel(type) {
+  if (type === "Start") return "S";
+  if (type === "Finish") return "F";
+  if (type === "Foot") return "Ft";
+  return "H";
+}
 
 export default function CreatePage() {
   const [formData, setFormData] = useState({
@@ -13,6 +21,8 @@ export default function CreatePage() {
     suitableFor: "Beginner",
     imageDataUrl: ""
   });
+  const [selectedHoldType, setSelectedHoldType] = useState("Hand");
+  const [selectedHolds, setSelectedHolds] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -22,8 +32,6 @@ export default function CreatePage() {
   const previewDescription =
     formData.description.trim() ||
     "Add a short description to help climbers understand this route.";
-
-  // Live text for the "Suitable for" section in preview.
   const previewLevel = useMemo(() => formData.suitableFor, [formData.suitableFor]);
 
   function updateField(field, value) {
@@ -55,9 +63,42 @@ export default function CreatePage() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      updateField("imageDataUrl", String(reader.result || ""));
+      // Save uploaded wall image and reset old hold points to avoid mismatch.
+      setFormData((prev) => ({
+        ...prev,
+        imageDataUrl: String(reader.result || "")
+      }));
+      setSelectedHolds([]);
+      setIsSubmitted(false);
     };
     reader.readAsDataURL(file);
+  }
+
+  function handleWallImageClick(event) {
+    if (!formData.imageDataUrl) return;
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+    // We store hold coordinates as percentages so they stay in the correct place on resize.
+    const newHold = {
+      id: Date.now() + Math.random(),
+      x: Number(x.toFixed(2)),
+      y: Number(y.toFixed(2)),
+      type: selectedHoldType
+    };
+
+    setSelectedHolds((prev) => [...prev, newHold]);
+    setIsSubmitted(false);
+  }
+
+  function removeHold(holdId) {
+    setSelectedHolds((prev) => prev.filter((hold) => hold.id !== holdId));
+  }
+
+  function clearAllHolds() {
+    setSelectedHolds([]);
   }
 
   function validateForm() {
@@ -76,7 +117,6 @@ export default function CreatePage() {
 
   function handleSubmit(event) {
     event.preventDefault();
-
     if (!validateForm()) return;
 
     const newRoute = {
@@ -87,10 +127,10 @@ export default function CreatePage() {
       description: formData.description.trim(),
       suitableFor: formData.suitableFor,
       imageDataUrl: formData.imageDataUrl,
+      selectedHolds,
       createdAt: new Date().toISOString()
     };
 
-    // Save route to localStorage so the user can keep their created routes.
     const existingRaw = localStorage.getItem(CREATED_ROUTES_STORAGE_KEY);
     let existingRoutes = [];
     try {
@@ -103,6 +143,7 @@ export default function CreatePage() {
 
     setIsSubmitted(true);
     setErrors({});
+    setSelectedHolds([]);
     setFormData({
       routeName: "",
       difficulty: "",
@@ -199,9 +240,80 @@ export default function CreatePage() {
         </label>
 
         <label className="cq-field">
-          <span>Optional image upload</span>
+          <span>Upload climbing wall image (optional)</span>
           <input type="file" accept="image/*" onChange={handleImageChange} />
         </label>
+
+        {formData.imageDataUrl && (
+          <div className="cq-field">
+            <span>Select hold type</span>
+            <div className="cq-tag-grid cq-hold-type-grid">
+              {holdTypeOptions.map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  className={`cq-tag-btn ${
+                    selectedHoldType === type ? "cq-tag-btn-active" : ""
+                  }`}
+                  onClick={() => setSelectedHoldType(type)}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {formData.imageDataUrl && (
+          <section className="cq-wall-editor" aria-label="Wall hold editor">
+            <div className="cq-wall-editor-head">
+              <p>
+                Tap on the wall image to add holds. Tap a marker to remove it.
+              </p>
+              <button type="button" className="cq-reset-btn" onClick={clearAllHolds}>
+                Clear all holds
+              </button>
+            </div>
+
+            <div
+              className="cq-wall-image-wrap"
+              onClick={handleWallImageClick}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                }
+              }}
+            >
+              <img
+                className="cq-wall-image"
+                src={formData.imageDataUrl}
+                alt="Uploaded climbing wall"
+              />
+
+              {selectedHolds.map((hold) => (
+                <button
+                  key={hold.id}
+                  type="button"
+                  className={`cq-hold-marker cq-hold-marker-${hold.type.toLowerCase()}`}
+                  style={{ left: `${hold.x}%`, top: `${hold.y}%` }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    removeHold(hold.id);
+                  }}
+                  aria-label={`Remove ${hold.type} hold`}
+                >
+                  {getHoldLabel(hold.type)}
+                </button>
+              ))}
+            </div>
+
+            <p className="cq-hold-count">
+              Selected holds: <strong>{selectedHolds.length}</strong>
+            </p>
+          </section>
+        )}
 
         <button type="submit" className="cq-primary-btn cq-create-submit">
           Submit Route
@@ -220,11 +332,23 @@ export default function CreatePage() {
         <p className="cq-route-reason">Suitable for: {previewLevel}</p>
 
         {formData.imageDataUrl && (
-          <img
-            className="cq-create-preview-image"
-            src={formData.imageDataUrl}
-            alt="Uploaded route preview"
-          />
+          <div className="cq-preview-wall-wrap">
+            <img
+              className="cq-create-preview-image"
+              src={formData.imageDataUrl}
+              alt="Uploaded route preview"
+            />
+
+            {selectedHolds.map((hold) => (
+              <span
+                key={`preview-${hold.id}`}
+                className={`cq-hold-marker cq-hold-marker-${hold.type.toLowerCase()}`}
+                style={{ left: `${hold.x}%`, top: `${hold.y}%` }}
+              >
+                {getHoldLabel(hold.type)}
+              </span>
+            ))}
+          </div>
         )}
       </article>
     </section>

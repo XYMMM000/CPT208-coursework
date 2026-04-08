@@ -321,6 +321,10 @@ a {
   gap: 8px;
 }
 
+.cq-hold-type-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .cq-tag-btn {
   border: 1px solid #d0def1;
   border-radius: 999px;
@@ -342,6 +346,85 @@ a {
   justify-content: center;
 }
 
+.cq-wall-editor {
+  border: 1px solid #d5e3f7;
+  border-radius: 14px;
+  background: #f6faff;
+  padding: 10px;
+}
+
+.cq-wall-editor-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.cq-wall-editor-head p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #46638a;
+}
+
+.cq-wall-editor .cq-reset-btn {
+  margin-top: 0;
+  width: auto;
+  font-size: 0.78rem;
+}
+
+.cq-wall-image-wrap {
+  margin-top: 10px;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #cfdcef;
+  cursor: crosshair;
+}
+
+.cq-wall-image {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.cq-hold-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  color: #fff;
+  font-size: 0.64rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 10px rgba(17, 29, 49, 0.3);
+  z-index: 2;
+}
+
+.cq-hold-marker-hand {
+  background: #28a36e;
+}
+
+.cq-hold-marker-foot {
+  background: #267cd7;
+}
+
+.cq-hold-marker-start {
+  background: #f0a625;
+}
+
+.cq-hold-marker-finish {
+  background: #d94a7a;
+}
+
+.cq-hold-count {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: #37557d;
+}
+
 .cq-create-preview {
   padding: 14px;
 }
@@ -351,12 +434,19 @@ a {
 }
 
 .cq-create-preview-image {
-  margin-top: 12px;
   width: 100%;
   border-radius: 12px;
   border: 1px solid #d2dfef;
   object-fit: cover;
   max-height: 220px;
+}
+
+.cq-preview-wall-wrap {
+  margin-top: 12px;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #d2dfef;
 }
 
 /* Bottom tab navigation (mobile-first) */
