@@ -744,6 +744,17 @@ a {
   font-weight: 600;
 }
 
+.cq-create-error {
+  margin: 0;
+  border: 1px solid #f0c2ca;
+  background: #fff2f5;
+  color: #a72f45;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 .cq-create-form {
   padding: 14px;
   display: grid;

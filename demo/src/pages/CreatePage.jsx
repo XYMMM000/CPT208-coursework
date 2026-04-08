@@ -1,4 +1,7 @@
 import { useMemo, useState } from "react";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { useAuth } from "../context/AuthContext";
+import { firestoreDb } from "../lib/firebase";
 
 const CREATED_ROUTES_STORAGE_KEY = "climbquest_created_routes";
 const styleTagOptions = ["Balance", "Power", "Endurance", "Technique"];
@@ -13,6 +16,7 @@ function getHoldLabel(type) {
 }
 
 export default function CreatePage() {
+  const { currentUser } = useAuth();
   const [formData, setFormData] = useState({
     routeName: "",
     difficulty: "",
@@ -24,7 +28,8 @@ export default function CreatePage() {
   const [selectedHoldType, setSelectedHoldType] = useState("Hand");
   const [selectedHolds, setSelectedHolds] = useState([]);
   const [errors, setErrors] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitFeedback, setSubmitFeedback] = useState({ type: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const previewTitle = formData.routeName.trim() || "Your New Route";
   const previewDifficulty = formData.difficulty || "Select difficulty";
@@ -39,7 +44,7 @@ export default function CreatePage() {
       ...prev,
       [field]: value
     }));
-    setIsSubmitted(false);
+    setSubmitFeedback({ type: "", message: "" });
   }
 
   function toggleStyleTag(tag) {
@@ -54,7 +59,7 @@ export default function CreatePage() {
         styleTags: nextTags
       };
     });
-    setIsSubmitted(false);
+    setSubmitFeedback({ type: "", message: "" });
   }
 
   function handleImageChange(event) {
@@ -69,7 +74,7 @@ export default function CreatePage() {
         imageDataUrl: String(reader.result || "")
       }));
       setSelectedHolds([]);
-      setIsSubmitted(false);
+      setSubmitFeedback({ type: "", message: "" });
     };
     reader.readAsDataURL(file);
   }
@@ -90,7 +95,7 @@ export default function CreatePage() {
     };
 
     setSelectedHolds((prev) => [...prev, newHold]);
-    setIsSubmitted(false);
+    setSubmitFeedback({ type: "", message: "" });
   }
 
   function removeHold(holdId) {
@@ -115,9 +120,11 @@ export default function CreatePage() {
     return Object.keys(nextErrors).length === 0;
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     if (!validateForm()) return;
+    setIsSubmitting(true);
+    setSubmitFeedback({ type: "", message: "" });
 
     const newRoute = {
       id: Date.now(),
@@ -131,27 +138,61 @@ export default function CreatePage() {
       createdAt: new Date().toISOString()
     };
 
-    const existingRaw = localStorage.getItem(CREATED_ROUTES_STORAGE_KEY);
-    let existingRoutes = [];
-    try {
-      existingRoutes = existingRaw ? JSON.parse(existingRaw) : [];
-    } catch {
-      existingRoutes = [];
-    }
-    const nextRoutes = [newRoute, ...existingRoutes];
-    localStorage.setItem(CREATED_ROUTES_STORAGE_KEY, JSON.stringify(nextRoutes));
+    // Payload sent to Firestore (required fields + optional extras for future use).
+    const firestoreRoute = {
+      routeName: newRoute.routeName,
+      difficulty: newRoute.difficulty,
+      styleTags: newRoute.styleTags,
+      description: newRoute.description,
+      suitableFor: newRoute.suitableFor,
+      creatorName:
+        currentUser?.displayName ||
+        currentUser?.email?.split("@")[0] ||
+        "Anonymous Climber",
+      createdTime: serverTimestamp(),
+      // Extra fields are helpful for future wall route rendering.
+      imageDataUrl: newRoute.imageDataUrl || "",
+      selectedHolds: newRoute.selectedHolds || []
+    };
 
-    setIsSubmitted(true);
-    setErrors({});
-    setSelectedHolds([]);
-    setFormData({
-      routeName: "",
-      difficulty: "",
-      styleTags: [],
-      description: "",
-      suitableFor: "Beginner",
-      imageDataUrl: ""
-    });
+    try {
+      // Save to Firestore collection: routes
+      await addDoc(collection(firestoreDb, "routes"), firestoreRoute);
+
+      // Keep localStorage save so existing community/local features still work.
+      const existingRaw = localStorage.getItem(CREATED_ROUTES_STORAGE_KEY);
+      let existingRoutes = [];
+      try {
+        existingRoutes = existingRaw ? JSON.parse(existingRaw) : [];
+      } catch {
+        existingRoutes = [];
+      }
+      const nextRoutes = [newRoute, ...existingRoutes];
+      localStorage.setItem(CREATED_ROUTES_STORAGE_KEY, JSON.stringify(nextRoutes));
+
+      setSubmitFeedback({
+        type: "success",
+        message: "Route saved to Firestore successfully."
+      });
+      setErrors({});
+      setSelectedHolds([]);
+      setFormData({
+        routeName: "",
+        difficulty: "",
+        styleTags: [],
+        description: "",
+        suitableFor: "Beginner",
+        imageDataUrl: ""
+      });
+    } catch (error) {
+      console.error("Firestore save failed:", error);
+      setSubmitFeedback({
+        type: "error",
+        message: "Could not save route to Firestore. Please try again."
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -162,9 +203,15 @@ export default function CreatePage() {
         <p>Create, preview, and save your custom route in a few simple steps.</p>
       </header>
 
-      {isSubmitted && (
+      {submitFeedback.type === "success" && (
         <p className="cq-create-success" role="status">
-          Route saved successfully. Great work, route designer.
+          {submitFeedback.message}
+        </p>
+      )}
+
+      {submitFeedback.type === "error" && (
+        <p className="cq-create-error" role="alert">
+          {submitFeedback.message}
         </p>
       )}
 
@@ -315,8 +362,8 @@ export default function CreatePage() {
           </section>
         )}
 
-        <button type="submit" className="cq-primary-btn cq-create-submit">
-          Submit Route
+        <button type="submit" className="cq-primary-btn cq-create-submit" disabled={isSubmitting}>
+          {isSubmitting ? "Saving Route..." : "Submit Route"}
         </button>
       </form>
 

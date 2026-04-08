@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 // Read Firebase values from Vite environment variables.
 // Add these keys in your .env file (see final setup steps in my response).
@@ -14,3 +15,4 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 export const firebaseAuth = getAuth(firebaseApp);
+export const firestoreDb = getFirestore(firebaseApp);
