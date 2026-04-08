@@ -36,13 +36,69 @@
 
 ## 4. 组员协作教程（GitHub 到本地 / 本地到 GitHub）
 
-### 4.1 首次从 GitHub 复制到本地（clone）
+## 4. 组员教程：如何从 GitHub 复制到本地
 
-1. 安装 Git（若已安装可跳过）
-2. 在本地选择要存放项目的目录，打开终端
-3. 执行以下命令：
+### 4.1 第一次拉取（Clone）
+
+1. 打开终端（PowerShell / Git Bash）。
+2. 进入你想存放项目的目录：
 
 ```bash
-git clone https://github.com/XYMMM000/CPT208-coursework.git
+cd 你的本地目录
+```
+
+3. 执行克隆命令：
+
+```bash
+git clone https://github.com/YimingXie040914/CPT208-coursework.git
+```
+
+4. 进入项目目录：
+
+```bash
 cd CPT208-coursework
-](https://xymmm000.github.io/CPT208-coursework/)
+```
+
+### 4.2 日常同步远程最新代码（Pull）
+
+每次开始开发前，先同步一次：
+
+```bash
+git pull origin main
+```
+
+如果你们默认分支不是 `main`，请改成实际分支名（例如 `master`）。
+
+## 5. 组员教程：如何从本地上传到 GitHub
+
+在项目根目录按顺序执行：
+
+1. 查看改动：
+
+```bash
+git status
+```
+
+2. 添加改动文件：
+
+```bash
+git add .
+```
+
+3. 提交改动（写清楚本次修改内容）：
+
+```bash
+git commit -m "更新：本次修改内容"
+```
+
+4. 上传到远程仓库：
+
+```bash
+git push origin main
+```
+
+如果提示权限或登录问题，请先完成 GitHub 账号登录（PAT 或 Git Credential Manager）。
+
+## 6. 本地预览方式
+
+在项目根目录运行：
