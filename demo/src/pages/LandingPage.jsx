@@ -6,21 +6,24 @@ import { Link } from "react-router-dom";
 const landingFeatures = [
   {
     icon: "P",
+    tone: "primary",
     title: "Personalized Challenge",
     description:
-      "Get challenge ideas based on your climbing level, goals, and preferred style."
+      "Get smart route suggestions tuned to your level and daily climbing mood."
   },
   {
     icon: "D",
+    tone: "mint",
     title: "DIY Route Creation",
     description:
-      "Design your own routes with simple tools and share them with your climbing group."
+      "Sketch and publish your own routes with a beginner-friendly creation flow."
   },
   {
     icon: "C",
+    tone: "sun",
     title: "Community Rating",
     description:
-      "Read feedback from other climbers and rate routes to help everyone improve."
+      "See honest feedback, rate climbs, and learn from the local climbing community."
   }
 ];
 
@@ -29,33 +32,48 @@ export default function LandingPage() {
     <div className="cq-landing-page">
       {/* Hero section: first thing users see when they open the app */}
       <section className="cq-hero-card">
+        <div className="cq-hero-glow cq-hero-glow-blue" aria-hidden="true" />
+        <div className="cq-hero-glow cq-hero-glow-green" aria-hidden="true" />
+
         <p className="cq-eyebrow">Human-Centered Climbing App</p>
         <h1>ClimbQuest</h1>
 
         <p className="cq-subtitle">
-          A playful climbing experience platform for route creation, challenge
-          discovery, and community feedback
+          A playful platform for route creation, challenge discovery, and
+          community feedback.
         </p>
 
         {/* Primary call-to-action */}
         <Link className="cq-primary-btn" to="/onboarding">
           Start Your Climb
         </Link>
+
+        {/* Small social proof row to build trust quickly */}
+        <div className="cq-social-proof" aria-label="Social proof">
+          <div className="cq-avatar-group" aria-hidden="true">
+            <span>A</span>
+            <span>L</span>
+            <span>M</span>
+          </div>
+          <p>Loved by student climbers in beginner clubs</p>
+        </div>
       </section>
 
       {/* Feature cards highlight the 3 core app ideas */}
       <section className="cq-feature-grid" aria-label="Core features">
-        {landingFeatures.map((feature) => (
+        {landingFeatures.map((feature, index) => (
           <FeatureCard
             key={feature.title}
             icon={feature.icon}
+            tone={feature.tone}
             title={feature.title}
             description={feature.description}
+            delay={index * 80}
           />
         ))}
       </section>
 
-      {/* Simple visual preview of the future app bottom navigation */}
+      {/* Phone-style preview helps users understand the mobile experience */}
       <BottomNavPreview />
     </div>
   );
