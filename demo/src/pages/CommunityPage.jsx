@@ -8,6 +8,12 @@ const difficultyChips = ["All", "Easy", "Medium", "Hard"];
 const styleChips = ["All", "Balance", "Power", "Endurance", "Technique"];
 const sourceChips = ["All", "Community", "AI"];
 
+function getDifficultyMeta(difficulty) {
+  if (difficulty === "Easy") return { grade: "V0-V1", toneClass: "cq-difficulty-easy" };
+  if (difficulty === "Medium") return { grade: "V2-V4", toneClass: "cq-difficulty-medium" };
+  return { grade: "V5+", toneClass: "cq-difficulty-hard" };
+}
+
 // AI-generated starter routes for inspiration.
 // These keep the feed lively even when user-created routes are still few.
 const aiGeneratedRoutes = [
@@ -149,8 +155,7 @@ export default function CommunityPage() {
 
       const matchesDifficulty =
         difficultyFilter === "All" || route.difficulty === difficultyFilter;
-      const matchesStyle =
-        styleFilter === "All" || route.styleTags.includes(styleFilter);
+      const matchesStyle = styleFilter === "All" || route.styleTags.includes(styleFilter);
       const matchesSource = sourceFilter === "All" || route.source === sourceFilter;
 
       return matchesSearch && matchesDifficulty && matchesStyle && matchesSource;
@@ -161,8 +166,8 @@ export default function CommunityPage() {
     <section className="cq-community-page">
       <header className="cq-community-header">
         <p className="cq-page-eyebrow">Community</p>
-        <h2>Route feed from climbers</h2>
-        <p>Discover shared routes, ratings, and ideas from your climbing community.</p>
+        <h2>Community beta feed</h2>
+        <p>Discover shared routes, quick beta tips, and fresh ideas from climbers.</p>
       </header>
 
       <label className="cq-community-search">
@@ -181,9 +186,7 @@ export default function CommunityPage() {
             <button
               key={chip}
               type="button"
-              className={`cq-tag-btn ${
-                difficultyFilter === chip ? "cq-tag-btn-active" : ""
-              }`}
+              className={`cq-tag-btn ${difficultyFilter === chip ? "cq-tag-btn-active" : ""}`}
               onClick={() => setDifficultyFilter(chip)}
             >
               {chip}
@@ -232,64 +235,78 @@ export default function CommunityPage() {
 
       {!isLoading && !errorMessage && (
         <section className="cq-community-list" aria-label="Community route feed">
-          {filteredRoutes.map((route) => (
-            <article key={route.id} className="cq-community-card">
-              <div className="cq-route-top-row">
-                <h3>{route.routeName}</h3>
-                <span className="cq-route-difficulty">{route.difficulty}</span>
-              </div>
+          {filteredRoutes.map((route) => {
+            const difficultyMeta = getDifficultyMeta(route.difficulty);
 
-              <div className="cq-community-meta">
-                <span>By {route.creatorName}</span>
-                <span className="cq-community-rating">
-                  Rating: {formatRating(route.averageRating)}
-                </span>
-              </div>
-
-              <div className="cq-community-source-row">
-                <span
-                  className={`cq-community-source-badge ${
-                    route.source === "AI"
-                      ? "cq-community-source-badge-ai"
-                      : "cq-community-source-badge-community"
-                  }`}
-                >
-                  {route.source}
-                </span>
-              </div>
-
-              <div className="cq-community-style-row">
-                {route.styleTags.map((tag) => (
-                  <span key={`${route.id}-${tag}`} className="cq-route-style-tag">
-                    {tag}
+            return (
+              <article key={route.id} className="cq-community-card">
+                <div className="cq-route-top-row">
+                  <h3>{route.routeName}</h3>
+                  <span className={`cq-route-difficulty ${difficultyMeta.toneClass}`}>
+                    {route.difficulty} | {difficultyMeta.grade}
                   </span>
-                ))}
-              </div>
+                </div>
 
-              <p className="cq-route-description">{route.description}</p>
+                <div className="cq-community-meta">
+                  <span>By {route.creatorName}</span>
+                  <span className="cq-community-rating">
+                    Community score: {formatRating(route.averageRating)}
+                  </span>
+                </div>
 
-              <Link
-                className="cq-secondary-btn cq-community-detail-link"
-                to="/route-detail"
-                state={{
-                  route: {
-                    title: route.routeName,
-                    difficulty: route.difficulty,
-                    tags: route.styleTags,
-                    description: route.description,
-                    creator: {
-                      name: route.creatorName,
-                      club: "ClimbQuest Community"
-                    },
-                    averageRating: Number(route.averageRating) || 4.0,
-                    ratingCount: 1
-                  }
-                }}
-              >
-                View Detail
-              </Link>
-            </article>
-          ))}
+                <div className="cq-community-source-row">
+                  <span
+                    className={`cq-community-source-badge ${
+                      route.source === "AI"
+                        ? "cq-community-source-badge-ai"
+                        : "cq-community-source-badge-community"
+                    }`}
+                  >
+                    {route.source === "AI" ? "AI Route Setter" : "Community Setter"}
+                  </span>
+                </div>
+
+                <div className="cq-route-line" aria-hidden="true">
+                  <span className="cq-route-line-node cq-route-line-node-start" />
+                  <span className="cq-route-line-segment" />
+                  <span className="cq-route-line-node cq-route-line-node-mid" />
+                  <span className="cq-route-line-segment" />
+                  <span className="cq-route-line-node cq-route-line-node-finish" />
+                </div>
+
+                <div className="cq-community-style-row">
+                  {route.styleTags.map((tag) => (
+                    <span key={`${route.id}-${tag}`} className="cq-route-style-tag">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <p className="cq-route-description">{route.description}</p>
+
+                <Link
+                  className="cq-secondary-btn cq-community-detail-link"
+                  to="/route-detail"
+                  state={{
+                    route: {
+                      title: route.routeName,
+                      difficulty: route.difficulty,
+                      tags: route.styleTags,
+                      description: route.description,
+                      creator: {
+                        name: route.creatorName,
+                        club: "ClimbQuest Community"
+                      },
+                      averageRating: Number(route.averageRating) || 4.0,
+                      ratingCount: 1
+                    }
+                  }}
+                >
+                  Open Route Beta
+                </Link>
+              </article>
+            );
+          })}
         </section>
       )}
 

@@ -54,6 +54,20 @@ function toDisplayName(level) {
   return level;
 }
 
+function buildGrowthPath(growth) {
+  // Convert skill percentages into simple milestone points for the path map.
+  const avgScore = Math.round(
+    (growth.techniqueLevel + growth.enduranceLevel + growth.confidenceLevel) / 3
+  );
+
+  return [
+    { id: "base", label: "Base", reached: true },
+    { id: "flow", label: "Flow", reached: avgScore >= 45 },
+    { id: "power", label: "Power", reached: avgScore >= 60 },
+    { id: "send", label: "Send", reached: avgScore >= 75 }
+  ];
+}
+
 export default function ProfilePage() {
   const profileData = useMemo(() => {
     const onboarding = safeParse(localStorage.getItem(ONBOARDING_STORAGE_KEY), {});
@@ -134,6 +148,7 @@ export default function ProfilePage() {
       ),
     [profileData.growth.currentSessions, profileData.growth.monthlyGoalSessions]
   );
+  const growthPath = useMemo(() => buildGrowthPath(profileData.growth), [profileData.growth]);
 
   return (
     <section className="cq-profile-page">
@@ -219,6 +234,29 @@ export default function ProfilePage() {
               style={{ width: `${profileData.growth.confidenceLevel}%` }}
             />
           </div>
+        </div>
+
+        {/* Beginner-friendly growth map: each reached node lights up like a route milestone. */}
+        <div className="cq-growth-map" aria-label="Growth path map">
+          {growthPath.map((step, index) => (
+            <div key={step.id} className="cq-growth-step">
+              <span
+                className={`cq-growth-dot ${step.reached ? "cq-growth-dot-active" : ""}`}
+              >
+                {index + 1}
+              </span>
+              <span className="cq-growth-label">{step.label}</span>
+              {index < growthPath.length - 1 && (
+                <span
+                  className={`cq-growth-link ${
+                    step.reached && growthPath[index + 1].reached
+                      ? "cq-growth-link-active"
+                      : ""
+                  }`}
+                />
+              )}
+            </div>
+          ))}
         </div>
       </section>
 

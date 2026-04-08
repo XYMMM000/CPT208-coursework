@@ -50,6 +50,12 @@ const mockRoutes = [
   }
 ];
 
+function getDifficultyMeta(difficulty) {
+  if (difficulty === "Easy") return { grade: "V0-V1", toneClass: "cq-difficulty-easy" };
+  if (difficulty === "Medium") return { grade: "V2-V4", toneClass: "cq-difficulty-medium" };
+  return { grade: "V5+", toneClass: "cq-difficulty-hard" };
+}
+
 function readUserPreferences() {
   try {
     const rawValue = localStorage.getItem(ONBOARDING_STORAGE_KEY);
@@ -109,9 +115,7 @@ export default function DiscoverPage() {
   // Build the top 3 recommendations using simple scoring based on preferences.
   const recommendedRoutes = useMemo(() => {
     return [...mockRoutes]
-      .sort(
-        (a, b) => scoreRoute(b, preferences) - scoreRoute(a, preferences)
-      )
+      .sort((a, b) => scoreRoute(b, preferences) - scoreRoute(a, preferences))
       .slice(0, 3)
       .map((route) => ({
         ...route,
@@ -135,23 +139,20 @@ export default function DiscoverPage() {
       <header className="cq-reco-header">
         <p className="cq-page-eyebrow">Discover</p>
         <h2>Welcome back, climber</h2>
-        <p>
-          Personalized recommendations based on your preferences and today&apos;s
-          climbing vibe.
-        </p>
+        <p>Recommended routes picked from your profile and today's climbing goal.</p>
       </header>
 
       {/* Conditional text: if we have onboarding choices, show the current profile summary. */}
       {(preferences.level || preferences.style || preferences.goal) && (
         <p className="cq-reco-profile-note">
-          Your profile: {preferences.level || "Any level"} /{" "}
-          {preferences.style || "Any style"} / {preferences.goal || "Any goal"}
+          Your profile: {preferences.level || "Any level"} / {preferences.style || "Any style"} /
+          {` ${preferences.goal || "Any goal"}`}
         </p>
       )}
 
       <section className="cq-todays-quest" aria-label="Today's quest">
         <div className="cq-todays-quest-head">
-          <h3>Today&apos;s Quest</h3>
+          <h3>Today's Quest</h3>
           <span>{challengeProgress}%</span>
         </div>
 
@@ -161,25 +162,34 @@ export default function DiscoverPage() {
 
         {/* Challenge progress bar updates when user starts a route. */}
         <div className="cq-quest-progress-track" aria-label="Challenge progress">
-          <div
-            className="cq-quest-progress-fill"
-            style={{ width: `${challengeProgress}%` }}
-          />
+          <div className="cq-quest-progress-fill" style={{ width: `${challengeProgress}%` }} />
         </div>
       </section>
 
       <section className="cq-route-grid" aria-label="Recommended routes">
         {recommendedRoutes.map((route) => {
           const isActiveRoute = activeQuestId === route.id;
+          const difficultyMeta = getDifficultyMeta(route.difficulty);
 
           return (
             <article key={route.id} className="cq-route-card">
               <div className="cq-route-top-row">
                 <h3>{route.name}</h3>
-                <span className="cq-route-difficulty">{route.difficulty}</span>
+                <span className={`cq-route-difficulty ${difficultyMeta.toneClass}`}>
+                  {route.difficulty} | {difficultyMeta.grade}
+                </span>
               </div>
 
               <span className="cq-route-style-tag">{route.style}</span>
+
+              {/* Mini topology line: gives a quick movement-path feeling. */}
+              <div className="cq-route-line" aria-hidden="true">
+                <span className="cq-route-line-node cq-route-line-node-start" />
+                <span className="cq-route-line-segment" />
+                <span className="cq-route-line-node cq-route-line-node-mid" />
+                <span className="cq-route-line-segment" />
+                <span className="cq-route-line-node cq-route-line-node-finish" />
+              </div>
 
               <p className="cq-route-description">{route.description}</p>
               <p className="cq-route-reason">{route.recommendationReason}</p>

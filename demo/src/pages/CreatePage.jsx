@@ -8,6 +8,13 @@ const styleTagOptions = ["Balance", "Power", "Endurance", "Technique"];
 const levelOptions = ["Beginner", "Intermediate", "Advanced"];
 const holdTypeOptions = ["Hand", "Foot", "Start", "Finish"];
 
+function getDifficultyMeta(difficulty) {
+  if (difficulty === "Easy") return { grade: "V0-V1", toneClass: "cq-difficulty-easy" };
+  if (difficulty === "Medium")
+    return { grade: "V2-V4", toneClass: "cq-difficulty-medium" };
+  return { grade: "V5+", toneClass: "cq-difficulty-hard" };
+}
+
 function getHoldLabel(type) {
   if (type === "Start") return "S";
   if (type === "Finish") return "F";
@@ -33,6 +40,8 @@ export default function CreatePage() {
 
   const previewTitle = formData.routeName.trim() || "Your New Route";
   const previewDifficulty = formData.difficulty || "Select difficulty";
+  const previewDifficultyMeta =
+    formData.difficulty ? getDifficultyMeta(formData.difficulty) : null;
   const previewStyle = formData.styleTags.join(", ") || "No style tags yet";
   const previewDescription =
     formData.description.trim() ||
@@ -201,7 +210,7 @@ export default function CreatePage() {
       <header className="cq-create-header">
         <p className="cq-page-eyebrow">Create</p>
         <h2>Build your own climbing route</h2>
-        <p>Create, preview, and save your custom route in a few simple steps.</p>
+        <p>Create, preview, and save your custom line with hold-by-hold planning.</p>
       </header>
 
       {submitFeedback.type === "success" && (
@@ -235,9 +244,9 @@ export default function CreatePage() {
             onChange={(event) => updateField("difficulty", event.target.value)}
           >
             <option value="">Choose difficulty</option>
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
+            <option value="Easy">Easy (V0-V1)</option>
+            <option value="Medium">Medium (V2-V4)</option>
+            <option value="Hard">Hard (V5+)</option>
           </select>
           {errors.difficulty && (
             <small className="cq-field-error">{errors.difficulty}</small>
@@ -373,9 +382,23 @@ export default function CreatePage() {
         <p className="cq-page-eyebrow">Live Preview</p>
         <div className="cq-route-top-row">
           <h3>{previewTitle}</h3>
-          <span className="cq-route-difficulty">{previewDifficulty}</span>
+          <span
+            className={`cq-route-difficulty ${
+              previewDifficultyMeta ? previewDifficultyMeta.toneClass : ""
+            }`}
+          >
+            {previewDifficulty}
+            {previewDifficultyMeta ? ` | ${previewDifficultyMeta.grade}` : ""}
+          </span>
         </div>
         <span className="cq-route-style-tag">{previewStyle}</span>
+        <div className="cq-route-line" aria-hidden="true">
+          <span className="cq-route-line-node cq-route-line-node-start" />
+          <span className="cq-route-line-segment" />
+          <span className="cq-route-line-node cq-route-line-node-mid" />
+          <span className="cq-route-line-segment" />
+          <span className="cq-route-line-node cq-route-line-node-finish" />
+        </div>
         <p className="cq-route-description">{previewDescription}</p>
         <p className="cq-route-reason">Suitable for: {previewLevel}</p>
 

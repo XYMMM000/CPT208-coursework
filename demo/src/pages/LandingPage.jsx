@@ -9,21 +9,21 @@ const landingFeatures = [
     tone: "primary",
     title: "Personalized Challenge",
     description:
-      "Get smart route suggestions tuned to your level and daily climbing mood."
+      "Get route picks with level + style matching and a clear reason for each recommendation."
   },
   {
     icon: "D",
     tone: "mint",
     title: "DIY Route Creation",
     description:
-      "Sketch and publish your own routes with a beginner-friendly creation flow."
+      "Upload a wall photo, tap holds, and publish your own line in minutes."
   },
   {
     icon: "C",
     tone: "sun",
     title: "Community Rating",
     description:
-      "See honest feedback, rate climbs, and learn from the local climbing community."
+      "Read beta tips, rate routes, and collect useful feedback from other climbers."
   }
 ];
 
@@ -39,13 +39,13 @@ export default function LandingPage() {
         <h1>ClimbQuest</h1>
 
         <p className="cq-subtitle">
-          A playful platform for route creation, challenge discovery, and
-          community feedback.
+          A playful climbing platform for route building, challenge discovery,
+          and social beta sharing.
         </p>
 
         {/* Primary call-to-action */}
         <Link className="cq-primary-btn" to="/onboarding">
-          Start Your Climb
+          Start Quest Session
         </Link>
 
         {/* Small social proof row to build trust quickly */}
@@ -55,7 +55,7 @@ export default function LandingPage() {
             <span>L</span>
             <span>M</span>
           </div>
-          <p>Loved by student climbers in beginner clubs</p>
+          <p>Trusted by beginner bouldering groups on campus</p>
         </div>
       </section>
 

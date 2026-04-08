@@ -289,23 +289,80 @@ a {
 
 .cq-route-difficulty {
   border-radius: 999px;
-  background: #eff5ff;
+  background: #fff5e9;
+  border: 1px solid #ebd5b7;
   padding: 4px 8px;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #2e4b79;
+  color: #6b4021;
+}
+
+.cq-difficulty-easy {
+  background: #ecf9f1;
+  border-color: #bee6cf;
+  color: #256946;
+}
+
+.cq-difficulty-medium {
+  background: #fff6e8;
+  border-color: #ead5b5;
+  color: #7a4d22;
+}
+
+.cq-difficulty-hard {
+  background: #fceef0;
+  border-color: #f0c8d0;
+  color: #8f3145;
 }
 
 .cq-route-style-tag {
   display: inline-block;
   margin-top: 8px;
   border-radius: 999px;
-  background: #f6efe3;
+  background: #f8efe2;
   border: 1px dashed #c7b297;
   padding: 3px 8px;
   font-size: 0.72rem;
   font-weight: 700;
   color: #6a4f36;
+}
+
+.cq-route-line {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cq-route-line-lg {
+  margin-top: 12px;
+}
+
+.cq-route-line-segment {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e5c89c, #bf8655, #8f5c2f);
+}
+
+.cq-route-line-node {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 4px 8px rgba(76, 53, 32, 0.2);
+}
+
+.cq-route-line-node-start {
+  background: #2e9d6f;
+}
+
+.cq-route-line-node-mid {
+  background: #ca7f34;
+}
+
+.cq-route-line-node-finish {
+  background: #b44a63;
 }
 
 .cq-route-description {
@@ -443,14 +500,14 @@ a {
 }
 
 .cq-community-source-badge-ai {
-  background: #f3efff;
-  border: 1px solid #d8ccff;
-  color: #5a3da1;
+  background: #efe9ff;
+  border: 1px solid #d8cbfb;
+  color: #5f439f;
 }
 
 .cq-community-source-badge-community {
-  background: #effdf5;
-  border: 1px solid #caefd9;
+  background: #ecfaf2;
+  border: 1px solid #c7ecd7;
   color: #2d6b52;
 }
 
@@ -590,16 +647,74 @@ a {
 }
 
 .cq-profile-activity-item {
-  border: 1px solid #dce6f4;
+  border: 1px solid #e9dac2;
   border-radius: 12px;
-  background: #f8fbff;
+  background: #fff8ee;
   padding: 10px;
 }
 
 .cq-profile-activity-item p {
   margin: 0;
-  color: #415a7d;
+  color: #6a573e;
   font-size: 0.85rem;
+}
+
+.cq-growth-map {
+  margin-top: 12px;
+  border: 1px dashed #dec7a6;
+  background: #fff7ea;
+  border-radius: 12px;
+  padding: 10px 10px 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+}
+
+.cq-growth-step {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.cq-growth-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #ede4d5;
+  color: #8c7d67;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid #dbc7a9;
+  z-index: 1;
+}
+
+.cq-growth-dot-active {
+  background: linear-gradient(135deg, #2f8a5c, #53ab78);
+  color: #fff;
+  border-color: #2f8a5c;
+}
+
+.cq-growth-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #68553f;
+}
+
+.cq-growth-link {
+  position: absolute;
+  top: 13px;
+  right: -50%;
+  width: 100%;
+  height: 3px;
+  background: #e7d9c1;
+  z-index: 0;
+}
+
+.cq-growth-link-active {
+  background: linear-gradient(90deg, #2f8a5c, #53ab78);
 }
 
 /* Route detail page */
@@ -728,7 +843,7 @@ a {
 .cq-detail-comment-author {
   font-size: 0.78rem;
   font-weight: 700;
-  color: #476288;
+  color: #6b512f;
   margin-bottom: 5px;
 }
 

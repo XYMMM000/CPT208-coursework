@@ -17,6 +17,12 @@ const initialRoute = {
   ratingCount: 26
 };
 
+function getDifficultyMeta(difficulty) {
+  if (difficulty === "Easy") return { grade: "V0-V1", toneClass: "cq-difficulty-easy" };
+  if (difficulty === "Medium") return { grade: "V2-V4", toneClass: "cq-difficulty-medium" };
+  return { grade: "V5+", toneClass: "cq-difficulty-hard" };
+}
+
 function renderStarLine(value) {
   return "*".repeat(value) + "-".repeat(5 - value);
 }
@@ -64,6 +70,7 @@ export default function RouteDetailPage() {
     { id: 2, author: "Leo", text: "Loved the finish move. Super satisfying route." }
   ]);
 
+  const difficultyMeta = getDifficultyMeta(routeState.difficulty);
   const ratingSummary = useMemo(() => {
     return `${routeState.averageRating.toFixed(1)} (${routeState.ratingCount} ratings)`;
   }, [routeState.averageRating, routeState.ratingCount]);
@@ -158,7 +165,9 @@ export default function RouteDetailPage() {
         <h2>{routeState.title}</h2>
 
         <div className="cq-detail-meta">
-          <span className="cq-route-difficulty">{routeState.difficulty}</span>
+          <span className={`cq-route-difficulty ${difficultyMeta.toneClass}`}>
+            {routeState.difficulty} | {difficultyMeta.grade}
+          </span>
           <span className="cq-detail-rating-summary">{ratingSummary}</span>
         </div>
 
@@ -168,6 +177,14 @@ export default function RouteDetailPage() {
               {tag}
             </span>
           ))}
+        </div>
+
+        <div className="cq-route-line cq-route-line-lg" aria-hidden="true">
+          <span className="cq-route-line-node cq-route-line-node-start" />
+          <span className="cq-route-line-segment" />
+          <span className="cq-route-line-node cq-route-line-node-mid" />
+          <span className="cq-route-line-segment" />
+          <span className="cq-route-line-node cq-route-line-node-finish" />
         </div>
 
         <p className="cq-route-description">{routeState.description}</p>
@@ -206,7 +223,7 @@ export default function RouteDetailPage() {
       </section>
 
       <section className="cq-detail-card">
-        <h3>Comments</h3>
+        <h3>Beta comments</h3>
 
         <div className="cq-detail-comment-box">
           <textarea
@@ -220,7 +237,7 @@ export default function RouteDetailPage() {
             className="cq-primary-btn cq-detail-comment-btn"
             onClick={handleAddComment}
           >
-            Post Comment
+            Post Beta
           </button>
         </div>
 
@@ -240,7 +257,9 @@ export default function RouteDetailPage() {
           className={`cq-secondary-btn ${routeState.isLiked ? "cq-action-active" : ""}`}
           onClick={toggleLike}
         >
-          {routeState.isLiked ? `Liked (${routeState.likes})` : `Like (${routeState.likes})`}
+          {routeState.isLiked
+            ? `Useful Beta (${routeState.likes})`
+            : `Mark Useful (${routeState.likes})`}
         </button>
 
         <button
@@ -248,7 +267,7 @@ export default function RouteDetailPage() {
           className={`cq-secondary-btn ${routeState.isSaved ? "cq-action-active" : ""}`}
           onClick={toggleSave}
         >
-          {routeState.isSaved ? "Saved" : "Save"}
+          {routeState.isSaved ? "Saved for Session" : "Save for Session"}
         </button>
 
         <button
@@ -258,7 +277,7 @@ export default function RouteDetailPage() {
           }`}
           onClick={toggleCompleted}
         >
-          {routeState.isCompleted ? "Completed" : "I completed this route"}
+          {routeState.isCompleted ? "Route Sent" : "I Sent This Route"}
         </button>
       </section>
     </section>
