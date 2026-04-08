@@ -235,6 +235,130 @@ a {
   box-shadow: none;
 }
 
+/* DIY route creation page */
+.cq-create-page {
+  display: grid;
+  gap: 12px;
+}
+
+.cq-create-header,
+.cq-create-form,
+.cq-create-preview {
+  background: var(--cq-surface);
+  border: 1px solid var(--cq-border);
+  border-radius: var(--cq-radius-lg);
+  box-shadow: var(--cq-shadow);
+}
+
+.cq-create-header {
+  padding: 18px 16px;
+}
+
+.cq-create-header h2 {
+  margin: 4px 0 0;
+  font-size: 1.4rem;
+}
+
+.cq-create-header p {
+  margin: 8px 0 0;
+  color: var(--cq-text-soft);
+  line-height: 1.5;
+}
+
+.cq-create-success {
+  margin: 0;
+  border: 1px solid #c9ecd8;
+  background: #effdf5;
+  color: #245d45;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.cq-create-form {
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.cq-field {
+  display: grid;
+  gap: 6px;
+}
+
+.cq-field > span {
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.cq-field input,
+.cq-field textarea,
+.cq-field select {
+  width: 100%;
+  border: 1px solid #cddcf0;
+  border-radius: 12px;
+  background: #f8fbff;
+  padding: 10px 11px;
+  color: var(--cq-text);
+  font: inherit;
+}
+
+.cq-field textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.cq-field-error {
+  color: #ba2d43;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.cq-tag-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cq-tag-btn {
+  border: 1px solid #d0def1;
+  border-radius: 999px;
+  background: #f5f9ff;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #355175;
+}
+
+.cq-tag-btn-active {
+  border-color: #82b7ff;
+  background: #eaf3ff;
+  color: var(--cq-primary-strong);
+}
+
+.cq-create-submit {
+  width: 100%;
+  justify-content: center;
+}
+
+.cq-create-preview {
+  padding: 14px;
+}
+
+.cq-create-preview h3 {
+  margin: 0;
+}
+
+.cq-create-preview-image {
+  margin-top: 12px;
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #d2dfef;
+  object-fit: cover;
+  max-height: 220px;
+}
+
 /* Bottom tab navigation (mobile-first) */
 .cq-bottom-nav {
   position: fixed;
@@ -765,5 +889,23 @@ a {
 
   .cq-route-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cq-create-page {
+    grid-template-columns: 1.2fr 0.8fr;
+    align-items: start;
+  }
+
+  .cq-create-header,
+  .cq-create-success,
+  .cq-create-form {
+    grid-column: 1 / 2;
+  }
+
+  .cq-create-preview {
+    grid-column: 2 / 3;
+    grid-row: 1 / 4;
+    position: sticky;
+    top: 18px;
   }
 }
