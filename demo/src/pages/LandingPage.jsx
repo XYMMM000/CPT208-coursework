@@ -1,59 +1,62 @@
-import { Link } from "react-router-dom";
+import BottomNavPreview from "../components/ui/BottomNavPreview";
 import FeatureCard from "../components/ui/FeatureCard";
+import { Link } from "react-router-dom";
 
+// Data is kept separate from JSX to make the component easier for beginners to edit.
 const landingFeatures = [
   {
+    icon: "P",
     title: "Personalized Challenge",
     description:
-      "Get climb recommendations based on your level, goals, and preferred climbing styles."
+      "Get challenge ideas based on your climbing level, goals, and preferred style."
   },
   {
+    icon: "D",
     title: "DIY Route Creation",
     description:
-      "Build your own route ideas in a simple creator and share them with your climbing friends."
+      "Design your own routes with simple tools and share them with your climbing group."
   },
   {
+    icon: "C",
     title: "Community Rating",
     description:
-      "Read feedback from other climbers, rate routes, and improve together as a community."
+      "Read feedback from other climbers and rate routes to help everyone improve."
   }
 ];
 
 export default function LandingPage() {
   return (
     <div className="cq-landing-page">
+      {/* Hero section: first thing users see when they open the app */}
       <section className="cq-hero-card">
         <p className="cq-eyebrow">Human-Centered Climbing App</p>
         <h1>ClimbQuest</h1>
+
         <p className="cq-subtitle">
           A playful climbing experience platform for route creation, challenge
           discovery, and community feedback
         </p>
 
-        {/* Main call-to-action button */}
+        {/* Primary call-to-action */}
         <Link className="cq-primary-btn" to="/home">
           Start Your Climb
         </Link>
       </section>
 
+      {/* Feature cards highlight the 3 core app ideas */}
       <section className="cq-feature-grid" aria-label="Core features">
         {landingFeatures.map((feature) => (
           <FeatureCard
             key={feature.title}
+            icon={feature.icon}
             title={feature.title}
             description={feature.description}
           />
         ))}
       </section>
 
-      {/* Simple mock preview of bottom navigation */}
-      <section className="cq-nav-mock" aria-label="Navigation preview">
-        <div className="cq-nav-mock-item cq-nav-mock-item-active">Home</div>
-        <div className="cq-nav-mock-item">Discover</div>
-        <div className="cq-nav-mock-item">Create</div>
-        <div className="cq-nav-mock-item">Community</div>
-        <div className="cq-nav-mock-item">Profile</div>
-      </section>
+      {/* Simple visual preview of the future app bottom navigation */}
+      <BottomNavPreview />
     </div>
   );
 }
