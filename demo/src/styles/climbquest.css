@@ -276,6 +276,103 @@ a {
   color: #fff;
 }
 
+/* Onboarding page */
+.cq-onboarding-page {
+  min-height: 100vh;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 18px 16px 26px;
+}
+
+.cq-onboarding-card {
+  background: var(--cq-surface);
+  border: 1px solid var(--cq-border);
+  border-radius: var(--cq-radius-lg);
+  box-shadow: var(--cq-shadow);
+  padding: 20px 16px;
+}
+
+.cq-onboarding-card h1 {
+  margin: 12px 0 0;
+  font-size: 1.65rem;
+  line-height: 1.15;
+}
+
+.cq-progress-wrapper {
+  margin-top: 14px;
+}
+
+.cq-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--cq-text-soft);
+}
+
+.cq-progress-track {
+  margin-top: 8px;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: #e7eefc;
+  overflow: hidden;
+}
+
+.cq-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1d7cf2, #24b4ff);
+  transition: width 220ms ease;
+}
+
+.cq-onboarding-group {
+  margin-top: 18px;
+}
+
+.cq-onboarding-group h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.cq-option-grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.cq-option-card {
+  border: 1px solid var(--cq-border);
+  background: #f8fbff;
+  border-radius: 14px;
+  padding: 12px 10px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--cq-text);
+}
+
+.cq-option-card-selected {
+  border-color: #7cb5ff;
+  background: #eaf3ff;
+  color: var(--cq-primary-strong);
+  box-shadow: inset 0 0 0 1px #7cb5ff;
+}
+
+.cq-onboarding-continue {
+  margin-top: 22px;
+  width: 100%;
+  justify-content: center;
+}
+
+.cq-onboarding-continue:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 @media (min-width: 768px) {
   .cq-landing-page {
     max-width: 980px;
@@ -291,6 +388,19 @@ a {
   }
 
   .cq-feature-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cq-onboarding-page {
+    max-width: 620px;
+    padding: 30px 24px;
+  }
+
+  .cq-onboarding-card {
+    padding: 28px 24px;
+  }
+
+  .cq-option-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

@@ -38,7 +38,7 @@ export default function LandingPage() {
         </p>
 
         {/* Primary call-to-action */}
-        <Link className="cq-primary-btn" to="/home">
+        <Link className="cq-primary-btn" to="/onboarding">
           Start Your Climb
         </Link>
       </section>
