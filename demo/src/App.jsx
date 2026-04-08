@@ -4,17 +4,16 @@ import CommunityPage from "./pages/CommunityPage";
 import CreatePage from "./pages/CreatePage";
 import DiscoverPage from "./pages/DiscoverPage";
 import HomePage from "./pages/HomePage";
-import LandingPage from "./pages/LandingPage";
 import ProfilePage from "./pages/ProfilePage";
 
 export default function App() {
   return (
     <Routes>
-      {/* Landing page for first-time visitors */}
-      <Route path="/" element={<LandingPage />} />
-
-      {/* App layout with shared bottom tabs */}
+      {/* Shared app layout for all main pages */}
       <Route element={<MobileAppLayout />}>
+        {/* Default route: open Home tab first */}
+        <Route index element={<Navigate to="/home" replace />} />
+        <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/discover" element={<DiscoverPage />} />
         <Route path="/create" element={<CreatePage />} />
@@ -22,8 +21,8 @@ export default function App() {
         <Route path="/profile" element={<ProfilePage />} />
       </Route>
 
-      {/* Any unknown URL will redirect back to landing */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* Any unknown URL redirects to Home */}
+      <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   );
 }
