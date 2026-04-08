@@ -1,118 +1,88 @@
+import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-
-const CREATED_ROUTES_STORAGE_KEY = "climbquest_created_routes";
-
-const mockCommunityRoutes = [
-  {
-    id: 1,
-    routeName: "Neon Ladder",
-    difficulty: "Easy",
-    styleTags: ["Balance", "Technique"],
-    creatorName: "Mia",
-    averageRating: 4.7,
-    description: "Smooth ladder-style climbing with simple transitions and fun flow."
-  },
-  {
-    id: 2,
-    routeName: "Core Crush",
-    difficulty: "Hard",
-    styleTags: ["Power"],
-    creatorName: "Alex",
-    averageRating: 4.4,
-    description: "Explosive moves and lock-offs for climbers who enjoy strength tests."
-  },
-  {
-    id: 3,
-    routeName: "Tempo Traverse",
-    difficulty: "Medium",
-    styleTags: ["Endurance", "Technique"],
-    creatorName: "Leo",
-    averageRating: 4.6,
-    description: "Long horizontal route focused on pacing, rhythm, and body control."
-  },
-  {
-    id: 4,
-    routeName: "Pocket Practice",
-    difficulty: "Medium",
-    styleTags: ["Power", "Technique"],
-    creatorName: "Hannah",
-    averageRating: 4.2,
-    description: "A playful route that mixes tiny holds with precise foot placement."
-  },
-  {
-    id: 5,
-    routeName: "Sunset Circuit",
-    difficulty: "Easy",
-    styleTags: ["Endurance", "Balance"],
-    creatorName: "Ryan",
-    averageRating: 4.8,
-    description: "Friendly circuit for social climbing sessions and light endurance work."
-  }
-];
+import { firestoreDb } from "../lib/firebase";
 
 const difficultyChips = ["All", "Easy", "Medium", "Hard"];
 const styleChips = ["All", "Balance", "Power", "Endurance", "Technique"];
 
-function renderStars(rating) {
-  return `${rating.toFixed(1)}/5`;
+function formatRating(value) {
+  const numericValue = Number(value);
+  if (Number.isNaN(numericValue)) return "4.0/5";
+  return `${numericValue.toFixed(1)}/5`;
 }
 
 export default function CommunityPage() {
-  // Keep full feed data in state so we can load localStorage data once on mount.
-  const [communityRoutes, setCommunityRoutes] = useState(mockCommunityRoutes);
+  const [communityRoutes, setCommunityRoutes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
   const [searchText, setSearchText] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("All");
   const [styleFilter, setStyleFilter] = useState("All");
 
   useEffect(() => {
-    // On component load, read user-created routes from localStorage and merge with mock feed.
-    const rawCreatedRoutes = localStorage.getItem(CREATED_ROUTES_STORAGE_KEY);
-    if (!rawCreatedRoutes) {
-      setCommunityRoutes(mockCommunityRoutes);
-      return;
+    let isActive = true;
+
+    async function fetchRoutesFromFirestore() {
+      setIsLoading(true);
+      setErrorMessage("");
+
+      try {
+        // Read all routes from Firestore collection "routes".
+        const snapshot = await getDocs(collection(firestoreDb, "routes"));
+
+        // Convert Firestore docs into a beginner-friendly UI shape.
+        const routes = snapshot.docs.map((doc) => {
+          const data = doc.data();
+
+          return {
+            id: doc.id,
+            routeName: data.routeName || "Untitled Route",
+            difficulty: data.difficulty || "Easy",
+            styleTags:
+              Array.isArray(data.styleTags) && data.styleTags.length > 0
+                ? data.styleTags
+                : ["Technique"],
+            creatorName: data.creatorName || "Anonymous Climber",
+            averageRating: data.averageRating ?? 4.0,
+            description:
+              data.description || "No description provided for this route yet.",
+            createdTime: data.createdTime?.seconds || 0
+          };
+        });
+
+        // Show newest routes first when timestamp exists.
+        routes.sort((a, b) => b.createdTime - a.createdTime);
+
+        if (isActive) {
+          setCommunityRoutes(routes);
+        }
+      } catch (error) {
+        console.error("Failed to fetch Firestore routes:", error);
+        if (isActive) {
+          setErrorMessage("Could not load community routes. Please try again.");
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
     }
 
-    try {
-      const parsedRoutes = JSON.parse(rawCreatedRoutes);
-      const createdRoutes = Array.isArray(parsedRoutes) ? parsedRoutes : [];
-
-      // Map DIY route structure into community feed card shape.
-      const normalizedCreatedRoutes = createdRoutes.map((route, index) => ({
-        id: `created-${route.id ?? index}`,
-        routeName: route.routeName || "Untitled Route",
-        difficulty: route.difficulty || "Easy",
-        styleTags:
-          Array.isArray(route.styleTags) && route.styleTags.length > 0
-            ? route.styleTags
-            : ["Technique"],
-        creatorName: "You",
-        averageRating: 4.0,
-        description:
-          route.description || "User-created route from the DIY route builder.",
-        createdAt: route.createdAt || null
-      }));
-
-      // Show newest created routes first, then keep the existing mock community feed.
-      normalizedCreatedRoutes.sort((a, b) => {
-        if (!a.createdAt || !b.createdAt) return 0;
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
-
-      setCommunityRoutes([...normalizedCreatedRoutes, ...mockCommunityRoutes]);
-    } catch {
-      // Fallback safely if localStorage data is invalid JSON.
-      setCommunityRoutes(mockCommunityRoutes);
-    }
+    fetchRoutesFromFirestore();
+    return () => {
+      isActive = false;
+    };
   }, []);
 
-  // Filter list based on search + selected filter chips.
+  // Search + filter logic works on the Firestore-loaded routes.
   const filteredRoutes = useMemo(() => {
     return communityRoutes.filter((route) => {
+      const searchValue = searchText.toLowerCase().trim();
       const matchesSearch =
-        route.routeName.toLowerCase().includes(searchText.toLowerCase()) ||
-        route.creatorName.toLowerCase().includes(searchText.toLowerCase()) ||
-        route.description.toLowerCase().includes(searchText.toLowerCase());
+        route.routeName.toLowerCase().includes(searchValue) ||
+        route.creatorName.toLowerCase().includes(searchValue) ||
+        route.description.toLowerCase().includes(searchValue);
 
       const matchesDifficulty =
         difficultyFilter === "All" || route.difficulty === difficultyFilter;
@@ -171,56 +141,70 @@ export default function CommunityPage() {
         </div>
       </div>
 
-      <section className="cq-community-list" aria-label="Community route feed">
-        {filteredRoutes.map((route) => (
-          <article key={route.id} className="cq-community-card">
-            <div className="cq-route-top-row">
-              <h3>{route.routeName}</h3>
-              <span className="cq-route-difficulty">{route.difficulty}</span>
-            </div>
+      {isLoading && (
+        <p className="cq-community-status" role="status">
+          Loading community routes...
+        </p>
+      )}
 
-            <div className="cq-community-meta">
-              <span>By {route.creatorName}</span>
-              <span className="cq-community-rating">
-                Rating: {renderStars(route.averageRating)}
-              </span>
-            </div>
+      {!isLoading && errorMessage && (
+        <p className="cq-community-status cq-community-status-error" role="alert">
+          {errorMessage}
+        </p>
+      )}
 
-            <div className="cq-community-style-row">
-              {route.styleTags.map((tag) => (
-                <span key={`${route.id}-${tag}`} className="cq-route-style-tag">
-                  {tag}
+      {!isLoading && !errorMessage && (
+        <section className="cq-community-list" aria-label="Community route feed">
+          {filteredRoutes.map((route) => (
+            <article key={route.id} className="cq-community-card">
+              <div className="cq-route-top-row">
+                <h3>{route.routeName}</h3>
+                <span className="cq-route-difficulty">{route.difficulty}</span>
+              </div>
+
+              <div className="cq-community-meta">
+                <span>By {route.creatorName}</span>
+                <span className="cq-community-rating">
+                  Rating: {formatRating(route.averageRating)}
                 </span>
-              ))}
-            </div>
+              </div>
 
-            <p className="cq-route-description">{route.description}</p>
+              <div className="cq-community-style-row">
+                {route.styleTags.map((tag) => (
+                  <span key={`${route.id}-${tag}`} className="cq-route-style-tag">
+                    {tag}
+                  </span>
+                ))}
+              </div>
 
-            <Link
-              className="cq-secondary-btn cq-community-detail-link"
-              to="/route-detail"
-              state={{
-                route: {
-                  title: route.routeName,
-                  difficulty: route.difficulty,
-                  tags: route.styleTags,
-                  description: route.description,
-                  creator: {
-                    name: route.creatorName,
-                    club: "ClimbQuest Community"
-                  },
-                  averageRating: route.averageRating,
-                  ratingCount: 1
-                }
-              }}
-            >
-              View Detail
-            </Link>
-          </article>
-        ))}
-      </section>
+              <p className="cq-route-description">{route.description}</p>
 
-      {filteredRoutes.length === 0 && (
+              <Link
+                className="cq-secondary-btn cq-community-detail-link"
+                to="/route-detail"
+                state={{
+                  route: {
+                    title: route.routeName,
+                    difficulty: route.difficulty,
+                    tags: route.styleTags,
+                    description: route.description,
+                    creator: {
+                      name: route.creatorName,
+                      club: "ClimbQuest Community"
+                    },
+                    averageRating: Number(route.averageRating) || 4.0,
+                    ratingCount: 1
+                  }
+                }}
+              >
+                View Detail
+              </Link>
+            </article>
+          ))}
+        </section>
+      )}
+
+      {!isLoading && !errorMessage && filteredRoutes.length === 0 && (
         <p className="cq-community-empty">No routes found. Try another filter or keyword.</p>
       )}
     </section>

@@ -432,6 +432,23 @@ a {
   font-size: 0.84rem;
 }
 
+.cq-community-status {
+  margin: 0;
+  border: 1px solid #c8d9f0;
+  border-radius: 12px;
+  background: #f5f9ff;
+  padding: 12px;
+  color: #506485;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.cq-community-status-error {
+  border-color: #f0c2ca;
+  background: #fff2f5;
+  color: #a72f45;
+}
+
 .cq-community-detail-link {
   margin-top: 12px;
   width: 100%;
