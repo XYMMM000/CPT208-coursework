@@ -4,33 +4,33 @@ import SectionTitle from "../components/SectionTitle";
 
 const features = [
   {
-    icon: "🎯",
-    title: "Personalized Challenge",
+    icon: "01",
+    title: "Challenge Automation",
     description:
-      "Discover climbing challenges tailored to your level, preferences, and progress.",
+      "Configure weekly challenge templates and launch them automatically for different skill levels.",
   },
   {
-    icon: "🛠️",
-    title: "DIY Route Creation",
+    icon: "02",
+    title: "Route Builder Toolkit",
     description:
-      "Build your own routes in a playful and accessible way, then share them with others.",
+      "Design and publish routes in minutes with reusable templates, tags, and difficulty presets.",
   },
   {
-    icon: "⭐",
-    title: "Community Rating",
+    icon: "03",
+    title: "Community Feedback Loop",
     description:
-      "Collect feedback from fellow climbers and improve every route with community insight.",
+      "Collect ratings and comments, then use insights dashboards to improve routes faster.",
   },
 ];
 
 export default function FeaturesSection() {
   return (
-    <section className="section">
+    <section className="section reveal-on-scroll" id="features">
       <Container>
         <SectionTitle
           eyebrow="Features"
-          title="Built for climbers who love creating and exploring"
-          description="ClimbQuest combines route building, challenge discovery, and social feedback in one simple mobile-first experience."
+          title="Everything teams need to run a modern climbing product"
+          description="ClimbQuest unifies route operations, challenge engagement, and community insights in one platform."
         />
 
         <div className="feature-grid">
