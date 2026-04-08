@@ -1,16 +1,16 @@
 :root {
-  --cq-bg: #f3f7ff;
-  --cq-surface: #ffffff;
-  --cq-surface-soft: #f8fbff;
-  --cq-text: #162033;
-  --cq-text-soft: #5e6b84;
-  --cq-border: #dce5f2;
-  --cq-primary: #1d7cf2;
-  --cq-primary-strong: #1463c4;
-  --cq-highlight: #16c083;
+  --cq-bg: #f4eee2;
+  --cq-surface: #fffaf2;
+  --cq-surface-soft: #fff7eb;
+  --cq-text: #2e261e;
+  --cq-text-soft: #6f6356;
+  --cq-border: #e6d8c3;
+  --cq-primary: #c06a2e;
+  --cq-primary-strong: #8f4f21;
+  --cq-highlight: #2f8a5c;
   --cq-radius-lg: 22px;
   --cq-radius-md: 16px;
-  --cq-shadow: 0 12px 24px rgba(22, 32, 51, 0.08);
+  --cq-shadow: 0 12px 24px rgba(58, 44, 31, 0.1);
 }
 
 *,
@@ -36,8 +36,15 @@ body {
     sans-serif;
   color: var(--cq-text);
   background:
-    radial-gradient(circle at 0% 0%, #dff4ff 0%, transparent 34%),
-    radial-gradient(circle at 100% 20%, #e8ffef 0%, transparent 28%),
+    radial-gradient(circle at 0% 0%, #fce9cd 0%, transparent 36%),
+    radial-gradient(circle at 100% 20%, #e8f5e6 0%, transparent 28%),
+    repeating-linear-gradient(
+      -12deg,
+      rgba(130, 95, 62, 0.025) 0px,
+      rgba(130, 95, 62, 0.025) 2px,
+      transparent 2px,
+      transparent 8px
+    ),
     var(--cq-bg);
 }
 
@@ -67,7 +74,7 @@ a {
 .cq-app-user {
   margin: 0;
   font-size: 0.78rem;
-  color: #4e6689;
+  color: var(--cq-text-soft);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -101,6 +108,7 @@ a {
 .cq-page-eyebrow {
   margin: 0 0 8px;
   color: var(--cq-primary-strong);
+  letter-spacing: 0.04em;
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -211,8 +219,8 @@ a {
 }
 
 .cq-todays-quest {
-  background: linear-gradient(135deg, #f5fbff, #eef6ff);
-  border: 1px solid #d7e7ff;
+  background: linear-gradient(135deg, #fff6e8, #f8efde);
+  border: 1px solid #e7d6ba;
   border-radius: var(--cq-radius-md);
   padding: 14px;
 }
@@ -244,14 +252,14 @@ a {
   width: 100%;
   height: 10px;
   border-radius: 999px;
-  background: #d9e8fb;
+  background: #e7dccd;
   overflow: hidden;
 }
 
 .cq-quest-progress-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(135deg, #1d7cf2, #23adff);
+  background: linear-gradient(135deg, #b5642e, #2f8a5c);
   transition: width 220ms ease;
 }
 
@@ -292,12 +300,12 @@ a {
   display: inline-block;
   margin-top: 8px;
   border-radius: 999px;
-  background: #effdf6;
-  border: 1px solid #caefd9;
+  background: #f6efe3;
+  border: 1px dashed #c7b297;
   padding: 3px 8px;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #2d6b52;
+  color: #6a4f36;
 }
 
 .cq-route-description {
@@ -517,10 +525,11 @@ a {
 }
 
 .cq-profile-stat-card {
-  background: #f8fbff;
-  border: 1px solid #d6e4f7;
+  background: #fff6e8;
+  border: 1px solid #e3d3b7;
   border-radius: 14px;
   padding: 12px;
+  box-shadow: 0 8px 14px rgba(92, 70, 46, 0.08);
 }
 
 .cq-profile-stat-card p {
@@ -565,12 +574,13 @@ a {
 
 .cq-profile-badge {
   border-radius: 999px;
-  border: 1px solid #bfe2ce;
-  background: #effdf5;
-  color: #2d6b52;
+  border: 1px dashed #c7b297;
+  background: #fff3df;
+  color: #7c5227;
   padding: 5px 10px;
   font-size: 0.75rem;
   font-weight: 700;
+  box-shadow: 0 6px 12px rgba(124, 82, 39, 0.12);
 }
 
 .cq-profile-activity-list {
@@ -740,8 +750,8 @@ a {
 }
 
 .cq-detail-complete-btn-active {
-  background: linear-gradient(135deg, #1d9f67, #24b97a);
-  box-shadow: 0 10px 18px rgba(29, 159, 103, 0.27);
+  background: linear-gradient(135deg, #2f8a5c, #4fa86d);
+  box-shadow: 0 10px 18px rgba(47, 138, 92, 0.28);
 }
 
 /* DIY route creation page */
@@ -1103,14 +1113,14 @@ a {
   font-size: 0.95rem;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(135deg, var(--cq-primary), #2a92ff);
-  box-shadow: 0 10px 18px rgba(29, 124, 242, 0.28);
+  background: linear-gradient(135deg, var(--cq-primary), #d0863f);
+  box-shadow: 0 10px 18px rgba(143, 79, 33, 0.27);
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
 .cq-primary-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 20px rgba(29, 124, 242, 0.33);
+  box-shadow: 0 12px 20px rgba(143, 79, 33, 0.34);
 }
 
 .cq-primary-btn:active {
