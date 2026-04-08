@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+
+const CREATED_ROUTES_STORAGE_KEY = "climbquest_created_routes";
 
 const mockCommunityRoutes = [
   {
@@ -57,13 +59,56 @@ function renderStars(rating) {
 }
 
 export default function CommunityPage() {
+  // Keep full feed data in state so we can load localStorage data once on mount.
+  const [communityRoutes, setCommunityRoutes] = useState(mockCommunityRoutes);
   const [searchText, setSearchText] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("All");
   const [styleFilter, setStyleFilter] = useState("All");
 
+  useEffect(() => {
+    // On component load, read user-created routes from localStorage and merge with mock feed.
+    const rawCreatedRoutes = localStorage.getItem(CREATED_ROUTES_STORAGE_KEY);
+    if (!rawCreatedRoutes) {
+      setCommunityRoutes(mockCommunityRoutes);
+      return;
+    }
+
+    try {
+      const parsedRoutes = JSON.parse(rawCreatedRoutes);
+      const createdRoutes = Array.isArray(parsedRoutes) ? parsedRoutes : [];
+
+      // Map DIY route structure into community feed card shape.
+      const normalizedCreatedRoutes = createdRoutes.map((route, index) => ({
+        id: `created-${route.id ?? index}`,
+        routeName: route.routeName || "Untitled Route",
+        difficulty: route.difficulty || "Easy",
+        styleTags:
+          Array.isArray(route.styleTags) && route.styleTags.length > 0
+            ? route.styleTags
+            : ["Technique"],
+        creatorName: "You",
+        averageRating: 4.0,
+        description:
+          route.description || "User-created route from the DIY route builder.",
+        createdAt: route.createdAt || null
+      }));
+
+      // Show newest created routes first, then keep the existing mock community feed.
+      normalizedCreatedRoutes.sort((a, b) => {
+        if (!a.createdAt || !b.createdAt) return 0;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+
+      setCommunityRoutes([...normalizedCreatedRoutes, ...mockCommunityRoutes]);
+    } catch {
+      // Fallback safely if localStorage data is invalid JSON.
+      setCommunityRoutes(mockCommunityRoutes);
+    }
+  }, []);
+
   // Filter list based on search + selected filter chips.
   const filteredRoutes = useMemo(() => {
-    return mockCommunityRoutes.filter((route) => {
+    return communityRoutes.filter((route) => {
       const matchesSearch =
         route.routeName.toLowerCase().includes(searchText.toLowerCase()) ||
         route.creatorName.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -76,7 +121,7 @@ export default function CommunityPage() {
 
       return matchesSearch && matchesDifficulty && matchesStyle;
     });
-  }, [searchText, difficultyFilter, styleFilter]);
+  }, [communityRoutes, searchText, difficultyFilter, styleFilter]);
 
   return (
     <section className="cq-community-page">
