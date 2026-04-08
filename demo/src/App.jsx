@@ -1,23 +1,29 @@
-import Navbar from "./assets/components/Navbar";
-import CTASection from "./assets/components/CTASection";
-import HeroSection from "./assets/sections/HeroSection";
-import FeaturesSection from "./assets/sections/FeaturesSection";
-import PreviewSection from "./assets/sections/PreviewSection";
-import ProductStudioSection from "./assets/sections/ProductStudioSection";
-import FooterSection from "./assets/sections/FooterSection";
+import { Navigate, Route, Routes } from "react-router-dom";
+import MobileAppLayout from "./components/layout/MobileAppLayout";
+import CommunityPage from "./pages/CommunityPage";
+import CreatePage from "./pages/CreatePage";
+import DiscoverPage from "./pages/DiscoverPage";
+import HomePage from "./pages/HomePage";
+import LandingPage from "./pages/LandingPage";
+import ProfilePage from "./pages/ProfilePage";
 
 export default function App() {
   return (
-    <div className="app-shell">
-      <Navbar />
-      <main>
-        <HeroSection />
-        <FeaturesSection />
-        <PreviewSection />
-        <ProductStudioSection />
-        <CTASection />
-      </main>
-      <FooterSection />
-    </div>
+    <Routes>
+      {/* Landing page for first-time visitors */}
+      <Route path="/" element={<LandingPage />} />
+
+      {/* App layout with shared bottom tabs */}
+      <Route element={<MobileAppLayout />}>
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/discover" element={<DiscoverPage />} />
+        <Route path="/create" element={<CreatePage />} />
+        <Route path="/community" element={<CommunityPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Route>
+
+      {/* Any unknown URL will redirect back to landing */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
