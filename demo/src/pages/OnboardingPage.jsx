@@ -1,9 +1,23 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const experienceOptions = ["Beginner", "Intermediate", "Advanced"];
-const styleOptions = ["Balance", "Strength", "Endurance", "Technique", "Fun"];
-const goalOptions = ["Learn", "Challenge", "Socialize", "Improve technique"];
+const steps = [
+  {
+    key: "level",
+    title: "Experience level",
+    options: ["Beginner", "Intermediate", "Advanced"]
+  },
+  {
+    key: "style",
+    title: "Preferred climbing style",
+    options: ["Balance", "Strength", "Endurance", "Technique", "Fun"]
+  },
+  {
+    key: "goal",
+    title: "Goal today",
+    options: ["Learn", "Challenge", "Socialize", "Improve technique"]
+  }
+];
 
 function OptionGroup({ title, options, selectedValue, onSelect }) {
   return (
@@ -34,24 +48,31 @@ function OptionGroup({ title, options, selectedValue, onSelect }) {
 export default function OnboardingPage() {
   const navigate = useNavigate();
 
-  // We keep all selections in one state object so beginners can see the full form state clearly.
+  // Keep onboarding answers in one object so the data model is simple for beginners.
   const [selections, setSelections] = useState({
     level: "",
     style: "",
     goal: ""
   });
 
-  // Progress is based on how many onboarding sections are completed.
+  // Step index controls which onboarding question is visible.
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
+  const currentStep = steps[currentStepIndex];
+  const totalSteps = steps.length;
+  const isLastStep = currentStepIndex === totalSteps - 1;
+
+  // Progress is based on the current screen position in the 3-step flow.
   const progress = useMemo(() => {
-    const completed = Object.values(selections).filter(Boolean).length;
+    const completed = currentStepIndex + 1;
     return {
       completed,
-      total: 3,
-      percent: (completed / 3) * 100
+      total: totalSteps,
+      percent: (completed / totalSteps) * 100
     };
-  }, [selections]);
+  }, [currentStepIndex, totalSteps]);
 
-  const isFormComplete = progress.completed === progress.total;
+  const hasSelectedCurrentStep = Boolean(selections[currentStep.key]);
 
   function updateSelection(field, value) {
     setSelections((prev) => ({
@@ -60,30 +81,39 @@ export default function OnboardingPage() {
     }));
   }
 
-  function handleContinue() {
-    if (!isFormComplete) return;
+  function handleBack() {
+    setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
+  }
 
-    // In a real app, this is where you could save selections to backend/local storage.
-    console.log("Onboarding selections:", selections);
-    navigate("/home");
+  function handleNext() {
+    if (!hasSelectedCurrentStep) return;
+
+    if (isLastStep) {
+      // In a real app, you could save selections to backend/local storage here.
+      console.log("Onboarding selections:", selections);
+      navigate("/home");
+      return;
+    }
+
+    setCurrentStepIndex((prev) => Math.min(prev + 1, totalSteps - 1));
   }
 
   return (
     <div className="cq-onboarding-page">
       <section className="cq-onboarding-card">
-        <p className="cq-eyebrow">Step 1 of 3</p>
+        <p className="cq-eyebrow">
+          Step {progress.completed} of {progress.total}
+        </p>
         <h1>Let&apos;s personalize your climb</h1>
         <p className="cq-subtitle">
-          Pick a few options so ClimbQuest can recommend better challenges for you.
+          Pick your preferences so ClimbQuest can suggest better routes and challenges.
         </p>
 
-        {/* Progress indicator for onboarding */}
+        {/* Progress indicator for multi-step onboarding */}
         <div className="cq-progress-wrapper" aria-label="Onboarding progress">
           <div className="cq-progress-meta">
             <span>Progress</span>
-            <span>
-              {progress.completed}/{progress.total}
-            </span>
+            <span>{Math.round(progress.percent)}%</span>
           </div>
           <div className="cq-progress-track">
             <div
@@ -94,34 +124,32 @@ export default function OnboardingPage() {
         </div>
 
         <OptionGroup
-          title="Experience level"
-          options={experienceOptions}
-          selectedValue={selections.level}
-          onSelect={(value) => updateSelection("level", value)}
+          title={currentStep.title}
+          options={currentStep.options}
+          selectedValue={selections[currentStep.key]}
+          onSelect={(value) => updateSelection(currentStep.key, value)}
         />
 
-        <OptionGroup
-          title="Preferred climbing style"
-          options={styleOptions}
-          selectedValue={selections.style}
-          onSelect={(value) => updateSelection("style", value)}
-        />
+        {/* Navigation buttons for step-by-step onboarding */}
+        <div className="cq-onboarding-actions">
+          <button
+            type="button"
+            className="cq-secondary-btn"
+            onClick={handleBack}
+            disabled={currentStepIndex === 0}
+          >
+            Back
+          </button>
 
-        <OptionGroup
-          title="Goal today"
-          options={goalOptions}
-          selectedValue={selections.goal}
-          onSelect={(value) => updateSelection("goal", value)}
-        />
-
-        <button
-          type="button"
-          className="cq-primary-btn cq-onboarding-continue"
-          onClick={handleContinue}
-          disabled={!isFormComplete}
-        >
-          Continue
-        </button>
+          <button
+            type="button"
+            className="cq-primary-btn cq-onboarding-continue"
+            onClick={handleNext}
+            disabled={!hasSelectedCurrentStep}
+          >
+            {isLastStep ? "Continue" : "Next"}
+          </button>
+        </div>
       </section>
     </div>
   );

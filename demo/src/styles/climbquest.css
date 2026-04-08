@@ -362,7 +362,7 @@ a {
 }
 
 .cq-onboarding-continue {
-  margin-top: 22px;
+  margin-top: 0;
   width: 100%;
   justify-content: center;
 }
@@ -371,6 +371,28 @@ a {
   opacity: 0.55;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+.cq-onboarding-actions {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.cq-secondary-btn {
+  border: 1px solid var(--cq-border);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--cq-text);
+  background: #f8fbff;
+}
+
+.cq-secondary-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 @media (min-width: 768px) {
