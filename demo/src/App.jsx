@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage";
 import LandingPage from "./pages/LandingPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import ProfilePage from "./pages/ProfilePage";
+import RouteDetailPage from "./pages/RouteDetailPage";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/create" element={<CreatePage />} />
         <Route path="/community" element={<CommunityPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/route-detail" element={<RouteDetailPage />} />
       </Route>
 
       {/* Any unknown URL redirects back to landing */}
