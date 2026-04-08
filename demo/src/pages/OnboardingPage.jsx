@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const ONBOARDING_STORAGE_KEY = "climbquest_onboarding_preferences";
+
 const steps = [
   {
     key: "level",
@@ -48,12 +50,26 @@ function OptionGroup({ title, options, selectedValue, onSelect }) {
 export default function OnboardingPage() {
   const navigate = useNavigate();
 
+  function getInitialSelections() {
+    try {
+      const saved = localStorage.getItem(ONBOARDING_STORAGE_KEY);
+      if (!saved) {
+        return { level: "", style: "", goal: "" };
+      }
+
+      const parsed = JSON.parse(saved);
+      return {
+        level: parsed.level || "",
+        style: parsed.style || "",
+        goal: parsed.goal || ""
+      };
+    } catch {
+      return { level: "", style: "", goal: "" };
+    }
+  }
+
   // Keep onboarding answers in one object so the data model is simple for beginners.
-  const [selections, setSelections] = useState({
-    level: "",
-    style: "",
-    goal: ""
-  });
+  const [selections, setSelections] = useState(getInitialSelections);
 
   // Step index controls which onboarding question is visible.
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -75,10 +91,20 @@ export default function OnboardingPage() {
   const hasSelectedCurrentStep = Boolean(selections[currentStep.key]);
 
   function updateSelection(field, value) {
-    setSelections((prev) => ({
-      ...prev,
-      [field]: value
-    }));
+    setSelections((prev) => {
+      const nextSelections = {
+        ...prev,
+        [field]: value
+      };
+
+      // Save every change so refresh will not lose onboarding progress.
+      localStorage.setItem(
+        ONBOARDING_STORAGE_KEY,
+        JSON.stringify(nextSelections)
+      );
+
+      return nextSelections;
+    });
   }
 
   function handleBack() {
@@ -90,12 +116,23 @@ export default function OnboardingPage() {
 
     if (isLastStep) {
       // In a real app, you could save selections to backend/local storage here.
+      localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(selections));
       console.log("Onboarding selections:", selections);
       navigate("/home");
       return;
     }
 
     setCurrentStepIndex((prev) => Math.min(prev + 1, totalSteps - 1));
+  }
+
+  function handleResetPreferences() {
+    localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+    setSelections({
+      level: "",
+      style: "",
+      goal: ""
+    });
+    setCurrentStepIndex(0);
   }
 
   return (
@@ -150,6 +187,14 @@ export default function OnboardingPage() {
             {isLastStep ? "Continue" : "Next"}
           </button>
         </div>
+
+        <button
+          type="button"
+          className="cq-reset-btn"
+          onClick={handleResetPreferences}
+        >
+          Reset preferences
+        </button>
       </section>
     </div>
   );

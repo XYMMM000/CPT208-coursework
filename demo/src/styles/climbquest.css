@@ -395,6 +395,17 @@ a {
   cursor: not-allowed;
 }
 
+.cq-reset-btn {
+  margin-top: 12px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--cq-text-soft);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
 @media (min-width: 768px) {
   .cq-landing-page {
     max-width: 980px;
