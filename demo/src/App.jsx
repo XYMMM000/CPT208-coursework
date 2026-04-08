@@ -1,7 +1,7 @@
-import HeroSection from "./sections/HeroSection";
-import FeaturesSection from "./sections/FeaturesSection";
-import PreviewSection from "./sections/PreviewSection";
-import FooterSection from "./sections/FooterSection";
+import HeroSection from "./assets/sections/HeroSection";
+import FeaturesSection from "./assets/sections/FeaturesSection";
+import PreviewSection from "./assets/sections/PreviewSection";
+import FooterSection from "./assets/sections/FooterSection";
 
 export default function App() {
   return (
