@@ -11,6 +11,7 @@ export default function Navbar() {
         <nav className="nav-links">
           <a href="#features">Features</a>
           <a href="#preview">Preview</a>
+          <a href="#studio">Studio</a>
           <a href="#cta">Pricing</a>
         </nav>
 
