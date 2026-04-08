@@ -149,10 +149,11 @@ export default function CreatePage() {
         currentUser?.displayName ||
         currentUser?.email?.split("@")[0] ||
         "Anonymous Climber",
-      createdTime: serverTimestamp(),
-      // Extra fields are helpful for future wall route rendering.
-      imageDataUrl: newRoute.imageDataUrl || "",
-      selectedHolds: newRoute.selectedHolds || []
+      createdTime: serverTimestamp()
+      // Performance note:
+      // We intentionally do NOT upload imageDataUrl / selectedHolds to Firestore here.
+      // Base64 image payloads are large and can slow writes and feed reads.
+      // Those remain in localStorage for the DIY editor preview workflow.
     };
 
     try {

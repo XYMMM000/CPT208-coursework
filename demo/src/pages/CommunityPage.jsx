@@ -1,8 +1,9 @@
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { firestoreDb } from "../lib/firebase";
 
+const COMMUNITY_CACHE_KEY = "climbquest_community_cache";
 const difficultyChips = ["All", "Easy", "Medium", "Hard"];
 const styleChips = ["All", "Balance", "Power", "Endurance", "Technique"];
 const sourceChips = ["All", "Community", "AI"];
@@ -51,6 +52,24 @@ function formatRating(value) {
   return `${numericValue.toFixed(1)}/5`;
 }
 
+function normalizeFirestoreRoute(doc) {
+  const data = doc.data();
+  return {
+    id: doc.id,
+    routeName: data.routeName || "Untitled Route",
+    difficulty: data.difficulty || "Easy",
+    styleTags:
+      Array.isArray(data.styleTags) && data.styleTags.length > 0
+        ? data.styleTags
+        : ["Technique"],
+    creatorName: data.creatorName || "Anonymous Climber",
+    averageRating: data.averageRating ?? 4.0,
+    description: data.description || "No description provided for this route yet.",
+    createdTime: data.createdTime?.seconds || 0,
+    source: "Community"
+  };
+}
+
 export default function CommunityPage() {
   const [communityRoutes, setCommunityRoutes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,48 +81,49 @@ export default function CommunityPage() {
 
   useEffect(() => {
     let isActive = true;
+    const cachedRaw = localStorage.getItem(COMMUNITY_CACHE_KEY);
+    if (cachedRaw) {
+      try {
+        const cachedRoutes = JSON.parse(cachedRaw);
+        if (Array.isArray(cachedRoutes) && cachedRoutes.length > 0) {
+          // Fast path: show last loaded community routes immediately.
+          setCommunityRoutes([...cachedRoutes, ...aiGeneratedRoutes]);
+          setIsLoading(false);
+        }
+      } catch {
+        // Ignore broken cache and continue with Firestore fetch.
+      }
+    }
 
     async function fetchRoutesFromFirestore() {
-      setIsLoading(true);
+      // Only show blocking loading when there is no cached data.
+      if (!cachedRaw) setIsLoading(true);
       setErrorMessage("");
 
       try {
-        // Read all routes from Firestore collection "routes".
-        const snapshot = await getDocs(collection(firestoreDb, "routes"));
+        // Read newest community routes only (smaller payload = faster load).
+        const routesQuery = query(
+          collection(firestoreDb, "routes"),
+          orderBy("createdTime", "desc"),
+          limit(30)
+        );
+        const snapshot = await getDocs(routesQuery);
 
         // Convert Firestore docs into a beginner-friendly UI shape.
-        const routes = snapshot.docs.map((doc) => {
-          const data = doc.data();
-
-          return {
-            id: doc.id,
-            routeName: data.routeName || "Untitled Route",
-            difficulty: data.difficulty || "Easy",
-            styleTags:
-              Array.isArray(data.styleTags) && data.styleTags.length > 0
-                ? data.styleTags
-                : ["Technique"],
-            creatorName: data.creatorName || "Anonymous Climber",
-            averageRating: data.averageRating ?? 4.0,
-            description:
-              data.description || "No description provided for this route yet.",
-            createdTime: data.createdTime?.seconds || 0,
-            source: "Community"
-          };
-        });
-
-        // Show newest routes first when timestamp exists.
-        routes.sort((a, b) => b.createdTime - a.createdTime);
+        const routes = snapshot.docs.map((doc) => normalizeFirestoreRoute(doc));
 
         if (isActive) {
           // Merge user/community routes with AI-generated routes.
           setCommunityRoutes([...routes, ...aiGeneratedRoutes]);
+          localStorage.setItem(COMMUNITY_CACHE_KEY, JSON.stringify(routes));
         }
       } catch (error) {
         console.error("Failed to fetch Firestore routes:", error);
         if (isActive) {
           setErrorMessage("Could not load community routes. Showing AI routes only.");
-          setCommunityRoutes(aiGeneratedRoutes);
+          if (!cachedRaw) {
+            setCommunityRoutes(aiGeneratedRoutes);
+          }
         }
       } finally {
         if (isActive) {
