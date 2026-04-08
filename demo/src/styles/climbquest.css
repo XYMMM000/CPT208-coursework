@@ -86,6 +86,155 @@ a {
   line-height: 1.55;
 }
 
+/* Personalized recommendation page */
+.cq-reco-page {
+  display: grid;
+  gap: 12px;
+}
+
+.cq-reco-header {
+  background: var(--cq-surface);
+  border: 1px solid var(--cq-border);
+  border-radius: var(--cq-radius-lg);
+  box-shadow: var(--cq-shadow);
+  padding: 18px 16px;
+}
+
+.cq-reco-header h2 {
+  margin: 4px 0 0;
+  font-size: 1.45rem;
+}
+
+.cq-reco-header p {
+  margin: 8px 0 0;
+  color: var(--cq-text-soft);
+  line-height: 1.5;
+}
+
+.cq-reco-profile-note {
+  margin: 0;
+  border: 1px dashed #bdd7fb;
+  border-radius: 12px;
+  background: #f4f9ff;
+  padding: 10px 12px;
+  font-size: 0.82rem;
+  color: #2f4b76;
+}
+
+.cq-todays-quest {
+  background: linear-gradient(135deg, #f5fbff, #eef6ff);
+  border: 1px solid #d7e7ff;
+  border-radius: var(--cq-radius-md);
+  padding: 14px;
+}
+
+.cq-todays-quest-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cq-todays-quest-head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.cq-todays-quest-head span {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--cq-primary-strong);
+}
+
+.cq-todays-quest-title {
+  margin: 8px 0 0;
+  font-weight: 600;
+}
+
+.cq-quest-progress-track {
+  margin-top: 10px;
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: #d9e8fb;
+  overflow: hidden;
+}
+
+.cq-quest-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1d7cf2, #23adff);
+  transition: width 220ms ease;
+}
+
+.cq-route-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.cq-route-card {
+  background: var(--cq-surface);
+  border: 1px solid var(--cq-border);
+  border-radius: var(--cq-radius-md);
+  padding: 14px;
+}
+
+.cq-route-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.cq-route-top-row h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.cq-route-difficulty {
+  border-radius: 999px;
+  background: #eff5ff;
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #2e4b79;
+}
+
+.cq-route-style-tag {
+  display: inline-block;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: #effdf6;
+  border: 1px solid #caefd9;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #2d6b52;
+}
+
+.cq-route-description {
+  margin: 10px 0 0;
+  color: var(--cq-text-soft);
+  line-height: 1.5;
+}
+
+.cq-route-reason {
+  margin: 8px 0 0;
+  font-size: 0.84rem;
+  color: #295081;
+}
+
+.cq-route-btn {
+  margin-top: 12px;
+  width: 100%;
+  justify-content: center;
+}
+
+.cq-route-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 /* Bottom tab navigation (mobile-first) */
 .cq-bottom-nav {
   position: fixed;
@@ -343,7 +492,7 @@ a {
 .cq-nav-mock {
   margin-top: 14px;
   position: relative;
-  padding-bottom: 34px;
+  padding-bottom: 20px;
   animation: cq-fade-up 440ms ease both;
 }
 
@@ -351,7 +500,7 @@ a {
   border-radius: 20px;
   border: 1px solid #d7e3f5;
   background: linear-gradient(180deg, #f8fbff, #eef4fb);
-  padding: 12px;
+  padding: 12px 12px 92px;
   box-shadow: 0 12px 22px rgba(23, 42, 74, 0.1);
 }
 
@@ -403,7 +552,7 @@ a {
   position: absolute;
   left: 10px;
   right: 10px;
-  bottom: 0;
+  bottom: 10px;
 }
 
 .cq-nav-mock-item {
@@ -612,5 +761,9 @@ a {
 
   .cq-option-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cq-route-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
