@@ -459,16 +459,26 @@ export default function CreatePage() {
     return (
       <div
         className={`cq-wall-image-wrap ${zoomMode ? "cq-wall-image-wrap-zoom" : ""}`}
-        onPointerDown={handleWallPointerDown}
-        onPointerMove={handleWallPointerMove}
-        onPointerUp={handleWallPointerUp}
-        onPointerCancel={handleWallPointerUp}
+        onPointerDown={zoomMode ? handleWallPointerDown : undefined}
+        onPointerMove={zoomMode ? handleWallPointerMove : undefined}
+        onPointerUp={zoomMode ? handleWallPointerUp : undefined}
+        onPointerCancel={zoomMode ? handleWallPointerUp : undefined}
+        onClick={
+          !zoomMode
+            ? () => {
+                openZoomEditor();
+              }
+            : undefined
+        }
         role="button"
         tabIndex={0}
-        style={{ touchAction: "none" }}
+        style={{ touchAction: "none", cursor: zoomMode ? "crosshair" : "zoom-in" }}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
+            if (!zoomMode) {
+              openZoomEditor();
+            }
           }
         }}
       >
@@ -483,7 +493,7 @@ export default function CreatePage() {
           }
         />
 
-        {/* Quick action: open full-screen zoom editor for easier point selection. */}
+        {/* Quick action: still available, but tapping the wall now also opens zoom mode. */}
         {!zoomMode && (
           <button
             type="button"
@@ -678,7 +688,10 @@ export default function CreatePage() {
         {activeWallImageSrc && (
           <section className="cq-wall-editor" aria-label="Wall hold contour annotation editor">
             <div className="cq-wall-editor-head">
-              <p>Tap or press-and-drag around one hold edge, then press Finish Current Hold.</p>
+              <p>
+                Tap the wall image to open zoom mode, then trace around one hold edge for precise
+                selection.
+              </p>
               <div style={{ display: "flex", gap: 8 }}>
                 <button type="button" className="cq-reset-btn" onClick={finishCurrentHold}>
                   Finish Current Hold
