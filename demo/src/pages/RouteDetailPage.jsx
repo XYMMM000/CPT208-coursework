@@ -564,7 +564,7 @@ export default function RouteDetailPage() {
                     width="180%"
                     height="180%"
                   >
-                    <feGaussianBlur stdDeviation="1.2" result="blur" />
+                    <feGaussianBlur stdDeviation="0.8" result="blur" />
                     <feMerge>
                       <feMergeNode in="blur" />
                       <feMergeNode in="SourceGraphic" />
@@ -578,7 +578,7 @@ export default function RouteDetailPage() {
                       points={pointsToSvgString(hold.points)}
                       fill="none"
                       stroke="rgba(255,255,255,0.75)"
-                      strokeWidth="3.6"
+                      strokeWidth="1.85"
                       strokeLinejoin="round"
                       filter={`url(#cqDetailHoldMaskGlow-${photoIndex})`}
                     />
@@ -590,7 +590,7 @@ export default function RouteDetailPage() {
                       points={pointsToSvgString(hold.points)}
                       fill="none"
                       stroke="#ffffff"
-                      strokeWidth="2"
+                      strokeWidth="1.1"
                       strokeLinejoin="round"
                     />
                   ))}

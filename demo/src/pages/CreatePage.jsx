@@ -532,7 +532,7 @@ export default function CreatePage() {
                 <defs>
                   {/* Subtle glow to make selected contours pop on textured wall photos. */}
                   <filter id="cqHoldMaskGlow" x="-40%" y="-40%" width="180%" height="180%">
-                    <feGaussianBlur stdDeviation="1.4" result="blur" />
+                    <feGaussianBlur stdDeviation="0.85" result="blur" />
                     <feMerge>
                       <feMergeNode in="blur" />
                       <feMergeNode in="SourceGraphic" />
@@ -547,7 +547,7 @@ export default function CreatePage() {
                       points={pointsToSvgString(hold.points)}
                       fill="none"
                       stroke="rgba(255,255,255,0.75)"
-                      strokeWidth="3.6"
+                      strokeWidth="1.9"
                       strokeLinejoin="round"
                       filter="url(#cqHoldMaskGlow)"
                     />
@@ -557,7 +557,7 @@ export default function CreatePage() {
                       points={pointsToSvgString(hold.points)}
                       fill="none"
                       stroke="#ffffff"
-                      strokeWidth="2.3"
+                      strokeWidth="1.15"
                       strokeLinejoin="round"
                     />
                   </g>
