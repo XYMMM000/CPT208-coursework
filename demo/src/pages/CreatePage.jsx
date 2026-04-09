@@ -17,29 +17,33 @@ function getDifficultyMeta(difficulty) {
 function getHoldPolygonColors(type) {
   if (type === "Foot") {
     return {
-      fill: "rgba(37, 119, 207, 0.28)",
+      fill: "rgba(58, 156, 255, 0.38)",
       previewStroke: "rgba(37, 119, 207, 0.85)",
-      anchorFill: "rgba(37, 119, 207, 0.9)"
+      anchorFill: "rgba(58, 156, 255, 0.96)",
+      glow: "rgba(58, 156, 255, 0.45)"
     };
   }
   if (type === "Start") {
     return {
-      fill: "rgba(202, 127, 52, 0.28)",
+      fill: "rgba(255, 180, 72, 0.38)",
       previewStroke: "rgba(202, 127, 52, 0.85)",
-      anchorFill: "rgba(202, 127, 52, 0.9)"
+      anchorFill: "rgba(255, 180, 72, 0.95)",
+      glow: "rgba(255, 180, 72, 0.44)"
     };
   }
   if (type === "Finish") {
     return {
-      fill: "rgba(180, 74, 99, 0.28)",
+      fill: "rgba(255, 97, 132, 0.38)",
       previewStroke: "rgba(180, 74, 99, 0.85)",
-      anchorFill: "rgba(180, 74, 99, 0.9)"
+      anchorFill: "rgba(255, 97, 132, 0.95)",
+      glow: "rgba(255, 97, 132, 0.45)"
     };
   }
   return {
-    fill: "rgba(46, 157, 111, 0.28)",
+    fill: "rgba(81, 226, 146, 0.38)",
     previewStroke: "rgba(46, 157, 111, 0.85)",
-    anchorFill: "rgba(46, 157, 111, 0.9)"
+    anchorFill: "rgba(81, 226, 146, 0.95)",
+    glow: "rgba(81, 226, 146, 0.45)"
   };
 }
 
@@ -466,17 +470,38 @@ export default function CreatePage() {
                 preserveAspectRatio="none"
                 aria-hidden="true"
               >
+                <defs>
+                  {/* SVG-only glow filter for selected holds (no CSS dependency). */}
+                  <filter id="cqHoldGlow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="1.2" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
                 {/* Render all finished hold polygons */}
                 {holdPolygons.map((hold, holdIndex) => {
                   const colors = getHoldPolygonColors(hold.type);
                   return (
                     <g key={`hold-polygon-${hold.id}`}>
+                      {/* Bright glow base so selected areas stand out on wall texture. */}
+                      <polygon
+                        points={pointsToSvgString(hold.points)}
+                        fill={colors.glow}
+                        stroke="transparent"
+                        filter="url(#cqHoldGlow)"
+                      />
+
+                      {/* Main semi-transparent filled selection shape. */}
                       <polygon
                         points={pointsToSvgString(hold.points)}
                         fill={colors.fill}
                         stroke="#ffffff"
-                        strokeWidth="0.9"
+                        strokeWidth="2"
                         strokeLinejoin="round"
+                        filter="url(#cqHoldGlow)"
                       />
 
                       {/* Visible anchor points for each finished hold */}
@@ -485,10 +510,11 @@ export default function CreatePage() {
                           key={`hold-anchor-${hold.id}-${pointIndex}`}
                           cx={point.x}
                           cy={point.y}
-                          r="1.25"
+                          r="1.45"
                           fill={colors.anchorFill}
                           stroke="#ffffff"
-                          strokeWidth="0.55"
+                          strokeWidth="0.9"
+                          filter="url(#cqHoldGlow)"
                         />
                       ))}
 
