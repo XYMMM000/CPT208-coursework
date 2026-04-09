@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import { firestoreDb } from "../lib/firebase";
@@ -19,6 +19,25 @@ function clamp(value, min, max) {
 
 function pointsToSvgString(points) {
   return points.map((point) => `${point.x},${point.y}`).join(" ");
+}
+
+function distanceBetweenPoints(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function simplifyPoints(points, minDistance = 0.7) {
+  if (points.length <= 2) return points;
+
+  const simplified = [points[0]];
+  for (let index = 1; index < points.length; index += 1) {
+    const prevPoint = simplified[simplified.length - 1];
+    const currentPoint = points[index];
+    if (distanceBetweenPoints(prevPoint, currentPoint) >= minDistance) {
+      simplified.push(currentPoint);
+    }
+  }
+
+  return simplified;
 }
 
 function toLightweightLocalRoute(route) {
@@ -76,6 +95,8 @@ export default function CreatePage() {
   const [submitFeedback, setSubmitFeedback] = useState({ type: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cloudSyncStatus, setCloudSyncStatus] = useState("idle");
+  const [isTracing, setIsTracing] = useState(false);
+  const traceLastPointRef = useRef(null);
 
   const previewTitle = formData.routeName.trim() || "Your New Route";
   const previewDifficulty = formData.difficulty || "Select difficulty";
@@ -127,22 +148,58 @@ export default function CreatePage() {
     reader.readAsDataURL(file);
   }
 
-  function handleWallImageClick(event) {
+  function getRelativePointFromPointerEvent(event) {
     if (!formData.imageDataUrl) return;
 
-    // IMPORTANT: calculate click point relative to image container.
+    // IMPORTANT: calculate pointer point relative to image container.
     const rect = event.currentTarget.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
 
-    const point = {
+    return {
       x: Number(clamp(x, 1, 99).toFixed(2)),
       y: Number(clamp(y, 1, 99).toFixed(2))
     };
+  }
 
-    // Manual contour mode: user traces real hold edge point-by-point.
+  function addPointToCurrentHold(point) {
+    if (!point) return;
     setCurrentHoldPoints((prev) => [...prev, point]);
+    traceLastPointRef.current = point;
     setAnnotationMessage("");
+  }
+
+  function handleWallPointerDown(event) {
+    if (!formData.imageDataUrl) return;
+    setIsTracing(true);
+    traceLastPointRef.current = null;
+
+    // Pointer capture keeps drawing stable even if finger moves quickly.
+    if (event.currentTarget.setPointerCapture) {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+
+    addPointToCurrentHold(getRelativePointFromPointerEvent(event));
+  }
+
+  function handleWallPointerMove(event) {
+    if (!isTracing || !formData.imageDataUrl) return;
+
+    const point = getRelativePointFromPointerEvent(event);
+    const lastPoint = traceLastPointRef.current;
+
+    // Sample points only when movement is enough, avoiding noisy duplicates.
+    if (!lastPoint || distanceBetweenPoints(lastPoint, point) >= 0.6) {
+      addPointToCurrentHold(point);
+    }
+  }
+
+  function handleWallPointerUp(event) {
+    setIsTracing(false);
+    traceLastPointRef.current = null;
+    if (event.currentTarget.releasePointerCapture) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
   }
 
   function finishCurrentHold() {
@@ -151,16 +208,18 @@ export default function CreatePage() {
       return;
     }
 
+    const normalizedPoints = simplifyPoints(currentHoldPoints);
+
     const centerX =
-      currentHoldPoints.reduce((sum, point) => sum + point.x, 0) / currentHoldPoints.length;
+      normalizedPoints.reduce((sum, point) => sum + point.x, 0) / normalizedPoints.length;
     const centerY =
-      currentHoldPoints.reduce((sum, point) => sum + point.y, 0) / currentHoldPoints.length;
+      normalizedPoints.reduce((sum, point) => sum + point.y, 0) / normalizedPoints.length;
 
     const newHold = {
       id: `${Date.now()}-${Math.random()}`,
       centerX: Number(centerX.toFixed(2)),
       centerY: Number(centerY.toFixed(2)),
-      points: currentHoldPoints
+      points: normalizedPoints
     };
 
     setHoldContours((prev) => [...prev, newHold]);
@@ -381,7 +440,7 @@ export default function CreatePage() {
         {formData.imageDataUrl && (
           <section className="cq-wall-editor" aria-label="Wall hold contour annotation editor">
             <div className="cq-wall-editor-head">
-              <p>Tap around one hold edge point-by-point, then press Finish Current Hold.</p>
+              <p>Tap or press-and-drag around one hold edge, then press Finish Current Hold.</p>
               <div style={{ display: "flex", gap: 8 }}>
                 <button type="button" className="cq-reset-btn" onClick={finishCurrentHold}>
                   Finish Current Hold
@@ -402,12 +461,17 @@ export default function CreatePage() {
             </div>
 
             {annotationMessage && <p className="cq-hold-count">{annotationMessage}</p>}
+            {isTracing && <p className="cq-hold-count">Tracing hold contour...</p>}
 
             <div
               className="cq-wall-image-wrap"
-              onClick={handleWallImageClick}
+              onPointerDown={handleWallPointerDown}
+              onPointerMove={handleWallPointerMove}
+              onPointerUp={handleWallPointerUp}
+              onPointerCancel={handleWallPointerUp}
               role="button"
               tabIndex={0}
+              style={{ touchAction: "none" }}
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
@@ -465,6 +529,13 @@ export default function CreatePage() {
                 {/* Current hold being traced: polyline + tiny anchors for precision. */}
                 {currentHoldPoints.length > 0 && (
                   <g>
+                    {currentHoldPoints.length >= 3 && (
+                      <polygon
+                        points={pointsToSvgString(currentHoldPoints)}
+                        fill="rgba(88, 232, 158, 0.18)"
+                        stroke="transparent"
+                      />
+                    )}
                     <polyline
                       points={pointsToSvgString(currentHoldPoints)}
                       fill="none"
