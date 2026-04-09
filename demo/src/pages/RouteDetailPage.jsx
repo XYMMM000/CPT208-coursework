@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import wallPhotoA from "../assets/photo/8a4c9063-e850-4c6f-9245-36835a1d0c3d.png";
 import wallPhotoB from "../assets/photo/c6ca442c-7547-46d8-8083-250e3c29a877.png";
@@ -324,6 +324,10 @@ function pointsToSvgString(points) {
   return points.map((point) => `${point.x},${point.y}`).join(" ");
 }
 
+function clampPercent(value) {
+  return Math.min(99, Math.max(1, value));
+}
+
 function getPolygonCenter(points) {
   if (!Array.isArray(points) || points.length === 0) {
     return { x: 0, y: 0 };
@@ -335,6 +339,108 @@ function getPolygonCenter(points) {
 
 function distanceBetween(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function getPixelColorScore(red, green, blue) {
+  // Higher score means "more likely to be a colorful climbing hold",
+  // lower score means "more likely to be gray/white wall background".
+  const max = Math.max(red, green, blue);
+  const min = Math.min(red, green, blue);
+  const saturation = max === 0 ? 0 : (max - min) / max;
+  const colorSpread =
+    (Math.abs(red - green) + Math.abs(green - blue) + Math.abs(blue - red)) / (255 * 3);
+  const brightness = (red + green + blue) / 765;
+
+  let score = saturation * 1.45 + colorSpread * 0.95;
+
+  // Penalize near-white wall region.
+  if (brightness > 0.86 && saturation < 0.18) score -= 0.7;
+  // Penalize near-gray region.
+  if (colorSpread < 0.09 && saturation < 0.14) score -= 0.35;
+  // Slightly penalize very dark pixels to avoid black volumes/holes overfitting.
+  if (brightness < 0.1) score -= 0.18;
+
+  return score;
+}
+
+function shiftContourByPercent(contour, deltaX, deltaY) {
+  if (!Array.isArray(contour.points)) return contour;
+  return {
+    ...contour,
+    points: contour.points.map((point) => ({
+      x: Number(clampPercent(point.x + deltaX).toFixed(2)),
+      y: Number(clampPercent(point.y + deltaY).toFixed(2))
+    }))
+  };
+}
+
+async function alignContoursToImageHolds(imageSrc, contours) {
+  if (!imageSrc || !Array.isArray(contours) || contours.length === 0) return contours;
+
+  const image = await new Promise((resolve, reject) => {
+    const element = new Image();
+    element.onload = () => resolve(element);
+    element.onerror = reject;
+    element.src = imageSrc;
+  });
+
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  if (!context) return contours;
+
+  // Downscale for faster processing while preserving enough detail.
+  const maxSize = 540;
+  const scale = Math.min(maxSize / image.width, maxSize / image.height, 1);
+  const width = Math.max(80, Math.round(image.width * scale));
+  const height = Math.max(80, Math.round(image.height * scale));
+  canvas.width = width;
+  canvas.height = height;
+  context.drawImage(image, 0, 0, width, height);
+
+  const imageData = context.getImageData(0, 0, width, height);
+  const pixels = imageData.data;
+  const maxShiftPercent = 3.2;
+
+  return contours.map((contour) => {
+    if (!Array.isArray(contour.points) || contour.points.length === 0) return contour;
+
+    const center = getPolygonCenter(contour.points);
+    const centerX = Math.round((center.x / 100) * (width - 1));
+    const centerY = Math.round((center.y / 100) * (height - 1));
+    const radius = Math.max(8, Math.round(Math.min(width, height) * 0.065));
+
+    let bestX = centerX;
+    let bestY = centerY;
+    let bestScore = -Infinity;
+
+    // Local search near contour center to find a more likely colorful hold pixel.
+    for (let offsetY = -radius; offsetY <= radius; offsetY += 2) {
+      for (let offsetX = -radius; offsetX <= radius; offsetX += 2) {
+        const sampleX = centerX + offsetX;
+        const sampleY = centerY + offsetY;
+        if (sampleX < 0 || sampleY < 0 || sampleX >= width || sampleY >= height) continue;
+
+        const pixelIndex = (sampleY * width + sampleX) * 4;
+        const red = pixels[pixelIndex];
+        const green = pixels[pixelIndex + 1];
+        const blue = pixels[pixelIndex + 2];
+        const score = getPixelColorScore(red, green, blue);
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestX = sampleX;
+          bestY = sampleY;
+        }
+      }
+    }
+
+    const deltaXPercent = ((bestX - centerX) / width) * 100;
+    const deltaYPercent = ((bestY - centerY) / height) * 100;
+    const safeDeltaX = Math.max(-maxShiftPercent, Math.min(maxShiftPercent, deltaXPercent));
+    const safeDeltaY = Math.max(-maxShiftPercent, Math.min(maxShiftPercent, deltaYPercent));
+
+    return shiftContourByPercent(contour, safeDeltaX, safeDeltaY);
+  });
 }
 
 function getCalibratedTemplatesForPhoto(routeState, photoIndex) {
@@ -469,7 +575,34 @@ export default function RouteDetailPage() {
     return `${routeState.averageRating.toFixed(1)} (${routeState.ratingCount} ratings)`;
   }, [routeState.averageRating, routeState.ratingCount]);
   const previewWallSrc = routeState.imageDataUrl || WALL_GALLERY_PHOTOS[selectedWallPhotoIndex];
-  const displayedContours = getContoursForPhoto(routeState, selectedWallPhotoIndex);
+  const baseContours = useMemo(
+    () => getContoursForPhoto(routeState, selectedWallPhotoIndex),
+    [routeState, selectedWallPhotoIndex]
+  );
+  const [displayedContours, setDisplayedContours] = useState(baseContours);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function runImageAlignment() {
+      try {
+        const aligned = await alignContoursToImageHolds(previewWallSrc, baseContours);
+        if (!cancelled) {
+          setDisplayedContours(aligned);
+        }
+      } catch {
+        if (!cancelled) {
+          // Fallback safely to unaligned contours if image analysis fails.
+          setDisplayedContours(baseContours);
+        }
+      }
+    }
+
+    runImageAlignment();
+    return () => {
+      cancelled = true;
+    };
+  }, [previewWallSrc, baseContours]);
 
   function persistInteraction(nextState) {
     const previous = readRouteInteractions();
