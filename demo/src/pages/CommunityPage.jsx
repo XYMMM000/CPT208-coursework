@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { firestoreDb } from "../lib/firebase";
 
 const COMMUNITY_CACHE_KEY = "climbquest_community_cache";
+const CREATED_ROUTES_STORAGE_KEY = "climbquest_created_routes";
+const FAST_FETCH_TIMEOUT_MS = 2600;
 const difficultyChips = ["All", "Easy", "Medium", "Hard"];
 const styleChips = ["All", "Balance", "Power", "Endurance", "Technique"];
 const sourceChips = ["All", "Community", "AI"];
@@ -76,9 +78,59 @@ function normalizeFirestoreRoute(doc) {
   };
 }
 
+function normalizeLocalRoute(route, index) {
+  return {
+    id: route.id ? `local-${route.id}` : `local-${Date.now()}-${index}`,
+    routeName: route.routeName || "Untitled Route",
+    difficulty: route.difficulty || "Easy",
+    styleTags:
+      Array.isArray(route.styleTags) && route.styleTags.length > 0
+        ? route.styleTags
+        : ["Technique"],
+    creatorName: route.creatorName || "You",
+    averageRating: route.averageRating ?? 4.0,
+    description: route.description || "No description provided for this route yet.",
+    createdTime: route.createdTime || 0,
+    source: "Community"
+  };
+}
+
+function safeReadRoutesFromStorage(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function mergeAndDedupeRoutes(...routeLists) {
+  const merged = routeLists.flat();
+  const byKey = new Map();
+
+  for (const route of merged) {
+    // Dedupe by route name + creator to avoid repeated cards.
+    const dedupeKey = `${route.routeName}::${route.creatorName}`.toLowerCase();
+    if (!byKey.has(dedupeKey)) {
+      byKey.set(dedupeKey, route);
+    }
+  }
+
+  return Array.from(byKey.values());
+}
+
 export default function CommunityPage() {
-  const [communityRoutes, setCommunityRoutes] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Instant first paint: build feed immediately from local sources.
+  const [communityRoutes, setCommunityRoutes] = useState(() => {
+    const cachedRoutes = safeReadRoutesFromStorage(COMMUNITY_CACHE_KEY);
+    const localRoutes = safeReadRoutesFromStorage(CREATED_ROUTES_STORAGE_KEY).map(
+      normalizeLocalRoute
+    );
+    return mergeAndDedupeRoutes(localRoutes, cachedRoutes, aiGeneratedRoutes);
+  });
+  const [isLoading, setIsLoading] = useState(communityRoutes.length === 0);
   const [errorMessage, setErrorMessage] = useState("");
   const [searchText, setSearchText] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("All");
@@ -87,49 +139,43 @@ export default function CommunityPage() {
 
   useEffect(() => {
     let isActive = true;
-    const cachedRaw = localStorage.getItem(COMMUNITY_CACHE_KEY);
-    if (cachedRaw) {
-      try {
-        const cachedRoutes = JSON.parse(cachedRaw);
-        if (Array.isArray(cachedRoutes) && cachedRoutes.length > 0) {
-          // Fast path: show last loaded community routes immediately.
-          setCommunityRoutes([...cachedRoutes, ...aiGeneratedRoutes]);
-          setIsLoading(false);
-        }
-      } catch {
-        // Ignore broken cache and continue with Firestore fetch.
-      }
-    }
 
     async function fetchRoutesFromFirestore() {
-      // Only show blocking loading when there is no cached data.
-      if (!cachedRaw) setIsLoading(true);
+      if (communityRoutes.length === 0) setIsLoading(true);
       setErrorMessage("");
 
       try {
-        // Read newest community routes only (smaller payload = faster load).
+        // Read a smaller first page to reduce time-to-first-render.
         const routesQuery = query(
           collection(firestoreDb, "routes"),
           orderBy("createdTime", "desc"),
-          limit(30)
+          limit(18)
         );
-        const snapshot = await getDocs(routesQuery);
+
+        // Timeout guard: if network is slow, keep current feed and stop blocking.
+        const snapshot = await Promise.race([
+          getDocs(routesQuery),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("fetch-timeout")), FAST_FETCH_TIMEOUT_MS)
+          )
+        ]);
 
         // Convert Firestore docs into a beginner-friendly UI shape.
         const routes = snapshot.docs.map((doc) => normalizeFirestoreRoute(doc));
+        const localRoutes = safeReadRoutesFromStorage(CREATED_ROUTES_STORAGE_KEY).map(
+          normalizeLocalRoute
+        );
+        const nextFeed = mergeAndDedupeRoutes(localRoutes, routes, aiGeneratedRoutes);
 
         if (isActive) {
-          // Merge user/community routes with AI-generated routes.
-          setCommunityRoutes([...routes, ...aiGeneratedRoutes]);
+          setCommunityRoutes(nextFeed);
           localStorage.setItem(COMMUNITY_CACHE_KEY, JSON.stringify(routes));
         }
       } catch (error) {
         console.error("Failed to fetch Firestore routes:", error);
         if (isActive) {
-          setErrorMessage("Could not load community routes. Showing AI routes only.");
-          if (!cachedRaw) {
-            setCommunityRoutes(aiGeneratedRoutes);
-          }
+          // Keep already-rendered routes and only show a soft warning.
+          setErrorMessage("Cloud refresh is slow. Showing local + cached routes.");
         }
       } finally {
         if (isActive) {
@@ -227,13 +273,13 @@ export default function CommunityPage() {
         </p>
       )}
 
-      {!isLoading && errorMessage && (
+      {errorMessage && (
         <p className="cq-community-status cq-community-status-error" role="alert">
           {errorMessage}
         </p>
       )}
 
-      {!isLoading && !errorMessage && (
+      {!isLoading && (
         <section className="cq-community-list" aria-label="Community route feed">
           {filteredRoutes.map((route) => {
             const difficultyMeta = getDifficultyMeta(route.difficulty);
@@ -310,7 +356,7 @@ export default function CommunityPage() {
         </section>
       )}
 
-      {!isLoading && !errorMessage && filteredRoutes.length === 0 && (
+      {!isLoading && filteredRoutes.length === 0 && (
         <p className="cq-community-empty">No routes found. Try another filter or keyword.</p>
       )}
     </section>
