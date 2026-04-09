@@ -250,11 +250,20 @@ export default function CreatePage() {
     if (event.currentTarget.releasePointerCapture) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
+
+    // MVP UX: if the user traced enough points, auto-finish this hold on pointer up.
+    if (currentHoldPoints.length >= 3) {
+      finishCurrentHold({ silentIfTooFew: true, fromAuto: true });
+    }
   }
 
-  function finishCurrentHold() {
+  function finishCurrentHold(options = {}) {
+    const { silentIfTooFew = false, fromAuto = false } = options;
+
     if (currentHoldPoints.length < 3) {
-      setAnnotationMessage("Add at least 3 points to finish one hold contour.");
+      if (!silentIfTooFew) {
+        setAnnotationMessage("Add at least 3 points to finish one hold contour.");
+      }
       return;
     }
 
@@ -276,7 +285,11 @@ export default function CreatePage() {
 
     setHoldContours((prev) => [...prev, newHold]);
     setCurrentHoldPoints([]);
-    setAnnotationMessage("Hold contour saved with smoothing. Start tracing a new hold.");
+    setAnnotationMessage(
+      fromAuto
+        ? "Hold contour auto-saved. Start tracing a new hold."
+        : "Hold contour saved with smoothing. Start tracing a new hold."
+    );
   }
 
   function undoLastPoint() {
