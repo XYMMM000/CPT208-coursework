@@ -2,8 +2,12 @@ import { useMemo, useRef, useState } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import { firestoreDb } from "../lib/firebase";
+import wallPhotoA from "../assets/photo/8a4c9063-e850-4c6f-9245-36835a1d0c3d.png";
+import wallPhotoB from "../assets/photo/c6ca442c-7547-46d8-8083-250e3c29a877.png";
+import wallPhotoC from "../assets/photo/c9d8dd37-6805-4547-973a-69ebcf0663ae.png";
 
 const CREATED_ROUTES_STORAGE_KEY = "climbquest_created_routes";
+const WALL_GALLERY_PHOTOS = [wallPhotoA, wallPhotoB, wallPhotoC];
 const styleTagOptions = ["Balance", "Power", "Endurance", "Technique"];
 const levelOptions = ["Beginner", "Intermediate", "Advanced"];
 
@@ -82,6 +86,7 @@ function toLightweightLocalRoute(route) {
     styleTags: route.styleTags,
     description: route.description,
     suitableFor: route.suitableFor,
+    wallPhotoIndex: route.wallPhotoIndex,
     holdContours: route.holdContours,
     createdAt: route.createdAt
   };
@@ -123,6 +128,7 @@ export default function CreatePage() {
   // Each item in holdContours is one selected hold mask region.
   const [holdContours, setHoldContours] = useState([]);
   const [currentHoldPoints, setCurrentHoldPoints] = useState([]);
+  const [selectedWallPhotoIndex, setSelectedWallPhotoIndex] = useState(0);
 
   const [errors, setErrors] = useState({});
   const [annotationMessage, setAnnotationMessage] = useState("");
@@ -141,6 +147,7 @@ export default function CreatePage() {
     formData.description.trim() ||
     "Add a short description to help climbers understand this route.";
   const previewLevel = useMemo(() => formData.suitableFor, [formData.suitableFor]);
+  const activeWallImageSrc = formData.imageDataUrl || WALL_GALLERY_PHOTOS[selectedWallPhotoIndex];
 
   function updateField(field, value) {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -182,8 +189,17 @@ export default function CreatePage() {
     reader.readAsDataURL(file);
   }
 
+  function handleUseBuiltInWall(index) {
+    setSelectedWallPhotoIndex(index);
+    // Switch back to built-in wall mode.
+    setFormData((prev) => ({ ...prev, imageDataUrl: "" }));
+    setCurrentHoldPoints([]);
+    setHoldContours([]);
+    setAnnotationMessage("Switched wall photo. Start tracing again for accurate matching.");
+  }
+
   function getRelativePointFromPointerEvent(event) {
-    if (!formData.imageDataUrl) return;
+    if (!activeWallImageSrc) return;
 
     // IMPORTANT: calculate pointer point relative to image container.
     const rect = event.currentTarget.getBoundingClientRect();
@@ -204,7 +220,7 @@ export default function CreatePage() {
   }
 
   function handleWallPointerDown(event) {
-    if (!formData.imageDataUrl) return;
+    if (!activeWallImageSrc) return;
     setIsTracing(true);
     traceLastPointRef.current = null;
 
@@ -217,7 +233,7 @@ export default function CreatePage() {
   }
 
   function handleWallPointerMove(event) {
-    if (!isTracing || !formData.imageDataUrl) return;
+    if (!isTracing || !activeWallImageSrc) return;
 
     const point = getRelativePointFromPointerEvent(event);
     const lastPoint = traceLastPointRef.current;
@@ -291,6 +307,9 @@ export default function CreatePage() {
     if (!formData.difficulty.trim()) {
       nextErrors.difficulty = "Difficulty is required.";
     }
+    if (holdContours.length === 0) {
+      nextErrors.holdContours = "Please finish at least one hold contour.";
+    }
 
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
@@ -312,6 +331,7 @@ export default function CreatePage() {
       description: formData.description.trim(),
       suitableFor: formData.suitableFor,
       imageDataUrl: formData.imageDataUrl,
+      wallPhotoIndex: selectedWallPhotoIndex,
       holdContours,
       createdAt: new Date().toISOString()
     };
@@ -328,6 +348,8 @@ export default function CreatePage() {
         currentUser?.displayName ||
         currentUser?.email?.split("@")[0] ||
         "Anonymous Climber",
+      holdContours: newRoute.holdContours,
+      wallPhotoIndex: newRoute.wallPhotoIndex,
       createdTime: serverTimestamp()
     };
 
@@ -473,7 +495,23 @@ export default function CreatePage() {
           <input type="file" accept="image/*" onChange={handleImageChange} />
         </label>
 
-        {formData.imageDataUrl && (
+        <div className="cq-field">
+          <span>Or use built-in wall photos (recommended for community matching)</span>
+          <div className="cq-tag-grid" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
+            {WALL_GALLERY_PHOTOS.map((photoSrc, index) => (
+              <button
+                key={`built-in-wall-${index}`}
+                type="button"
+                className={`cq-tag-btn ${selectedWallPhotoIndex === index && !formData.imageDataUrl ? "cq-tag-btn-active" : ""}`}
+                onClick={() => handleUseBuiltInWall(index)}
+              >
+                Wall {index + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {activeWallImageSrc && (
           <section className="cq-wall-editor" aria-label="Wall hold contour annotation editor">
             <div className="cq-wall-editor-head">
               <p>Tap or press-and-drag around one hold edge, then press Finish Current Hold.</p>
@@ -515,7 +553,15 @@ export default function CreatePage() {
               }}
             >
               {/* Base layer: original wall photo remains visible. */}
-              <img className="cq-wall-image" src={formData.imageDataUrl} alt="Uploaded climbing wall" />
+              <img
+                className="cq-wall-image"
+                src={activeWallImageSrc}
+                alt={
+                  formData.imageDataUrl
+                    ? "Uploaded climbing wall"
+                    : `Built-in wall ${selectedWallPhotoIndex + 1}`
+                }
+              />
 
               {/*
                 Overlay rendering model:
@@ -529,35 +575,14 @@ export default function CreatePage() {
                 preserveAspectRatio="none"
                 aria-hidden="true"
               >
-                <defs>
-                  {/* Subtle glow to make selected contours pop on textured wall photos. */}
-                  <filter id="cqHoldMaskGlow" x="-40%" y="-40%" width="180%" height="180%">
-                    <feGaussianBlur stdDeviation="0.85" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-
                 {holdContours.map((hold) => (
                   <g key={`hold-mask-${hold.id}`}>
-                    {/* Glow stroke: helps contour stand out without tinting hold interior color. */}
-                    <polygon
-                      points={pointsToSvgString(hold.points)}
-                      fill="none"
-                      stroke="rgba(255,255,255,0.75)"
-                      strokeWidth="1.9"
-                      strokeLinejoin="round"
-                      filter="url(#cqHoldMaskGlow)"
-                    />
-
-                    {/* Main contour: white outline only (no interior fill). */}
+                    {/* Final style: single thin white contour so hold color stays visible. */}
                     <polygon
                       points={pointsToSvgString(hold.points)}
                       fill="none"
                       stroke="#ffffff"
-                      strokeWidth="1.15"
+                      strokeWidth="0.42"
                       strokeLinejoin="round"
                     />
                   </g>
@@ -597,6 +622,10 @@ export default function CreatePage() {
                 )}
               </svg>
             </div>
+
+            {errors.holdContours && (
+              <small className="cq-field-error">{errors.holdContours}</small>
+            )}
 
             <p className="cq-hold-count">
               Current hold points: <strong>{currentHoldPoints.length}</strong> | Selected holds:{" "}

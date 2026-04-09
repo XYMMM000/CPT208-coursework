@@ -76,6 +76,7 @@ function normalizeFirestoreRoute(doc) {
     suitableFor: data.suitableFor || "Beginner",
     holdContours: Array.isArray(data.holdContours) ? data.holdContours : [],
     imageDataUrl: data.imageDataUrl || "",
+    wallPhotoIndex: Number.isInteger(data.wallPhotoIndex) ? data.wallPhotoIndex : 0,
     createdTime: data.createdTime?.seconds || 0,
     source: "Community"
   };
@@ -96,6 +97,7 @@ function normalizeLocalRoute(route, index) {
     suitableFor: route.suitableFor || "Beginner",
     holdContours: Array.isArray(route.holdContours) ? route.holdContours : [],
     imageDataUrl: route.imageDataUrl || "",
+    wallPhotoIndex: Number.isInteger(route.wallPhotoIndex) ? route.wallPhotoIndex : 0,
     createdTime: route.createdTime || 0,
     source: "Community"
   };
@@ -357,6 +359,7 @@ export default function CommunityPage() {
                       suitableFor: route.suitableFor,
                       holdContours: route.holdContours,
                       imageDataUrl: route.imageDataUrl,
+                      wallPhotoIndex: route.wallPhotoIndex,
                       createdTime: route.createdTime,
                       createdTimeLabel: formatCreatedTime(route.createdTime),
                       source: route.source,

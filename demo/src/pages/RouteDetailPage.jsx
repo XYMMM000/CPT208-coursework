@@ -15,6 +15,7 @@ const initialRoute = {
   suitableFor: "Beginner",
   holdContours: [],
   imageDataUrl: "",
+  wallPhotoIndex: 0,
   source: "Community",
   createdTimeLabel: "Unknown",
   creator: {
@@ -328,6 +329,10 @@ function getContoursForPhoto(routeState, photoIndex) {
     Array.isArray(routeState.holdContours) && routeState.holdContours.length > 0;
   if (hasUserContours) return routeState.holdContours;
 
+  // Community routes should only show real user-drawn contours.
+  // If there is no stored contour data, do not fake it with random presets.
+  if (routeState.source !== "AI") return [];
+
   const difficultyKey =
     routeState.difficulty === "Hard"
       ? "Hard"
@@ -336,6 +341,13 @@ function getContoursForPhoto(routeState, photoIndex) {
         : "Medium";
 
   return WALL_GALLERY_CONTOUR_PRESETS_BY_DIFFICULTY[difficultyKey][photoIndex] || [];
+}
+
+function normalizeWallPhotoIndex(value) {
+  if (!Number.isFinite(value)) return 0;
+  if (value < 0) return 0;
+  if (value >= WALL_GALLERY_PHOTOS.length) return 0;
+  return Math.floor(value);
 }
 
 function readRouteInteractions() {
@@ -365,6 +377,9 @@ export default function RouteDetailPage() {
       ...(routeFromState?.creator || {})
     }
   };
+  const selectedWallPhotoIndex = normalizeWallPhotoIndex(
+    Number(resolvedInitialRoute.wallPhotoIndex)
+  );
   const routeKey = `${resolvedInitialRoute.title}::${resolvedInitialRoute.creator.name}`;
   const savedInteractions = readRouteInteractions()[routeKey];
 
@@ -385,22 +400,13 @@ export default function RouteDetailPage() {
 
   const difficultyMeta = getDifficultyMeta(routeState.difficulty);
   const displayedContourCount = useMemo(() => {
-    const hasUserContours =
-      Array.isArray(routeState.holdContours) && routeState.holdContours.length > 0;
-    if (hasUserContours) return routeState.holdContours.length;
-
-    const difficultyKey =
-      routeState.difficulty === "Hard"
-        ? "Hard"
-        : routeState.difficulty === "Easy"
-          ? "Easy"
-          : "Medium";
-
-    return (WALL_GALLERY_CONTOUR_PRESETS_BY_DIFFICULTY[difficultyKey][0] || []).length;
-  }, [routeState.holdContours, routeState.difficulty]);
+    return getContoursForPhoto(routeState, selectedWallPhotoIndex).length;
+  }, [routeState, selectedWallPhotoIndex]);
   const ratingSummary = useMemo(() => {
     return `${routeState.averageRating.toFixed(1)} (${routeState.ratingCount} ratings)`;
   }, [routeState.averageRating, routeState.ratingCount]);
+  const previewWallSrc = routeState.imageDataUrl || WALL_GALLERY_PHOTOS[selectedWallPhotoIndex];
+  const displayedContours = getContoursForPhoto(routeState, selectedWallPhotoIndex);
 
   function persistInteraction(nextState) {
     const previous = readRouteInteractions();
@@ -537,66 +543,38 @@ export default function RouteDetailPage() {
       <section className="cq-detail-card">
         <h3>Hold Contour Preview</h3>
         <p className="cq-detail-creator">
-          Showing 3 wall photos from assets with your DIY route contour overlay.
+          Showing the matched wall photo for this route with aligned hold contours.
         </p>
 
-        <div className="cq-detail-wall-grid">
-          {WALL_GALLERY_PHOTOS.map((photoSrc, photoIndex) => (
-            <div key={`wall-photo-${photoIndex}`} className="cq-preview-wall-wrap">
-              <img
-                className="cq-create-preview-image"
-                src={photoSrc}
-                alt={`Wall preview ${photoIndex + 1}`}
+        <div className="cq-preview-wall-wrap">
+          <img
+            className="cq-create-preview-image"
+            src={previewWallSrc}
+            alt={
+              routeState.imageDataUrl
+                ? "Uploaded wall preview"
+                : `Matched wall preview ${selectedWallPhotoIndex + 1}`
+            }
+          />
+
+          {/* Render only the contours matched to this wall image. */}
+          <svg
+            className="cq-wall-svg-overlay"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            {displayedContours.map((hold, index) => (
+              <polygon
+                key={`detail-hold-${hold.id || index}`}
+                points={pointsToSvgString(hold.points)}
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="0.4"
+                strokeLinejoin="round"
               />
-
-              {/* Render the same user DIY hold contours above each wall photo. */}
-              <svg
-                className="cq-wall-svg-overlay"
-                viewBox="0 0 100 100"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-              >
-                <defs>
-                  <filter
-                    id={`cqDetailHoldMaskGlow-${photoIndex}`}
-                    x="-40%"
-                    y="-40%"
-                    width="180%"
-                    height="180%"
-                  >
-                    <feGaussianBlur stdDeviation="0.8" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-
-                {getContoursForPhoto(routeState, photoIndex).map((hold, index) => (
-                    <polygon
-                      key={`detail-hold-${photoIndex}-${hold.id || index}`}
-                      points={pointsToSvgString(hold.points)}
-                      fill="none"
-                      stroke="rgba(255,255,255,0.75)"
-                      strokeWidth="1.85"
-                      strokeLinejoin="round"
-                      filter={`url(#cqDetailHoldMaskGlow-${photoIndex})`}
-                    />
-                  ))}
-
-                {getContoursForPhoto(routeState, photoIndex).map((hold, index) => (
-                    <polygon
-                      key={`detail-hold-main-${photoIndex}-${hold.id || index}`}
-                      points={pointsToSvgString(hold.points)}
-                      fill="none"
-                      stroke="#ffffff"
-                      strokeWidth="1.1"
-                      strokeLinejoin="round"
-                    />
-                  ))}
-              </svg>
-            </div>
-          ))}
+            ))}
+          </svg>
         </div>
       </section>
 
