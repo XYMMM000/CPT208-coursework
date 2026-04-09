@@ -542,22 +542,23 @@ export default function CreatePage() {
 
                 {holdContours.map((hold) => (
                   <g key={`hold-mask-${hold.id}`}>
-                    {/* Glow base */}
+                    {/* Glow stroke: helps contour stand out without tinting hold interior color. */}
                     <polygon
                       points={pointsToSvgString(hold.points)}
-                      fill="rgba(88, 232, 158, 0.42)"
-                      stroke="transparent"
+                      fill="none"
+                      stroke="rgba(255,255,255,0.75)"
+                      strokeWidth="3.6"
+                      strokeLinejoin="round"
                       filter="url(#cqHoldMaskGlow)"
                     />
 
-                    {/* Main contour mask */}
+                    {/* Main contour: white outline only (no interior fill). */}
                     <polygon
                       points={pointsToSvgString(hold.points)}
-                      fill="rgba(88, 232, 158, 0.32)"
+                      fill="none"
                       stroke="#ffffff"
                       strokeWidth="2.3"
                       strokeLinejoin="round"
-                      filter="url(#cqHoldMaskGlow)"
                     />
                   </g>
                 ))}
@@ -568,7 +569,7 @@ export default function CreatePage() {
                     {currentHoldPoints.length >= 3 && (
                       <polygon
                         points={pointsToSvgString(currentHoldPoints)}
-                        fill="rgba(88, 232, 158, 0.18)"
+                        fill="none"
                         stroke="transparent"
                       />
                     )}

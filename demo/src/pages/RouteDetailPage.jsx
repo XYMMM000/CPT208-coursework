@@ -576,11 +576,22 @@ export default function RouteDetailPage() {
                     <polygon
                       key={`detail-hold-${photoIndex}-${hold.id || index}`}
                       points={pointsToSvgString(hold.points)}
-                      fill="rgba(88, 232, 158, 0.32)"
+                      fill="none"
+                      stroke="rgba(255,255,255,0.75)"
+                      strokeWidth="3.6"
+                      strokeLinejoin="round"
+                      filter={`url(#cqDetailHoldMaskGlow-${photoIndex})`}
+                    />
+                  ))}
+
+                {getContoursForPhoto(routeState, photoIndex).map((hold, index) => (
+                    <polygon
+                      key={`detail-hold-main-${photoIndex}-${hold.id || index}`}
+                      points={pointsToSvgString(hold.points)}
+                      fill="none"
                       stroke="#ffffff"
                       strokeWidth="2"
                       strokeLinejoin="round"
-                      filter={`url(#cqDetailHoldMaskGlow-${photoIndex})`}
                     />
                   ))}
               </svg>
