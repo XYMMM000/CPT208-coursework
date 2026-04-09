@@ -28,8 +28,7 @@ const initialRoute = {
 const WALL_GALLERY_PHOTOS = [wallPhotoA, wallPhotoB, wallPhotoC];
 
 // Hand-crafted contour templates aligned to visible holds in each wall photo.
-// These are used as fallback so every wall image shows a meaningful DIY route overlay.
-const WALL_GALLERY_CONTOUR_PRESETS = [
+const WALL_GALLERY_CONTOUR_BASE_PRESETS = [
   // Photo 1
   [
     {
@@ -206,6 +205,101 @@ const WALL_GALLERY_CONTOUR_PRESETS = [
   ]
 ];
 
+function buildDifficultyContourPresets(basePresets) {
+  // Easy: shorter route (fewer selected holds).
+  const easy = basePresets.map((photoHolds) => photoHolds.slice(0, 3));
+
+  // Medium: balanced route (default set).
+  const medium = basePresets.map((photoHolds) => photoHolds.slice(0, 5));
+
+  // Hard: denser route with extra holds near tougher move zones.
+  const hardExtras = [
+    [
+      {
+        id: "p1-h6",
+        points: [
+          { x: 61.5, y: 31.4 },
+          { x: 64.2, y: 29.5 },
+          { x: 67.4, y: 30.2 },
+          { x: 67.9, y: 33.6 },
+          { x: 65.6, y: 35.8 },
+          { x: 62.3, y: 34.9 }
+        ]
+      },
+      {
+        id: "p1-h7",
+        points: [
+          { x: 74.2, y: 63.4 },
+          { x: 77.1, y: 61.9 },
+          { x: 80.2, y: 63.1 },
+          { x: 80.8, y: 66.6 },
+          { x: 78.2, y: 68.9 },
+          { x: 74.9, y: 67.6 }
+        ]
+      }
+    ],
+    [
+      {
+        id: "p2-h6",
+        points: [
+          { x: 44.1, y: 34.8 },
+          { x: 47.2, y: 32.9 },
+          { x: 50.5, y: 34.2 },
+          { x: 51.1, y: 37.8 },
+          { x: 48.2, y: 40.1 },
+          { x: 44.8, y: 38.6 }
+        ]
+      },
+      {
+        id: "p2-h7",
+        points: [
+          { x: 80.8, y: 52.8 },
+          { x: 83.4, y: 51.1 },
+          { x: 86.8, y: 52.2 },
+          { x: 87.1, y: 55.8 },
+          { x: 84.9, y: 57.9 },
+          { x: 81.6, y: 56.8 }
+        ]
+      }
+    ],
+    [
+      {
+        id: "p3-h6",
+        points: [
+          { x: 33.8, y: 57.5 },
+          { x: 36.7, y: 55.8 },
+          { x: 39.9, y: 57.1 },
+          { x: 40.3, y: 60.8 },
+          { x: 37.6, y: 62.7 },
+          { x: 34.5, y: 61.3 }
+        ]
+      },
+      {
+        id: "p3-h7",
+        points: [
+          { x: 63.8, y: 64.4 },
+          { x: 66.5, y: 62.6 },
+          { x: 69.8, y: 63.8 },
+          { x: 70.2, y: 67.3 },
+          { x: 67.6, y: 69.4 },
+          { x: 64.4, y: 68.2 }
+        ]
+      }
+    ]
+  ];
+
+  const hard = basePresets.map((photoHolds, index) => [
+    ...photoHolds.slice(0, 5),
+    ...(hardExtras[index] || [])
+  ]);
+
+  return { Easy: easy, Medium: medium, Hard: hard };
+}
+
+const WALL_GALLERY_CONTOUR_PRESETS_BY_DIFFICULTY = buildDifficultyContourPresets(
+  WALL_GALLERY_CONTOUR_BASE_PRESETS
+);
+
 function getDifficultyMeta(difficulty) {
   if (difficulty === "Easy") return { grade: "V0-V1", toneClass: "cq-difficulty-easy" };
   if (difficulty === "Medium") return { grade: "V2-V4", toneClass: "cq-difficulty-medium" };
@@ -233,7 +327,15 @@ function getContoursForPhoto(routeState, photoIndex) {
   const hasUserContours =
     Array.isArray(routeState.holdContours) && routeState.holdContours.length > 0;
   if (hasUserContours) return routeState.holdContours;
-  return WALL_GALLERY_CONTOUR_PRESETS[photoIndex] || [];
+
+  const difficultyKey =
+    routeState.difficulty === "Hard"
+      ? "Hard"
+      : routeState.difficulty === "Easy"
+        ? "Easy"
+        : "Medium";
+
+  return WALL_GALLERY_CONTOUR_PRESETS_BY_DIFFICULTY[difficultyKey][photoIndex] || [];
 }
 
 function readRouteInteractions() {
@@ -286,8 +388,16 @@ export default function RouteDetailPage() {
     const hasUserContours =
       Array.isArray(routeState.holdContours) && routeState.holdContours.length > 0;
     if (hasUserContours) return routeState.holdContours.length;
-    return (WALL_GALLERY_CONTOUR_PRESETS[0] || []).length;
-  }, [routeState.holdContours]);
+
+    const difficultyKey =
+      routeState.difficulty === "Hard"
+        ? "Hard"
+        : routeState.difficulty === "Easy"
+          ? "Easy"
+          : "Medium";
+
+    return (WALL_GALLERY_CONTOUR_PRESETS_BY_DIFFICULTY[difficultyKey][0] || []).length;
+  }, [routeState.holdContours, routeState.difficulty]);
   const ratingSummary = useMemo(() => {
     return `${routeState.averageRating.toFixed(1)} (${routeState.ratingCount} ratings)`;
   }, [routeState.averageRating, routeState.ratingCount]);
