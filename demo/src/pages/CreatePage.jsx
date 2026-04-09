@@ -40,6 +40,40 @@ function simplifyPoints(points, minDistance = 0.7) {
   return simplified;
 }
 
+function smoothClosedPolygon(points, iterations = 1) {
+  // Chaikin-like corner cutting for smoother contour edges.
+  // Works best for closed polygons with at least 4 points.
+  if (!Array.isArray(points) || points.length < 4) return points;
+
+  let current = points;
+  for (let round = 0; round < iterations; round += 1) {
+    const next = [];
+    for (let index = 0; index < current.length; index += 1) {
+      const p0 = current[index];
+      const p1 = current[(index + 1) % current.length];
+
+      const q = {
+        x: Number((0.75 * p0.x + 0.25 * p1.x).toFixed(2)),
+        y: Number((0.75 * p0.y + 0.25 * p1.y).toFixed(2))
+      };
+      const r = {
+        x: Number((0.25 * p0.x + 0.75 * p1.x).toFixed(2)),
+        y: Number((0.25 * p0.y + 0.75 * p1.y).toFixed(2))
+      };
+
+      next.push(q, r);
+    }
+
+    // Keep point count under control for performance on mobile.
+    current = simplifyPoints(next, 0.45);
+    if (current.length > 64) {
+      current = current.filter((_, idx) => idx % 2 === 0);
+    }
+  }
+
+  return current;
+}
+
 function toLightweightLocalRoute(route) {
   return {
     id: route.id,
@@ -208,7 +242,9 @@ export default function CreatePage() {
       return;
     }
 
-    const normalizedPoints = simplifyPoints(currentHoldPoints);
+    const simplifiedPoints = simplifyPoints(currentHoldPoints);
+    const normalizedPoints =
+      simplifiedPoints.length >= 4 ? smoothClosedPolygon(simplifiedPoints, 1) : simplifiedPoints;
 
     const centerX =
       normalizedPoints.reduce((sum, point) => sum + point.x, 0) / normalizedPoints.length;
@@ -224,7 +260,7 @@ export default function CreatePage() {
 
     setHoldContours((prev) => [...prev, newHold]);
     setCurrentHoldPoints([]);
-    setAnnotationMessage("Hold contour saved. Start tapping a new hold edge.");
+    setAnnotationMessage("Hold contour saved with smoothing. Start tracing a new hold.");
   }
 
   function undoLastPoint() {
