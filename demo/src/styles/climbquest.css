@@ -1751,55 +1751,108 @@ a {
 }
 .cq-wall-selection-list {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   grid-template-columns: 1fr;
 }
 
 .cq-wall-selection-card {
-  display: block;
+  display: grid;
+  grid-template-rows: auto 1fr;
   text-decoration: none;
   color: inherit;
   border: 1px solid rgba(40, 78, 120, 0.18);
-  border-radius: 18px;
+  border-radius: 20px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.82);
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 12px 22px rgba(25, 45, 74, 0.08);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .cq-wall-selection-card:active {
-  transform: scale(0.99);
+  transform: scale(0.995);
 }
 
 .cq-wall-selection-card:hover {
-  box-shadow: 0 10px 22px rgba(18, 43, 79, 0.14);
+  box-shadow: 0 16px 30px rgba(18, 43, 79, 0.16);
+  transform: translateY(-2px);
 }
 
 .cq-wall-selection-image {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  min-height: 210px;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
   display: block;
 }
 
 .cq-wall-selection-content {
-  padding: 12px 12px 14px;
+  padding: 14px 14px 16px;
   display: grid;
-  gap: 10px;
+  gap: 12px;
+  align-content: start;
+}
+
+.cq-wall-selection-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cq-wall-level-badge {
+  border-radius: 999px;
+  border: 1px solid #cbe7d6;
+  background: #eefbf3;
+  color: #256946;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 9px;
+}
+
+.cq-wall-active-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #476288;
 }
 
 .cq-wall-selection-content h3 {
   margin: 0;
-  font-size: 1.14rem;
+  font-size: 1.35rem;
+  line-height: 1.2;
   color: #16263f;
 }
 
 .cq-wall-selection-cta {
   justify-self: start;
+  margin-top: 2px;
   font-weight: 700;
+  padding: 10px 16px;
 }
 
 @media (min-width: 760px) {
+  .cq-wall-select-page {
+    /* Override editor-page two-column split on wall selection page. */
+    grid-template-columns: 1fr;
+  }
+
+  .cq-wall-select-page .cq-create-header {
+    grid-column: 1 / -1;
+  }
+
+  .cq-wall-select-page .cq-wall-selection-list {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
   .cq-wall-selection-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .cq-wall-selection-image {
+    min-height: 190px;
   }
 }

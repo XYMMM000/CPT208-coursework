@@ -9,25 +9,31 @@ const wallOptions = [
     id: "wall-1",
     name: "Granite Rhythm Slab",
     image: wallPhotoA,
-    tags: ["Slab", "Balance", "Training"]
+    tags: ["Slab", "Balance", "Training"],
+    level: "Beginner Friendly",
+    activeClimbers: 128
   },
   {
     id: "wall-2",
     name: "Blue Volume Circuit",
     image: wallPhotoB,
-    tags: ["Mixed", "Technique"]
+    tags: ["Mixed", "Technique"],
+    level: "Intermediate",
+    activeClimbers: 94
   },
   {
     id: "wall-3",
     name: "Power Cave Line",
     image: wallPhotoC,
-    tags: ["Overhang", "Power"]
+    tags: ["Overhang", "Power"],
+    level: "Advanced",
+    activeClimbers: 63
   }
 ];
 
 export default function CreateWallSelectionPage() {
   return (
-    <section className="cq-create-page">
+    <section className="cq-create-page cq-wall-select-page">
       <header className="cq-create-header">
         <p className="cq-page-eyebrow">Create</p>
         <h2>Choose a wall to start your DIY route</h2>
@@ -46,6 +52,11 @@ export default function CreateWallSelectionPage() {
             <img className="cq-wall-selection-image" src={wall.image} alt={wall.name} />
 
             <div className="cq-wall-selection-content">
+              {/* Product-style info bar: difficulty badge + simple social signal. */}
+              <div className="cq-wall-selection-meta">
+                <span className="cq-wall-level-badge">{wall.level}</span>
+                <span className="cq-wall-active-count">{wall.activeClimbers} climbers this week</span>
+              </div>
               <h3>{wall.name}</h3>
               <div className="cq-community-style-row">
                 {wall.tags.map((tag) => (
@@ -62,4 +73,3 @@ export default function CreateWallSelectionPage() {
     </section>
   );
 }
-
