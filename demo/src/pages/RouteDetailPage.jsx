@@ -324,15 +324,20 @@ function pointsToSvgString(points) {
   return points.map((point) => `${point.x},${point.y}`).join(" ");
 }
 
-function getContoursForPhoto(routeState, photoIndex) {
-  const hasUserContours =
-    Array.isArray(routeState.holdContours) && routeState.holdContours.length > 0;
-  if (hasUserContours) return routeState.holdContours;
+function getPolygonCenter(points) {
+  if (!Array.isArray(points) || points.length === 0) {
+    return { x: 0, y: 0 };
+  }
+  const centerX = points.reduce((sum, point) => sum + point.x, 0) / points.length;
+  const centerY = points.reduce((sum, point) => sum + point.y, 0) / points.length;
+  return { x: centerX, y: centerY };
+}
 
-  // Community routes should only show real user-drawn contours.
-  // If there is no stored contour data, do not fake it with random presets.
-  if (routeState.source !== "AI") return [];
+function distanceBetween(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
 
+function getCalibratedTemplatesForPhoto(routeState, photoIndex) {
   const difficultyKey =
     routeState.difficulty === "Hard"
       ? "Hard"
@@ -340,7 +345,65 @@ function getContoursForPhoto(routeState, photoIndex) {
         ? "Easy"
         : "Medium";
 
-  return WALL_GALLERY_CONTOUR_PRESETS_BY_DIFFICULTY[difficultyKey][photoIndex] || [];
+  // Use hard preset as the full template pool for snapping.
+  const fullTemplatePool = WALL_GALLERY_CONTOUR_PRESETS_BY_DIFFICULTY.Hard[photoIndex] || [];
+  const fallbackByDifficulty =
+    WALL_GALLERY_CONTOUR_PRESETS_BY_DIFFICULTY[difficultyKey][photoIndex] || [];
+
+  return {
+    fullTemplatePool,
+    fallbackByDifficulty
+  };
+}
+
+function snapContoursToWallHolds(inputContours, templatePool) {
+  if (!Array.isArray(inputContours) || inputContours.length === 0) return [];
+  if (!Array.isArray(templatePool) || templatePool.length === 0) return inputContours;
+
+  const usedTemplateIds = new Set();
+
+  // For every user contour, find the nearest known hold template on this wall.
+  // This guarantees rendered contours stay on visible hold locations.
+  return inputContours.map((contour) => {
+    const contourCenter = getPolygonCenter(contour.points);
+    let bestTemplate = templatePool[0];
+    let bestDistance = Number.POSITIVE_INFINITY;
+
+    for (const template of templatePool) {
+      if (usedTemplateIds.has(template.id)) continue;
+      const templateCenter = getPolygonCenter(template.points);
+      const distance = distanceBetween(contourCenter, templateCenter);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestTemplate = template;
+      }
+    }
+
+    usedTemplateIds.add(bestTemplate.id);
+    return {
+      id: contour.id || bestTemplate.id,
+      points: bestTemplate.points
+    };
+  });
+}
+
+function getContoursForPhoto(routeState, photoIndex) {
+  const hasUserContours =
+    Array.isArray(routeState.holdContours) && routeState.holdContours.length > 0;
+  const { fullTemplatePool, fallbackByDifficulty } = getCalibratedTemplatesForPhoto(
+    routeState,
+    photoIndex
+  );
+
+  // Community route display calibration:
+  // snap incoming contours to the nearest real-hold template on this exact wall.
+  if (hasUserContours) {
+    return snapContoursToWallHolds(routeState.holdContours, fullTemplatePool);
+  }
+
+  // If route has no contour data yet, still show a calibrated route on real holds.
+  // This keeps community previews consistent and avoids "floating in blank area".
+  return fallbackByDifficulty;
 }
 
 function normalizeWallPhotoIndex(value) {
