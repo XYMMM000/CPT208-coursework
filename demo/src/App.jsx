@@ -3,6 +3,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import MobileAppLayout from "./components/layout/MobileAppLayout";
 import CommunityPage from "./pages/CommunityPage";
 import CreatePage from "./pages/CreatePage";
+import CreateWallSelectionPage from "./pages/CreateWallSelectionPage";
 import DiscoverPage from "./pages/DiscoverPage";
 import HomePage from "./pages/HomePage";
 import LandingPage from "./pages/LandingPage";
@@ -31,7 +32,8 @@ export default function App() {
       >
         <Route path="/home" element={<HomePage />} />
         <Route path="/discover" element={<DiscoverPage />} />
-        <Route path="/create" element={<CreatePage />} />
+        <Route path="/create" element={<CreateWallSelectionPage />} />
+        <Route path="/create/editor/:wallId" element={<CreatePage />} />
         <Route path="/community" element={<CommunityPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/route-detail" element={<RouteDetailPage />} />

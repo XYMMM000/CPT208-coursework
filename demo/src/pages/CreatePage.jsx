@@ -1,5 +1,6 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { firestoreDb } from "../lib/firebase";
 import wallPhotoA from "../assets/photo/8a4c9063-e850-4c6f-9245-36835a1d0c3d.png";
@@ -11,6 +12,11 @@ const WALL_GALLERY_PHOTOS = [wallPhotoA, wallPhotoB, wallPhotoC];
 const styleTagOptions = ["Balance", "Power", "Endurance", "Technique"];
 const levelOptions = ["Beginner", "Intermediate", "Advanced"];
 const AUTO_CLOSE_DISTANCE_THRESHOLD = 2.2;
+const WALL_ROUTE_ID_TO_INDEX = {
+  "wall-1": 0,
+  "wall-2": 1,
+  "wall-3": 2
+};
 
 function getDifficultyMeta(difficulty) {
   if (difficulty === "Easy") return { grade: "V0-V1", toneClass: "cq-difficulty-easy" };
@@ -123,6 +129,7 @@ function saveRouteToLocalStorageInBackground(lightweightRoute) {
 
 export default function CreatePage() {
   const { currentUser } = useAuth();
+  const { wallId } = useParams();
 
   const [formData, setFormData] = useState({
     routeName: "",
@@ -156,6 +163,15 @@ export default function CreatePage() {
     "Add a short description to help climbers understand this route.";
   const previewLevel = useMemo(() => formData.suitableFor, [formData.suitableFor]);
   const activeWallImageSrc = formData.imageDataUrl || WALL_GALLERY_PHOTOS[selectedWallPhotoIndex];
+
+  useEffect(() => {
+    // Sync editor wall with route param from the wall selection page.
+    if (!wallId) return;
+    const nextIndex = WALL_ROUTE_ID_TO_INDEX[wallId];
+    if (typeof nextIndex === "number") {
+      setSelectedWallPhotoIndex(nextIndex);
+    }
+  }, [wallId]);
 
   function updateField(field, value) {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -424,9 +440,14 @@ export default function CreatePage() {
   return (
     <section className="cq-create-page">
       <header className="cq-create-header">
+        <Link className="cq-secondary-btn cq-detail-back-btn" to="/create">
+          Back to Wall Selection
+        </Link>
         <p className="cq-page-eyebrow">Create</p>
         <h2>Build your own climbing route</h2>
-        <p>Tap holds on the wall photo to create contour-style selection masks.</p>
+        <p>
+          Tap holds on wall {selectedWallPhotoIndex + 1} to create contour-style selection masks.
+        </p>
       </header>
 
       {submitFeedback.type === "success" && (
