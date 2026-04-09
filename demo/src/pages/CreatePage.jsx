@@ -151,6 +151,7 @@ export default function CreatePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cloudSyncStatus, setCloudSyncStatus] = useState("idle");
   const [isTracing, setIsTracing] = useState(false);
+  const [isZoomEditorOpen, setIsZoomEditorOpen] = useState(false);
   const traceLastPointRef = useRef(null);
 
   const previewTitle = formData.routeName.trim() || "Your New Route";
@@ -172,6 +173,15 @@ export default function CreatePage() {
       setSelectedWallPhotoIndex(nextIndex);
     }
   }, [wallId]);
+
+  useEffect(() => {
+    if (!isZoomEditorOpen) return undefined;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isZoomEditorOpen]);
 
   function updateField(field, value) {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -340,6 +350,14 @@ export default function CreatePage() {
     setHoldContours((prev) => prev.slice(0, -1));
   }
 
+  function openZoomEditor() {
+    setIsZoomEditorOpen(true);
+  }
+
+  function closeZoomEditor() {
+    setIsZoomEditorOpen(false);
+  }
+
   function validateForm() {
     const nextErrors = {};
 
@@ -435,6 +453,105 @@ export default function CreatePage() {
             "Saved locally, but cloud sync failed. You can continue editing and retry later."
         });
       });
+  }
+
+  function renderWallCanvas({ zoomMode = false } = {}) {
+    return (
+      <div
+        className={`cq-wall-image-wrap ${zoomMode ? "cq-wall-image-wrap-zoom" : ""}`}
+        onPointerDown={handleWallPointerDown}
+        onPointerMove={handleWallPointerMove}
+        onPointerUp={handleWallPointerUp}
+        onPointerCancel={handleWallPointerUp}
+        role="button"
+        tabIndex={0}
+        style={{ touchAction: "none" }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+          }
+        }}
+      >
+        {/* Base layer: original wall photo remains visible. */}
+        <img
+          className="cq-wall-image"
+          src={activeWallImageSrc}
+          alt={
+            formData.imageDataUrl
+              ? "Uploaded climbing wall"
+              : `Built-in wall ${selectedWallPhotoIndex + 1}`
+          }
+        />
+
+        {/* Quick action: open full-screen zoom editor for easier point selection. */}
+        {!zoomMode && (
+          <button
+            type="button"
+            className="cq-secondary-btn cq-wall-zoom-trigger"
+            onClick={(event) => {
+              event.stopPropagation();
+              openZoomEditor();
+            }}
+          >
+            Zoom
+          </button>
+        )}
+
+        {/*
+          Overlay rendering model:
+          1) Use an SVG layer with 0..100 coordinates (percentage-like space).
+          2) Each hold is an irregular polygon contour (no circular marker fallback).
+          3) Polygon style = thin white outline so hold color remains visible.
+        */}
+        <svg
+          className="cq-wall-svg-overlay"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          {holdContours.map((hold) => (
+            <g key={`hold-mask-${hold.id}`}>
+              <polygon
+                points={pointsToSvgString(hold.points)}
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="0.42"
+                strokeLinejoin="round"
+              />
+            </g>
+          ))}
+
+          {/* Current hold being traced: polyline + tiny anchors for precision. */}
+          {currentHoldPoints.length > 0 && (
+            <g>
+              {currentHoldPoints.length >= 3 && (
+                <polygon points={pointsToSvgString(currentHoldPoints)} fill="none" stroke="transparent" />
+              )}
+              <polyline
+                points={pointsToSvgString(currentHoldPoints)}
+                fill="none"
+                stroke="rgba(255,255,255,0.95)"
+                strokeWidth="1.2"
+                strokeDasharray="2 1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              {currentHoldPoints.map((point, index) => (
+                <circle
+                  key={`current-point-${index}`}
+                  cx={point.x}
+                  cy={point.y}
+                  r="0.7"
+                  fill="#ffffff"
+                  stroke="rgba(88, 232, 158, 0.95)"
+                  strokeWidth="0.35"
+                />
+              ))}
+            </g>
+          )}
+        </svg>
+      </div>
+    );
   }
 
   return (
@@ -584,91 +701,7 @@ export default function CreatePage() {
             {annotationMessage && <p className="cq-hold-count">{annotationMessage}</p>}
             {isTracing && <p className="cq-hold-count">Tracing hold contour...</p>}
 
-            <div
-              className="cq-wall-image-wrap"
-              onPointerDown={handleWallPointerDown}
-              onPointerMove={handleWallPointerMove}
-              onPointerUp={handleWallPointerUp}
-              onPointerCancel={handleWallPointerUp}
-              role="button"
-              tabIndex={0}
-              style={{ touchAction: "none" }}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                }
-              }}
-            >
-              {/* Base layer: original wall photo remains visible. */}
-              <img
-                className="cq-wall-image"
-                src={activeWallImageSrc}
-                alt={
-                  formData.imageDataUrl
-                    ? "Uploaded climbing wall"
-                    : `Built-in wall ${selectedWallPhotoIndex + 1}`
-                }
-              />
-
-              {/*
-                Overlay rendering model:
-                1) Use an SVG layer with 0..100 coordinates (percentage-like space).
-                2) Each hold is an irregular polygon contour (no circular marker fallback).
-                3) Polygon style = thick white outline + bright semi-transparent fill + glow.
-              */}
-              <svg
-                className="cq-wall-svg-overlay"
-                viewBox="0 0 100 100"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-              >
-                {holdContours.map((hold) => (
-                  <g key={`hold-mask-${hold.id}`}>
-                    {/* Final style: single thin white contour so hold color stays visible. */}
-                    <polygon
-                      points={pointsToSvgString(hold.points)}
-                      fill="none"
-                      stroke="#ffffff"
-                      strokeWidth="0.42"
-                      strokeLinejoin="round"
-                    />
-                  </g>
-                ))}
-
-                {/* Current hold being traced: polyline + tiny anchors for precision. */}
-                {currentHoldPoints.length > 0 && (
-                  <g>
-                    {currentHoldPoints.length >= 3 && (
-                      <polygon
-                        points={pointsToSvgString(currentHoldPoints)}
-                        fill="none"
-                        stroke="transparent"
-                      />
-                    )}
-                    <polyline
-                      points={pointsToSvgString(currentHoldPoints)}
-                      fill="none"
-                      stroke="rgba(255,255,255,0.95)"
-                      strokeWidth="1.2"
-                      strokeDasharray="2 1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    {currentHoldPoints.map((point, index) => (
-                      <circle
-                        key={`current-point-${index}`}
-                        cx={point.x}
-                        cy={point.y}
-                        r="0.7"
-                        fill="#ffffff"
-                        stroke="rgba(88, 232, 158, 0.95)"
-                        strokeWidth="0.35"
-                      />
-                    ))}
-                  </g>
-                )}
-              </svg>
-            </div>
+            {renderWallCanvas()}
 
             {errors.holdContours && (
               <small className="cq-field-error">{errors.holdContours}</small>
@@ -693,6 +726,24 @@ export default function CreatePage() {
               )}
             </div>
           </section>
+        )}
+
+        {/* Full-screen zoom editor: larger view for easier hold selection on mobile. */}
+        {isZoomEditorOpen && activeWallImageSrc && (
+          <div className="cq-wall-zoom-modal" role="dialog" aria-modal="true">
+            <div className="cq-wall-zoom-panel">
+              <div className="cq-wall-zoom-head">
+                <p>Zoom Editor</p>
+                <button type="button" className="cq-secondary-btn" onClick={closeZoomEditor}>
+                  Done
+                </button>
+              </div>
+              <p className="cq-hold-count">
+                Draw in this enlarged view for more precise contour selection.
+              </p>
+              {renderWallCanvas({ zoomMode: true })}
+            </div>
+          </div>
         )}
 
         <button type="submit" className="cq-primary-btn cq-create-submit" disabled={isSubmitting}>

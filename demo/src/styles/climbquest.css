@@ -1047,6 +1047,60 @@ a {
   z-index: 1;
 }
 
+.cq-wall-image-wrap-zoom {
+  margin-top: 0;
+}
+
+.cq-wall-zoom-trigger {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  padding: 7px 12px;
+  font-size: 0.78rem;
+  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.cq-wall-zoom-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(16, 24, 38, 0.46);
+  display: grid;
+  place-items: center;
+  padding: 12px;
+}
+
+.cq-wall-zoom-panel {
+  width: min(100%, 820px);
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+  background: var(--cq-surface);
+  border: 1px solid var(--cq-border);
+  border-radius: 16px;
+  box-shadow: 0 16px 36px rgba(20, 30, 45, 0.3);
+  padding: 12px;
+}
+
+.cq-wall-zoom-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.cq-wall-zoom-head p {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #22344f;
+}
+
+.cq-wall-zoom-panel .cq-wall-image-wrap {
+  margin-top: 8px;
+}
+
 .cq-wall-svg-point {
   fill: #ffffff;
   stroke: #245b46;
