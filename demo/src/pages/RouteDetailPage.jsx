@@ -9,6 +9,10 @@ const initialRoute = {
   tags: ["Balance", "Technique", "Endurance"],
   description:
     "A smooth slab-focused route with controlled shifts, precise feet, and steady rhythm.",
+  suitableFor: "Beginner",
+  holdContours: [],
+  source: "Community",
+  createdTimeLabel: "Unknown",
   creator: {
     name: "Eric",
     club: "NerdCave Climbing Club"
@@ -25,6 +29,14 @@ function getDifficultyMeta(difficulty) {
 
 function renderStarLine(value) {
   return "*".repeat(value) + "-".repeat(5 - value);
+}
+
+function formatCreatedTime(createdTime) {
+  if (!createdTime) return "Unknown";
+  const dateValue =
+    typeof createdTime === "number" ? new Date(createdTime * 1000) : new Date(createdTime);
+  if (Number.isNaN(dateValue.getTime())) return "Unknown";
+  return dateValue.toLocaleDateString();
 }
 
 function readRouteInteractions() {
@@ -47,6 +59,8 @@ export default function RouteDetailPage() {
   const resolvedInitialRoute = {
     ...initialRoute,
     ...routeFromState,
+    createdTimeLabel:
+      routeFromState?.createdTimeLabel || formatCreatedTime(routeFromState?.createdTime),
     creator: {
       ...initialRoute.creator,
       ...(routeFromState?.creator || {})
@@ -194,6 +208,16 @@ export default function RouteDetailPage() {
         <h3>Creator</h3>
         <p className="cq-detail-creator">
           {routeState.creator.name} - {routeState.creator.club}
+        </p>
+      </section>
+
+      <section className="cq-detail-card">
+        <h3>DIY Route Data</h3>
+        <p className="cq-detail-creator">Suitable for: {routeState.suitableFor}</p>
+        <p className="cq-detail-creator">Source: {routeState.source}</p>
+        <p className="cq-detail-creator">Created: {routeState.createdTimeLabel}</p>
+        <p className="cq-detail-creator">
+          Hold contours: {Array.isArray(routeState.holdContours) ? routeState.holdContours.length : 0}
         </p>
       </section>
 

@@ -73,6 +73,8 @@ function normalizeFirestoreRoute(doc) {
     creatorName: data.creatorName || "Anonymous Climber",
     averageRating: data.averageRating ?? 4.0,
     description: data.description || "No description provided for this route yet.",
+    suitableFor: data.suitableFor || "Beginner",
+    holdContours: Array.isArray(data.holdContours) ? data.holdContours : [],
     createdTime: data.createdTime?.seconds || 0,
     source: "Community"
   };
@@ -90,9 +92,19 @@ function normalizeLocalRoute(route, index) {
     creatorName: route.creatorName || "You",
     averageRating: route.averageRating ?? 4.0,
     description: route.description || "No description provided for this route yet.",
+    suitableFor: route.suitableFor || "Beginner",
+    holdContours: Array.isArray(route.holdContours) ? route.holdContours : [],
     createdTime: route.createdTime || 0,
     source: "Community"
   };
+}
+
+function formatCreatedTime(createdTime) {
+  if (!createdTime) return "Unknown";
+  const dateValue =
+    typeof createdTime === "number" ? new Date(createdTime * 1000) : new Date(createdTime);
+  if (Number.isNaN(dateValue.getTime())) return "Unknown";
+  return dateValue.toLocaleDateString();
 }
 
 function safeReadRoutesFromStorage(key) {
@@ -335,10 +347,16 @@ export default function CommunityPage() {
                   to="/route-detail"
                   state={{
                     route: {
+                      id: route.id,
                       title: route.routeName,
                       difficulty: route.difficulty,
                       tags: route.styleTags,
                       description: route.description,
+                      suitableFor: route.suitableFor,
+                      holdContours: route.holdContours,
+                      createdTime: route.createdTime,
+                      createdTimeLabel: formatCreatedTime(route.createdTime),
+                      source: route.source,
                       creator: {
                         name: route.creatorName,
                         club: "ClimbQuest Community"
