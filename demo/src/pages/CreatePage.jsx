@@ -10,20 +10,43 @@ const holdTypeOptions = ["Hand", "Foot", "Start", "Finish"];
 
 function getDifficultyMeta(difficulty) {
   if (difficulty === "Easy") return { grade: "V0-V1", toneClass: "cq-difficulty-easy" };
-  if (difficulty === "Medium")
-    return { grade: "V2-V4", toneClass: "cq-difficulty-medium" };
+  if (difficulty === "Medium") return { grade: "V2-V4", toneClass: "cq-difficulty-medium" };
   return { grade: "V5+", toneClass: "cq-difficulty-hard" };
 }
 
-function getHoldLabel(type) {
-  if (type === "Start") return "S";
-  if (type === "Finish") return "F";
-  if (type === "Foot") return "Ft";
-  return "H";
+function getHoldPolygonColors(type) {
+  if (type === "Foot") {
+    return {
+      fill: "rgba(37, 119, 207, 0.28)",
+      previewStroke: "rgba(37, 119, 207, 0.85)",
+      anchorFill: "rgba(37, 119, 207, 0.9)"
+    };
+  }
+  if (type === "Start") {
+    return {
+      fill: "rgba(202, 127, 52, 0.28)",
+      previewStroke: "rgba(202, 127, 52, 0.85)",
+      anchorFill: "rgba(202, 127, 52, 0.9)"
+    };
+  }
+  if (type === "Finish") {
+    return {
+      fill: "rgba(180, 74, 99, 0.28)",
+      previewStroke: "rgba(180, 74, 99, 0.85)",
+      anchorFill: "rgba(180, 74, 99, 0.9)"
+    };
+  }
+  return {
+    fill: "rgba(46, 157, 111, 0.28)",
+    previewStroke: "rgba(46, 157, 111, 0.85)",
+    anchorFill: "rgba(46, 157, 111, 0.9)"
+  };
 }
 
-// Keep local cache lightweight to improve submit speed.
-// Large base64 images in localStorage can block the UI thread on mobile.
+function pointsToSvgString(points) {
+  return points.map((point) => `${point.x},${point.y}`).join(" ");
+}
+
 function toLightweightLocalRoute(route) {
   return {
     id: route.id,
@@ -32,8 +55,7 @@ function toLightweightLocalRoute(route) {
     styleTags: route.styleTags,
     description: route.description,
     suitableFor: route.suitableFor,
-    // Save only annotation points for quick preview/history.
-    selectedHolds: route.selectedHolds,
+    holdPolygons: route.holdPolygons,
     createdAt: route.createdAt
   };
 }
@@ -47,11 +69,11 @@ function saveRouteToLocalStorageInBackground(lightweightRoute) {
     } catch {
       existingRoutes = [];
     }
+
     const nextRoutes = [lightweightRoute, ...existingRoutes];
     localStorage.setItem(CREATED_ROUTES_STORAGE_KEY, JSON.stringify(nextRoutes));
   };
 
-  // requestIdleCallback is best for performance, fallback to setTimeout.
   if (typeof window !== "undefined" && "requestIdleCallback" in window) {
     window.requestIdleCallback(task);
   } else {
@@ -61,6 +83,7 @@ function saveRouteToLocalStorageInBackground(lightweightRoute) {
 
 export default function CreatePage() {
   const { currentUser } = useAuth();
+
   const [formData, setFormData] = useState({
     routeName: "",
     difficulty: "",
@@ -69,9 +92,16 @@ export default function CreatePage() {
     suitableFor: "Beginner",
     imageDataUrl: ""
   });
+
+  // Polygon annotation states:
+  // 1) currentHoldPoints = anchors user is currently clicking
+  // 2) holdPolygons = confirmed holds (finished polygons)
   const [selectedHoldType, setSelectedHoldType] = useState("Hand");
-  const [selectedHolds, setSelectedHolds] = useState([]);
+  const [currentHoldPoints, setCurrentHoldPoints] = useState([]);
+  const [holdPolygons, setHoldPolygons] = useState([]);
+
   const [errors, setErrors] = useState({});
+  const [annotationMessage, setAnnotationMessage] = useState("");
   const [submitFeedback, setSubmitFeedback] = useState({ type: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -86,10 +116,7 @@ export default function CreatePage() {
   const previewLevel = useMemo(() => formData.suitableFor, [formData.suitableFor]);
 
   function updateField(field, value) {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value
-    }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     setSubmitFeedback({ type: "", message: "" });
   }
 
@@ -114,12 +141,15 @@ export default function CreatePage() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      // Save uploaded wall image and reset old hold points to avoid mismatch.
       setFormData((prev) => ({
         ...prev,
         imageDataUrl: String(reader.result || "")
       }));
-      setSelectedHolds([]);
+
+      // Reset polygons when image changes.
+      setCurrentHoldPoints([]);
+      setHoldPolygons([]);
+      setAnnotationMessage("");
       setSubmitFeedback({ type: "", message: "" });
     };
     reader.readAsDataURL(file);
@@ -128,32 +158,46 @@ export default function CreatePage() {
   function handleWallImageClick(event) {
     if (!formData.imageDataUrl) return;
 
+    // IMPORTANT: use image-wrap bounds so coordinates are image-relative.
     const rect = event.currentTarget.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
 
-    // We store hold coordinates as percentages so they stay in the correct place on resize.
-    const newHold = {
-      id: Date.now() + Math.random(),
+    const newPoint = {
       x: Number(x.toFixed(2)),
-      y: Number(y.toFixed(2)),
-      type: selectedHoldType
+      y: Number(y.toFixed(2))
     };
 
-    setSelectedHolds((prev) => [...prev, newHold]);
-    setSubmitFeedback({ type: "", message: "" });
+    setCurrentHoldPoints((prev) => [...prev, newPoint]);
+    setAnnotationMessage("");
   }
 
-  function removeHold(holdId) {
-    setSelectedHolds((prev) => prev.filter((hold) => hold.id !== holdId));
+  function clearCurrentHold() {
+    setCurrentHoldPoints([]);
+    setAnnotationMessage("");
   }
 
   function clearAllHolds() {
-    setSelectedHolds([]);
+    setCurrentHoldPoints([]);
+    setHoldPolygons([]);
+    setAnnotationMessage("");
   }
 
-  function formatPoint(hold) {
-    return `(${hold.x.toFixed(1)}%, ${hold.y.toFixed(1)}%)`;
+  function finishCurrentHold() {
+    if (currentHoldPoints.length < 3) {
+      setAnnotationMessage("Add at least 3 points to finish one hold polygon.");
+      return;
+    }
+
+    const newHold = {
+      id: `${Date.now()}-${Math.random()}`,
+      type: selectedHoldType,
+      points: currentHoldPoints
+    };
+
+    setHoldPolygons((prev) => [...prev, newHold]);
+    setCurrentHoldPoints([]);
+    setAnnotationMessage("Hold polygon created. You can start drawing a new one.");
   }
 
   function validateForm() {
@@ -173,6 +217,7 @@ export default function CreatePage() {
   async function handleSubmit(event) {
     event.preventDefault();
     if (!validateForm()) return;
+
     setIsSubmitting(true);
     setSubmitFeedback({ type: "", message: "" });
 
@@ -184,12 +229,12 @@ export default function CreatePage() {
       description: formData.description.trim(),
       suitableFor: formData.suitableFor,
       imageDataUrl: formData.imageDataUrl,
-      selectedHolds,
+      holdPolygons,
       createdAt: new Date().toISOString()
     };
+
     const lightweightLocalRoute = toLightweightLocalRoute(newRoute);
 
-    // Payload sent to Firestore (required fields + optional extras for future use).
     const firestoreRoute = {
       routeName: newRoute.routeName,
       difficulty: newRoute.difficulty,
@@ -201,24 +246,21 @@ export default function CreatePage() {
         currentUser?.email?.split("@")[0] ||
         "Anonymous Climber",
       createdTime: serverTimestamp()
-      // Performance note:
-      // We intentionally do NOT upload imageDataUrl / selectedHolds to Firestore here.
-      // Base64 image payloads are large and can slow writes and feed reads.
-      // Those remain in localStorage for the DIY editor preview workflow.
     };
 
     try {
-      // Save to Firestore collection: routes
       await addDoc(collection(firestoreDb, "routes"), firestoreRoute);
-      // Do local cache write in background to keep submit interaction snappy.
       saveRouteToLocalStorageInBackground(lightweightLocalRoute);
 
       setSubmitFeedback({
         type: "success",
         message: "Route saved to Firestore successfully."
       });
+
       setErrors({});
-      setSelectedHolds([]);
+      setCurrentHoldPoints([]);
+      setHoldPolygons([]);
+      setAnnotationMessage("");
       setFormData({
         routeName: "",
         difficulty: "",
@@ -243,7 +285,7 @@ export default function CreatePage() {
       <header className="cq-create-header">
         <p className="cq-page-eyebrow">Create</p>
         <h2>Build your own climbing route</h2>
-        <p>Create, preview, and save your custom line with hold-by-hold planning.</p>
+        <p>Create, annotate holds, and save your custom route.</p>
       </header>
 
       {submitFeedback.type === "success" && (
@@ -281,9 +323,7 @@ export default function CreatePage() {
             <option value="Medium">Medium (V2-V4)</option>
             <option value="Hard">Hard (V5+)</option>
           </select>
-          {errors.difficulty && (
-            <small className="cq-field-error">{errors.difficulty}</small>
-          )}
+          {errors.difficulty && <small className="cq-field-error">{errors.difficulty}</small>}
         </label>
 
         <div className="cq-field">
@@ -336,7 +376,7 @@ export default function CreatePage() {
 
         {formData.imageDataUrl && (
           <div className="cq-field">
-            <span>Select hold type</span>
+            <span>Hold type for next polygon</span>
             <div className="cq-tag-grid cq-hold-type-grid">
               {holdTypeOptions.map((type) => (
                 <button
@@ -355,15 +395,28 @@ export default function CreatePage() {
         )}
 
         {formData.imageDataUrl && (
-          <section className="cq-wall-editor" aria-label="Wall hold editor">
+          <section className="cq-wall-editor" aria-label="Wall polygon annotation editor">
             <div className="cq-wall-editor-head">
-              <p>
-                Tap on the wall image to add holds. Tap a marker to remove it.
-              </p>
-              <button type="button" className="cq-reset-btn" onClick={clearAllHolds}>
-                Clear all holds
+              <p>Tap image to add anchors. Use Finish Hold to create one polygon.</p>
+            </div>
+
+            <div className="cq-tag-grid" style={{ marginTop: 10 }}>
+              <button type="button" className="cq-tag-btn cq-tag-btn-active" onClick={finishCurrentHold}>
+                Finish Hold
+              </button>
+              <button type="button" className="cq-tag-btn" onClick={clearCurrentHold}>
+                Clear Current Hold
+              </button>
+              <button type="button" className="cq-tag-btn" onClick={clearAllHolds}>
+                Clear All Holds
               </button>
             </div>
+
+            {annotationMessage && (
+              <p className="cq-hold-count" style={{ marginTop: 10 }}>
+                {annotationMessage}
+              </p>
+            )}
 
             <div
               className="cq-wall-image-wrap"
@@ -376,64 +429,106 @@ export default function CreatePage() {
                 }
               }}
             >
-              <img
-                className="cq-wall-image"
-                src={formData.imageDataUrl}
-                alt="Uploaded climbing wall"
-              />
+              <img className="cq-wall-image" src={formData.imageDataUrl} alt="Uploaded climbing wall" />
 
-              {/* SVG overlay kept as MVP groundwork for future route highlight rendering. */}
+              {/*
+                SVG overlay logic (beginner-friendly):
+                1) All drawing uses 0..100 coordinates (percent-like system).
+                2) Because points are saved as image-relative percentages, polygons stay aligned on resize.
+                3) Saved holds are rendered as closed polygons.
+                4) Current hold-in-progress is rendered as polyline + anchor points.
+              */}
               <svg
                 className="cq-wall-svg-overlay"
                 viewBox="0 0 100 100"
                 preserveAspectRatio="none"
                 aria-hidden="true"
               >
-                {selectedHolds.map((hold, index) => (
-                  <g key={`svg-point-${hold.id}`}>
-                    <circle
-                      cx={hold.x}
-                      cy={hold.y}
-                      r="1.8"
-                      className={`cq-wall-svg-point cq-wall-svg-point-${hold.type.toLowerCase()}`}
-                    />
-                    <text x={hold.x} y={hold.y} dy="0.38em" className="cq-wall-svg-point-label">
-                      {index + 1}
-                    </text>
-                  </g>
-                ))}
-              </svg>
+                {/* Render all finished hold polygons */}
+                {holdPolygons.map((hold, holdIndex) => {
+                  const colors = getHoldPolygonColors(hold.type);
+                  return (
+                    <g key={`hold-polygon-${hold.id}`}>
+                      <polygon
+                        points={pointsToSvgString(hold.points)}
+                        fill={colors.fill}
+                        stroke="#ffffff"
+                        strokeWidth="0.9"
+                        strokeLinejoin="round"
+                      />
 
-              {selectedHolds.map((hold) => (
-                <button
-                  key={hold.id}
-                  type="button"
-                  className={`cq-hold-marker cq-hold-marker-${hold.type.toLowerCase()}`}
-                  style={{ left: `${hold.x}%`, top: `${hold.y}%` }}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    removeHold(hold.id);
-                  }}
-                  aria-label={`Remove ${hold.type} hold`}
-                >
-                  {getHoldLabel(hold.type)}
-                </button>
-              ))}
+                      {/* Visible anchor points for each finished hold */}
+                      {hold.points.map((point, pointIndex) => (
+                        <circle
+                          key={`hold-anchor-${hold.id}-${pointIndex}`}
+                          cx={point.x}
+                          cy={point.y}
+                          r="1.25"
+                          fill={colors.anchorFill}
+                          stroke="#ffffff"
+                          strokeWidth="0.55"
+                        />
+                      ))}
+
+                      {/* Small label index for each completed hold */}
+                      {hold.points[0] && (
+                        <text
+                          x={hold.points[0].x}
+                          y={hold.points[0].y}
+                          dy="-1.6"
+                          fill="#ffffff"
+                          fontSize="2.5"
+                          fontWeight="700"
+                        >
+                          H{holdIndex + 1}
+                        </text>
+                      )}
+                    </g>
+                  );
+                })}
+
+                {/* Render current (unfinished) hold path */}
+                {currentHoldPoints.length > 0 && (
+                  <g>
+                    <polyline
+                      points={pointsToSvgString(currentHoldPoints)}
+                      fill="none"
+                      stroke={getHoldPolygonColors(selectedHoldType).previewStroke}
+                      strokeWidth="0.75"
+                      strokeDasharray="2 1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+
+                    {currentHoldPoints.map((point, index) => (
+                      <circle
+                        key={`current-anchor-${index}`}
+                        cx={point.x}
+                        cy={point.y}
+                        r="1.35"
+                        fill={getHoldPolygonColors(selectedHoldType).anchorFill}
+                        stroke="#ffffff"
+                        strokeWidth="0.6"
+                      />
+                    ))}
+                  </g>
+                )}
+              </svg>
             </div>
 
             <p className="cq-hold-count">
-              Selected holds: <strong>{selectedHolds.length}</strong>
+              Current hold anchors: <strong>{currentHoldPoints.length}</strong> | Finished holds:{" "}
+              <strong>{holdPolygons.length}</strong>
             </p>
 
-            {/* Selected point list helps users verify all coordinates in MVP mode. */}
-            <div className="cq-point-list-wrap" aria-label="Selected points list">
-              {selectedHolds.length === 0 ? (
-                <p className="cq-point-list-empty">No points selected yet.</p>
+            <div className="cq-point-list-wrap" aria-label="Created hold list">
+              {holdPolygons.length === 0 ? (
+                <p className="cq-point-list-empty">No finished holds yet.</p>
               ) : (
                 <ul className="cq-point-list">
-                  {selectedHolds.map((hold, index) => (
-                    <li key={`point-item-${hold.id}`}>
-                      #{index + 1} {hold.type} {formatPoint(hold)}
+                  {holdPolygons.map((hold, index) => (
+                    <li key={`hold-list-${hold.id}`}>
+                      Hold #{index + 1} - {hold.type} - {hold.points.length} anchor points
                     </li>
                   ))}
                 </ul>
@@ -447,7 +542,6 @@ export default function CreatePage() {
         </button>
       </form>
 
-      {/* Live preview card updates as the user types. */}
       <article className="cq-create-preview">
         <p className="cq-page-eyebrow">Live Preview</p>
         <div className="cq-route-top-row">
@@ -471,26 +565,7 @@ export default function CreatePage() {
         </div>
         <p className="cq-route-description">{previewDescription}</p>
         <p className="cq-route-reason">Suitable for: {previewLevel}</p>
-
-        {formData.imageDataUrl && (
-          <div className="cq-preview-wall-wrap">
-            <img
-              className="cq-create-preview-image"
-              src={formData.imageDataUrl}
-              alt="Uploaded route preview"
-            />
-
-            {selectedHolds.map((hold) => (
-              <span
-                key={`preview-${hold.id}`}
-                className={`cq-hold-marker cq-hold-marker-${hold.type.toLowerCase()}`}
-                style={{ left: `${hold.x}%`, top: `${hold.y}%` }}
-              >
-                {getHoldLabel(hold.type)}
-              </span>
-            ))}
-          </div>
-        )}
+        <p className="cq-route-reason">Annotated holds: {holdPolygons.length}</p>
       </article>
     </section>
   );
