@@ -10,6 +10,7 @@ const CREATED_ROUTES_STORAGE_KEY = "climbquest_created_routes";
 const WALL_GALLERY_PHOTOS = [wallPhotoA, wallPhotoB, wallPhotoC];
 const styleTagOptions = ["Balance", "Power", "Endurance", "Technique"];
 const levelOptions = ["Beginner", "Intermediate", "Advanced"];
+const AUTO_CLOSE_DISTANCE_THRESHOLD = 2.2;
 
 function getDifficultyMeta(difficulty) {
   if (difficulty === "Easy") return { grade: "V0-V1", toneClass: "cq-difficulty-easy" };
@@ -27,6 +28,13 @@ function pointsToSvgString(points) {
 
 function distanceBetweenPoints(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function shouldAutoCloseHold(points) {
+  if (!Array.isArray(points) || points.length < 3) return false;
+  const first = points[0];
+  const last = points[points.length - 1];
+  return distanceBetweenPoints(first, last) <= AUTO_CLOSE_DISTANCE_THRESHOLD;
 }
 
 function simplifyPoints(points, minDistance = 0.7) {
@@ -251,9 +259,14 @@ export default function CreatePage() {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
 
-    // MVP UX: if the user traced enough points, auto-finish this hold on pointer up.
-    if (currentHoldPoints.length >= 3) {
+    // Auto-finish only when the end point is close enough to the start point.
+    // This avoids accidental submits when user is still outlining the hold.
+    if (shouldAutoCloseHold(currentHoldPoints)) {
       finishCurrentHold({ silentIfTooFew: true, fromAuto: true });
+    } else if (currentHoldPoints.length >= 3) {
+      setAnnotationMessage(
+        "Trace back near your start point to auto-finish, or press Finish Current Hold."
+      );
     }
   }
 
