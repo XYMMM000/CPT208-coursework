@@ -104,6 +104,7 @@ export default function CreatePage() {
   const [annotationMessage, setAnnotationMessage] = useState("");
   const [submitFeedback, setSubmitFeedback] = useState({ type: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [cloudSyncStatus, setCloudSyncStatus] = useState("idle");
 
   const previewTitle = formData.routeName.trim() || "Your New Route";
   const previewDifficulty = formData.difficulty || "Select difficulty";
@@ -220,6 +221,7 @@ export default function CreatePage() {
 
     setIsSubmitting(true);
     setSubmitFeedback({ type: "", message: "" });
+    setCloudSyncStatus("idle");
 
     const newRoute = {
       id: Date.now(),
@@ -248,36 +250,50 @@ export default function CreatePage() {
       createdTime: serverTimestamp()
     };
 
-    try {
-      await addDoc(collection(firestoreDb, "routes"), firestoreRoute);
-      saveRouteToLocalStorageInBackground(lightweightLocalRoute);
+    // Fast path:
+    // 1) Save lightweight data locally first (non-blocking) so UI can finish quickly.
+    // 2) Start Firestore sync in background.
+    saveRouteToLocalStorageInBackground(lightweightLocalRoute);
 
-      setSubmitFeedback({
-        type: "success",
-        message: "Route saved to Firestore successfully."
-      });
+    setSubmitFeedback({
+      type: "success",
+      message: "Route saved instantly on this device. Cloud sync is running..."
+    });
+    setCloudSyncStatus("syncing");
 
-      setErrors({});
-      setCurrentHoldPoints([]);
-      setHoldPolygons([]);
-      setAnnotationMessage("");
-      setFormData({
-        routeName: "",
-        difficulty: "",
-        styleTags: [],
-        description: "",
-        suitableFor: "Beginner",
-        imageDataUrl: ""
+    // Reset form immediately for better mobile UX.
+    setErrors({});
+    setCurrentHoldPoints([]);
+    setHoldPolygons([]);
+    setAnnotationMessage("");
+    setFormData({
+      routeName: "",
+      difficulty: "",
+      styleTags: [],
+      description: "",
+      suitableFor: "Beginner",
+      imageDataUrl: ""
+    });
+    setIsSubmitting(false);
+
+    // Background cloud sync (does not block user interaction).
+    addDoc(collection(firestoreDb, "routes"), firestoreRoute)
+      .then(() => {
+        setCloudSyncStatus("synced");
+        setSubmitFeedback({
+          type: "success",
+          message: "Route saved. Cloud sync completed."
+        });
+      })
+      .catch((error) => {
+        console.error("Firestore save failed:", error);
+        setCloudSyncStatus("failed");
+        setSubmitFeedback({
+          type: "error",
+          message:
+            "Saved locally, but cloud sync failed. You can continue editing and retry later."
+        });
       });
-    } catch (error) {
-      console.error("Firestore save failed:", error);
-      setSubmitFeedback({
-        type: "error",
-        message: "Could not save route to Firestore. Please try again."
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
   }
 
   return (
@@ -297,6 +313,12 @@ export default function CreatePage() {
       {submitFeedback.type === "error" && (
         <p className="cq-create-error" role="alert">
           {submitFeedback.message}
+        </p>
+      )}
+
+      {cloudSyncStatus === "syncing" && (
+        <p className="cq-hold-count" role="status">
+          Syncing to cloud...
         </p>
       )}
 
