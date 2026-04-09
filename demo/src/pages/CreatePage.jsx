@@ -12,6 +12,7 @@ const WALL_GALLERY_PHOTOS = [wallPhotoA, wallPhotoB, wallPhotoC];
 const styleTagOptions = ["Balance", "Power", "Endurance", "Technique"];
 const levelOptions = ["Beginner", "Intermediate", "Advanced"];
 const AUTO_CLOSE_DISTANCE_THRESHOLD = 2.2;
+const TRACE_SAMPLE_MIN_DISTANCE = 0.12;
 const MIN_ZOOM_SCALE = 1;
 const MAX_ZOOM_SCALE = 3;
 const ZOOM_STEP = 0.12;
@@ -44,55 +45,6 @@ function shouldAutoCloseHold(points) {
   const first = points[0];
   const last = points[points.length - 1];
   return distanceBetweenPoints(first, last) <= AUTO_CLOSE_DISTANCE_THRESHOLD;
-}
-
-function simplifyPoints(points, minDistance = 0.7) {
-  if (points.length <= 2) return points;
-
-  const simplified = [points[0]];
-  for (let index = 1; index < points.length; index += 1) {
-    const prevPoint = simplified[simplified.length - 1];
-    const currentPoint = points[index];
-    if (distanceBetweenPoints(prevPoint, currentPoint) >= minDistance) {
-      simplified.push(currentPoint);
-    }
-  }
-
-  return simplified;
-}
-
-function smoothClosedPolygon(points, iterations = 1) {
-  // Chaikin-like corner cutting for smoother contour edges.
-  // Works best for closed polygons with at least 4 points.
-  if (!Array.isArray(points) || points.length < 4) return points;
-
-  let current = points;
-  for (let round = 0; round < iterations; round += 1) {
-    const next = [];
-    for (let index = 0; index < current.length; index += 1) {
-      const p0 = current[index];
-      const p1 = current[(index + 1) % current.length];
-
-      const q = {
-        x: Number((0.75 * p0.x + 0.25 * p1.x).toFixed(2)),
-        y: Number((0.75 * p0.y + 0.25 * p1.y).toFixed(2))
-      };
-      const r = {
-        x: Number((0.25 * p0.x + 0.75 * p1.x).toFixed(2)),
-        y: Number((0.25 * p0.y + 0.75 * p1.y).toFixed(2))
-      };
-
-      next.push(q, r);
-    }
-
-    // Keep point count under control for performance on mobile.
-    current = simplifyPoints(next, 0.45);
-    if (current.length > 64) {
-      current = current.filter((_, idx) => idx % 2 === 0);
-    }
-  }
-
-  return current;
 }
 
 function toLightweightLocalRoute(route) {
@@ -276,8 +228,8 @@ export default function CreatePage() {
     const point = getRelativePointFromPointerEvent(event);
     const lastPoint = traceLastPointRef.current;
 
-    // Sample points only when movement is enough, avoiding noisy duplicates.
-    if (!lastPoint || distanceBetweenPoints(lastPoint, point) >= 0.6) {
+    // Keep dense raw points to preserve the exact traced contour shape.
+    if (!lastPoint || distanceBetweenPoints(lastPoint, point) >= TRACE_SAMPLE_MIN_DISTANCE) {
       addPointToCurrentHold(point);
     }
   }
@@ -310,9 +262,8 @@ export default function CreatePage() {
       return;
     }
 
-    const simplifiedPoints = simplifyPoints(currentHoldPoints);
-    const normalizedPoints =
-      simplifiedPoints.length >= 4 ? smoothClosedPolygon(simplifiedPoints, 1) : simplifiedPoints;
+    // No smoothing/snapping: save exactly what the user traced.
+    const normalizedPoints = currentHoldPoints;
 
     const centerX =
       normalizedPoints.reduce((sum, point) => sum + point.x, 0) / normalizedPoints.length;
@@ -330,8 +281,8 @@ export default function CreatePage() {
     setCurrentHoldPoints([]);
     setAnnotationMessage(
       fromAuto
-        ? "Hold contour auto-saved. Start tracing a new hold."
-        : "Hold contour saved with smoothing. Start tracing a new hold."
+        ? "Hold contour auto-saved. Raw traced shape kept."
+        : "Hold contour saved. Raw traced shape kept."
     );
   }
 
