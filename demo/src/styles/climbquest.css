@@ -1156,6 +1156,17 @@ a {
   border: 1px solid #d2dfef;
 }
 
+.cq-detail-preview-fallback {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  background: #f8fbff;
+  color: #5a6f8e;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
 /* Bottom tab navigation (mobile-first) */
 .cq-bottom-nav {
   position: fixed;

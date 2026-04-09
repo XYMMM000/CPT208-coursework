@@ -11,6 +11,7 @@ const initialRoute = {
     "A smooth slab-focused route with controlled shifts, precise feet, and steady rhythm.",
   suitableFor: "Beginner",
   holdContours: [],
+  imageDataUrl: "",
   source: "Community",
   createdTimeLabel: "Unknown",
   creator: {
@@ -37,6 +38,11 @@ function formatCreatedTime(createdTime) {
     typeof createdTime === "number" ? new Date(createdTime * 1000) : new Date(createdTime);
   if (Number.isNaN(dateValue.getTime())) return "Unknown";
   return dateValue.toLocaleDateString();
+}
+
+function pointsToSvgString(points) {
+  if (!Array.isArray(points)) return "";
+  return points.map((point) => `${point.x},${point.y}`).join(" ");
 }
 
 function readRouteInteractions() {
@@ -219,6 +225,53 @@ export default function RouteDetailPage() {
         <p className="cq-detail-creator">
           Hold contours: {Array.isArray(routeState.holdContours) ? routeState.holdContours.length : 0}
         </p>
+      </section>
+
+      <section className="cq-detail-card">
+        <h3>Hold Contour Preview</h3>
+
+        <div className="cq-preview-wall-wrap">
+          {routeState.imageDataUrl ? (
+            <img
+              className="cq-create-preview-image"
+              src={routeState.imageDataUrl}
+              alt="Route hold contour preview"
+            />
+          ) : (
+            <div className="cq-detail-preview-fallback">No wall image uploaded for this route.</div>
+          )}
+
+          {/* Render contour overlays in the same 0..100 coordinate space. */}
+          <svg
+            className="cq-wall-svg-overlay"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <defs>
+              <filter id="cqDetailHoldMaskGlow" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="1.2" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            {Array.isArray(routeState.holdContours) &&
+              routeState.holdContours.map((hold, index) => (
+                <polygon
+                  key={`detail-hold-${hold.id || index}`}
+                  points={pointsToSvgString(hold.points)}
+                  fill="rgba(88, 232, 158, 0.32)"
+                  stroke="#ffffff"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                  filter="url(#cqDetailHoldMaskGlow)"
+                />
+              ))}
+          </svg>
+        </div>
       </section>
 
       <section className="cq-detail-card">

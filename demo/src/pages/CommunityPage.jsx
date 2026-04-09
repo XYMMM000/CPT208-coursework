@@ -75,6 +75,7 @@ function normalizeFirestoreRoute(doc) {
     description: data.description || "No description provided for this route yet.",
     suitableFor: data.suitableFor || "Beginner",
     holdContours: Array.isArray(data.holdContours) ? data.holdContours : [],
+    imageDataUrl: data.imageDataUrl || "",
     createdTime: data.createdTime?.seconds || 0,
     source: "Community"
   };
@@ -94,6 +95,7 @@ function normalizeLocalRoute(route, index) {
     description: route.description || "No description provided for this route yet.",
     suitableFor: route.suitableFor || "Beginner",
     holdContours: Array.isArray(route.holdContours) ? route.holdContours : [],
+    imageDataUrl: route.imageDataUrl || "",
     createdTime: route.createdTime || 0,
     source: "Community"
   };
@@ -354,6 +356,7 @@ export default function CommunityPage() {
                       description: route.description,
                       suitableFor: route.suitableFor,
                       holdContours: route.holdContours,
+                      imageDataUrl: route.imageDataUrl,
                       createdTime: route.createdTime,
                       createdTimeLabel: formatCreatedTime(route.createdTime),
                       source: route.source,
