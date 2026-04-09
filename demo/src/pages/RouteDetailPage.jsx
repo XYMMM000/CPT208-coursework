@@ -22,50 +22,12 @@ const initialRoute = {
   ratingCount: 26
 };
 
-// Default wall image used when a route has no uploaded wall photo yet.
-// We use an inline SVG data URL so this works without extra static assets.
-const DEFAULT_WALL_IMAGE_DATA_URL = `data:image/svg+xml;utf8,${encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1200">
-  <defs>
-    <linearGradient id="wallBg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#8e6a49"/>
-      <stop offset="100%" stop-color="#6f5138"/>
-    </linearGradient>
-    <pattern id="grain" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(-22)">
-      <rect width="26" height="26" fill="rgba(255,255,255,0.02)"/>
-      <line x1="0" y1="13" x2="26" y2="13" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-    </pattern>
-  </defs>
-
-  <rect width="800" height="1200" rx="24" fill="url(#wallBg)"/>
-  <rect width="800" height="1200" rx="24" fill="url(#grain)"/>
-
-  <g fill-opacity="0.92" stroke="#f7f7f7" stroke-opacity="0.45" stroke-width="3">
-    <ellipse cx="120" cy="160" rx="44" ry="34" fill="#f4b321"/>
-    <ellipse cx="280" cy="130" rx="36" ry="29" fill="#39a0ed"/>
-    <ellipse cx="430" cy="180" rx="52" ry="40" fill="#2fbf71"/>
-    <ellipse cx="650" cy="150" rx="41" ry="31" fill="#ed6a5a"/>
-
-    <ellipse cx="170" cy="330" rx="62" ry="48" fill="#f08a24"/>
-    <ellipse cx="370" cy="320" rx="44" ry="37" fill="#a66dd4"/>
-    <ellipse cx="570" cy="350" rx="55" ry="42" fill="#49b2a5"/>
-
-    <ellipse cx="120" cy="530" rx="39" ry="31" fill="#5c88da"/>
-    <ellipse cx="300" cy="520" rx="64" ry="47" fill="#e36888"/>
-    <ellipse cx="520" cy="560" rx="48" ry="37" fill="#f4b321"/>
-    <ellipse cx="690" cy="520" rx="37" ry="30" fill="#2fbf71"/>
-
-    <ellipse cx="180" cy="760" rx="52" ry="42" fill="#ed6a5a"/>
-    <ellipse cx="390" cy="740" rx="58" ry="45" fill="#39a0ed"/>
-    <ellipse cx="620" cy="780" rx="51" ry="39" fill="#a66dd4"/>
-
-    <ellipse cx="110" cy="980" rx="36" ry="30" fill="#2fbf71"/>
-    <ellipse cx="300" cy="990" rx="50" ry="38" fill="#f08a24"/>
-    <ellipse cx="520" cy="960" rx="45" ry="35" fill="#5c88da"/>
-    <ellipse cx="700" cy="1000" rx="54" ry="41" fill="#e36888"/>
-  </g>
-</svg>
-`)}`;
+// Real wall photo fallback URLs for routes without uploaded images.
+// If primary fails to load, we switch to backup automatically.
+const DEFAULT_WALL_PHOTO_URL =
+  "https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=1200&q=80";
+const BACKUP_WALL_PHOTO_URL =
+  "https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?auto=format&fit=crop&w=1200&q=80";
 
 function getDifficultyMeta(difficulty) {
   if (difficulty === "Easy") return { grade: "V0-V1", toneClass: "cq-difficulty-easy" };
@@ -278,8 +240,14 @@ export default function RouteDetailPage() {
         <div className="cq-preview-wall-wrap">
           <img
             className="cq-create-preview-image"
-            src={routeState.imageDataUrl || DEFAULT_WALL_IMAGE_DATA_URL}
+            src={routeState.imageDataUrl || DEFAULT_WALL_PHOTO_URL}
             alt="Route hold contour preview"
+            onError={(event) => {
+              const target = event.currentTarget;
+              if (target.src !== BACKUP_WALL_PHOTO_URL) {
+                target.src = BACKUP_WALL_PHOTO_URL;
+              }
+            }}
           />
 
           {/* Render contour overlays in the same 0..100 coordinate space. */}
