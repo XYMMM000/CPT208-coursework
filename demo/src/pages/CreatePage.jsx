@@ -115,6 +115,10 @@ export default function CreatePage() {
     setSelectedHolds([]);
   }
 
+  function formatPoint(hold) {
+    return `(${hold.x.toFixed(1)}%, ${hold.y.toFixed(1)}%)`;
+  }
+
   function validateForm() {
     const nextErrors = {};
 
@@ -349,6 +353,28 @@ export default function CreatePage() {
                 alt="Uploaded climbing wall"
               />
 
+              {/* SVG overlay kept as MVP groundwork for future route highlight rendering. */}
+              <svg
+                className="cq-wall-svg-overlay"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                {selectedHolds.map((hold, index) => (
+                  <g key={`svg-point-${hold.id}`}>
+                    <circle
+                      cx={hold.x}
+                      cy={hold.y}
+                      r="1.8"
+                      className={`cq-wall-svg-point cq-wall-svg-point-${hold.type.toLowerCase()}`}
+                    />
+                    <text x={hold.x} y={hold.y} dy="0.38em" className="cq-wall-svg-point-label">
+                      {index + 1}
+                    </text>
+                  </g>
+                ))}
+              </svg>
+
               {selectedHolds.map((hold) => (
                 <button
                   key={hold.id}
@@ -369,6 +395,21 @@ export default function CreatePage() {
             <p className="cq-hold-count">
               Selected holds: <strong>{selectedHolds.length}</strong>
             </p>
+
+            {/* Selected point list helps users verify all coordinates in MVP mode. */}
+            <div className="cq-point-list-wrap" aria-label="Selected points list">
+              {selectedHolds.length === 0 ? (
+                <p className="cq-point-list-empty">No points selected yet.</p>
+              ) : (
+                <ul className="cq-point-list">
+                  {selectedHolds.map((hold, index) => (
+                    <li key={`point-item-${hold.id}`}>
+                      #{index + 1} {hold.type} {formatPoint(hold)}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </section>
         )}
 
