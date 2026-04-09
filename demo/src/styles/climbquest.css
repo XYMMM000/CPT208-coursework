@@ -869,6 +869,12 @@ a {
   box-shadow: 0 10px 18px rgba(47, 138, 92, 0.28);
 }
 
+.cq-detail-wall-grid {
+  margin-top: 10px;
+  display: grid;
+  gap: 10px;
+}
+
 /* DIY route creation page */
 .cq-create-page {
   display: grid;
@@ -1719,6 +1725,10 @@ a {
 
   .cq-detail-complete-btn {
     grid-column: auto;
+  }
+
+  .cq-detail-wall-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .cq-create-page {

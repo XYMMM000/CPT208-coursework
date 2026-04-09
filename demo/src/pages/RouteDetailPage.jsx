@@ -1,5 +1,8 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import wallPhotoA from "../assets/photo/8a4c9063-e850-4c6f-9245-36835a1d0c3d.png";
+import wallPhotoB from "../assets/photo/c6ca442c-7547-46d8-8083-250e3c29a877.png";
+import wallPhotoC from "../assets/photo/c9d8dd37-6805-4547-973a-69ebcf0663ae.png";
 
 const ROUTE_INTERACTIONS_STORAGE_KEY = "climbquest_route_interactions";
 
@@ -22,12 +25,7 @@ const initialRoute = {
   ratingCount: 26
 };
 
-// Real wall photo fallback URLs for routes without uploaded images.
-// If primary fails to load, we switch to backup automatically.
-const DEFAULT_WALL_PHOTO_URL =
-  "https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=1200&q=80";
-const BACKUP_WALL_PHOTO_URL =
-  "https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?auto=format&fit=crop&w=1200&q=80";
+const WALL_GALLERY_PHOTOS = [wallPhotoA, wallPhotoB, wallPhotoC];
 
 function getDifficultyMeta(difficulty) {
   if (difficulty === "Easy") return { grade: "V0-V1", toneClass: "cq-difficulty-easy" };
@@ -236,50 +234,57 @@ export default function RouteDetailPage() {
 
       <section className="cq-detail-card">
         <h3>Hold Contour Preview</h3>
+        <p className="cq-detail-creator">
+          Showing 3 wall photos from assets with your DIY route contour overlay.
+        </p>
 
-        <div className="cq-preview-wall-wrap">
-          <img
-            className="cq-create-preview-image"
-            src={routeState.imageDataUrl || DEFAULT_WALL_PHOTO_URL}
-            alt="Route hold contour preview"
-            onError={(event) => {
-              const target = event.currentTarget;
-              if (target.src !== BACKUP_WALL_PHOTO_URL) {
-                target.src = BACKUP_WALL_PHOTO_URL;
-              }
-            }}
-          />
+        <div className="cq-detail-wall-grid">
+          {WALL_GALLERY_PHOTOS.map((photoSrc, photoIndex) => (
+            <div key={`wall-photo-${photoIndex}`} className="cq-preview-wall-wrap">
+              <img
+                className="cq-create-preview-image"
+                src={photoSrc}
+                alt={`Wall preview ${photoIndex + 1}`}
+              />
 
-          {/* Render contour overlays in the same 0..100 coordinate space. */}
-          <svg
-            className="cq-wall-svg-overlay"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <defs>
-              <filter id="cqDetailHoldMaskGlow" x="-40%" y="-40%" width="180%" height="180%">
-                <feGaussianBlur stdDeviation="1.2" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
+              {/* Render the same user DIY hold contours above each wall photo. */}
+              <svg
+                className="cq-wall-svg-overlay"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <defs>
+                  <filter
+                    id={`cqDetailHoldMaskGlow-${photoIndex}`}
+                    x="-40%"
+                    y="-40%"
+                    width="180%"
+                    height="180%"
+                  >
+                    <feGaussianBlur stdDeviation="1.2" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
 
-            {Array.isArray(routeState.holdContours) &&
-              routeState.holdContours.map((hold, index) => (
-                <polygon
-                  key={`detail-hold-${hold.id || index}`}
-                  points={pointsToSvgString(hold.points)}
-                  fill="rgba(88, 232, 158, 0.32)"
-                  stroke="#ffffff"
-                  strokeWidth="2"
-                  strokeLinejoin="round"
-                  filter="url(#cqDetailHoldMaskGlow)"
-                />
-              ))}
-          </svg>
+                {Array.isArray(routeState.holdContours) &&
+                  routeState.holdContours.map((hold, index) => (
+                    <polygon
+                      key={`detail-hold-${photoIndex}-${hold.id || index}`}
+                      points={pointsToSvgString(hold.points)}
+                      fill="rgba(88, 232, 158, 0.32)"
+                      stroke="#ffffff"
+                      strokeWidth="2"
+                      strokeLinejoin="round"
+                      filter={`url(#cqDetailHoldMaskGlow-${photoIndex})`}
+                    />
+                  ))}
+              </svg>
+            </div>
+          ))}
         </div>
       </section>
 
