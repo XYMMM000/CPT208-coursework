@@ -22,6 +22,43 @@ function getHoldLabel(type) {
   return "H";
 }
 
+// Keep local cache lightweight to improve submit speed.
+// Large base64 images in localStorage can block the UI thread on mobile.
+function toLightweightLocalRoute(route) {
+  return {
+    id: route.id,
+    routeName: route.routeName,
+    difficulty: route.difficulty,
+    styleTags: route.styleTags,
+    description: route.description,
+    suitableFor: route.suitableFor,
+    // Save only annotation points for quick preview/history.
+    selectedHolds: route.selectedHolds,
+    createdAt: route.createdAt
+  };
+}
+
+function saveRouteToLocalStorageInBackground(lightweightRoute) {
+  const task = () => {
+    const existingRaw = localStorage.getItem(CREATED_ROUTES_STORAGE_KEY);
+    let existingRoutes = [];
+    try {
+      existingRoutes = existingRaw ? JSON.parse(existingRaw) : [];
+    } catch {
+      existingRoutes = [];
+    }
+    const nextRoutes = [lightweightRoute, ...existingRoutes];
+    localStorage.setItem(CREATED_ROUTES_STORAGE_KEY, JSON.stringify(nextRoutes));
+  };
+
+  // requestIdleCallback is best for performance, fallback to setTimeout.
+  if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+    window.requestIdleCallback(task);
+  } else {
+    setTimeout(task, 0);
+  }
+}
+
 export default function CreatePage() {
   const { currentUser } = useAuth();
   const [formData, setFormData] = useState({
@@ -150,6 +187,7 @@ export default function CreatePage() {
       selectedHolds,
       createdAt: new Date().toISOString()
     };
+    const lightweightLocalRoute = toLightweightLocalRoute(newRoute);
 
     // Payload sent to Firestore (required fields + optional extras for future use).
     const firestoreRoute = {
@@ -172,17 +210,8 @@ export default function CreatePage() {
     try {
       // Save to Firestore collection: routes
       await addDoc(collection(firestoreDb, "routes"), firestoreRoute);
-
-      // Keep localStorage save so existing community/local features still work.
-      const existingRaw = localStorage.getItem(CREATED_ROUTES_STORAGE_KEY);
-      let existingRoutes = [];
-      try {
-        existingRoutes = existingRaw ? JSON.parse(existingRaw) : [];
-      } catch {
-        existingRoutes = [];
-      }
-      const nextRoutes = [newRoute, ...existingRoutes];
-      localStorage.setItem(CREATED_ROUTES_STORAGE_KEY, JSON.stringify(nextRoutes));
+      // Do local cache write in background to keep submit interaction snappy.
+      saveRouteToLocalStorageInBackground(lightweightLocalRoute);
 
       setSubmitFeedback({
         type: "success",
