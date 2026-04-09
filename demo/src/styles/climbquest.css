@@ -1049,6 +1049,17 @@ a {
 
 .cq-wall-image-wrap-zoom {
   margin-top: 0;
+  overflow: auto;
+  max-height: 72vh;
+  background: #edf3ff;
+}
+
+.cq-wall-stage {
+  position: relative;
+}
+
+.cq-wall-stage-zoom {
+  min-width: 100%;
 }
 
 .cq-wall-zoom-trigger {

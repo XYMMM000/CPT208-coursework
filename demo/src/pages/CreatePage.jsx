@@ -12,6 +12,9 @@ const WALL_GALLERY_PHOTOS = [wallPhotoA, wallPhotoB, wallPhotoC];
 const styleTagOptions = ["Balance", "Power", "Endurance", "Technique"];
 const levelOptions = ["Beginner", "Intermediate", "Advanced"];
 const AUTO_CLOSE_DISTANCE_THRESHOLD = 2.2;
+const MIN_ZOOM_SCALE = 1;
+const MAX_ZOOM_SCALE = 3;
+const ZOOM_STEP = 0.12;
 const WALL_ROUTE_ID_TO_INDEX = {
   "wall-1": 0,
   "wall-2": 1,
@@ -152,6 +155,7 @@ export default function CreatePage() {
   const [cloudSyncStatus, setCloudSyncStatus] = useState("idle");
   const [isTracing, setIsTracing] = useState(false);
   const [isZoomEditorOpen, setIsZoomEditorOpen] = useState(false);
+  const [zoomScale, setZoomScale] = useState(1.65);
   const traceLastPointRef = useRef(null);
 
   const previewTitle = formData.routeName.trim() || "Your New Route";
@@ -351,11 +355,20 @@ export default function CreatePage() {
   }
 
   function openZoomEditor() {
+    setZoomScale(1.65);
     setIsZoomEditorOpen(true);
   }
 
   function closeZoomEditor() {
     setIsZoomEditorOpen(false);
+  }
+
+  function handleZoomWheel(event) {
+    event.preventDefault();
+    const direction = event.deltaY < 0 ? 1 : -1;
+    setZoomScale((prev) =>
+      Number(clamp(prev + direction * ZOOM_STEP, MIN_ZOOM_SCALE, MAX_ZOOM_SCALE).toFixed(2))
+    );
   }
 
   function validateForm() {
@@ -456,13 +469,11 @@ export default function CreatePage() {
   }
 
   function renderWallCanvas({ zoomMode = false } = {}) {
+    const zoomedWidthPercent = zoomMode ? `${Math.round(zoomScale * 100)}%` : "100%";
+
     return (
       <div
         className={`cq-wall-image-wrap ${zoomMode ? "cq-wall-image-wrap-zoom" : ""}`}
-        onPointerDown={zoomMode ? handleWallPointerDown : undefined}
-        onPointerMove={zoomMode ? handleWallPointerMove : undefined}
-        onPointerUp={zoomMode ? handleWallPointerUp : undefined}
-        onPointerCancel={zoomMode ? handleWallPointerUp : undefined}
         onClick={
           !zoomMode
             ? () => {
@@ -470,9 +481,10 @@ export default function CreatePage() {
               }
             : undefined
         }
+        onWheel={zoomMode ? handleZoomWheel : undefined}
         role="button"
         tabIndex={0}
-        style={{ touchAction: "none", cursor: zoomMode ? "crosshair" : "zoom-in" }}
+        style={{ cursor: zoomMode ? "crosshair" : "zoom-in" }}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
@@ -482,84 +494,107 @@ export default function CreatePage() {
           }
         }}
       >
-        {/* Base layer: original wall photo remains visible. */}
-        <img
-          className="cq-wall-image"
-          src={activeWallImageSrc}
-          alt={
-            formData.imageDataUrl
-              ? "Uploaded climbing wall"
-              : `Built-in wall ${selectedWallPhotoIndex + 1}`
-          }
-        />
-
-        {/* Quick action: still available, but tapping the wall now also opens zoom mode. */}
-        {!zoomMode && (
-          <button
-            type="button"
-            className="cq-secondary-btn cq-wall-zoom-trigger"
-            onClick={(event) => {
-              event.stopPropagation();
-              openZoomEditor();
-            }}
-          >
-            Zoom
-          </button>
-        )}
-
-        {/*
-          Overlay rendering model:
-          1) Use an SVG layer with 0..100 coordinates (percentage-like space).
-          2) Each hold is an irregular polygon contour (no circular marker fallback).
-          3) Polygon style = thin white outline so hold color remains visible.
-        */}
-        <svg
-          className="cq-wall-svg-overlay"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-          aria-hidden="true"
+        <div
+          className={`cq-wall-stage ${zoomMode ? "cq-wall-stage-zoom" : ""}`}
+          onPointerDown={zoomMode ? handleWallPointerDown : undefined}
+          onPointerMove={zoomMode ? handleWallPointerMove : undefined}
+          onPointerUp={zoomMode ? handleWallPointerUp : undefined}
+          onPointerCancel={zoomMode ? handleWallPointerUp : undefined}
+          role="button"
+          tabIndex={zoomMode ? 0 : -1}
+          onKeyDown={(event) => {
+            if (zoomMode && (event.key === "Enter" || event.key === " ")) {
+              event.preventDefault();
+            }
+          }}
+          style={{
+            width: zoomedWidthPercent,
+            touchAction: zoomMode ? "none" : "auto"
+          }}
         >
-          {holdContours.map((hold) => (
-            <g key={`hold-mask-${hold.id}`}>
-              <polygon
-                points={pointsToSvgString(hold.points)}
-                fill="none"
-                stroke="#ffffff"
-                strokeWidth="0.42"
-                strokeLinejoin="round"
-              />
-            </g>
-          ))}
+          {/* Base layer: original wall photo remains visible. */}
+          <img
+            className="cq-wall-image"
+            src={activeWallImageSrc}
+            alt={
+              formData.imageDataUrl
+                ? "Uploaded climbing wall"
+                : `Built-in wall ${selectedWallPhotoIndex + 1}`
+            }
+          />
 
-          {/* Current hold being traced: polyline + tiny anchors for precision. */}
-          {currentHoldPoints.length > 0 && (
-            <g>
-              {currentHoldPoints.length >= 3 && (
-                <polygon points={pointsToSvgString(currentHoldPoints)} fill="none" stroke="transparent" />
-              )}
-              <polyline
-                points={pointsToSvgString(currentHoldPoints)}
-                fill="none"
-                stroke="rgba(255,255,255,0.95)"
-                strokeWidth="1.2"
-                strokeDasharray="2 1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {currentHoldPoints.map((point, index) => (
-                <circle
-                  key={`current-point-${index}`}
-                  cx={point.x}
-                  cy={point.y}
-                  r="0.7"
-                  fill="#ffffff"
-                  stroke="rgba(88, 232, 158, 0.95)"
-                  strokeWidth="0.35"
-                />
-              ))}
-            </g>
+          {/* Quick action: still available, but tapping the wall now also opens zoom mode. */}
+          {!zoomMode && (
+            <button
+              type="button"
+              className="cq-secondary-btn cq-wall-zoom-trigger"
+              onClick={(event) => {
+                event.stopPropagation();
+                openZoomEditor();
+              }}
+            >
+              Zoom
+            </button>
           )}
-        </svg>
+
+          {/*
+            Overlay rendering model:
+            1) Use an SVG layer with 0..100 coordinates (percentage-like space).
+            2) Each hold is an irregular polygon contour (no circular marker fallback).
+            3) Polygon style = thin white outline so hold color remains visible.
+          */}
+          <svg
+            className="cq-wall-svg-overlay"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            {holdContours.map((hold) => (
+              <g key={`hold-mask-${hold.id}`}>
+                <polygon
+                  points={pointsToSvgString(hold.points)}
+                  fill="none"
+                  stroke="#ffffff"
+                  strokeWidth="0.42"
+                  strokeLinejoin="round"
+                />
+              </g>
+            ))}
+
+            {/* Current hold being traced: polyline + tiny anchors for precision. */}
+            {currentHoldPoints.length > 0 && (
+              <g>
+                {currentHoldPoints.length >= 3 && (
+                  <polygon
+                    points={pointsToSvgString(currentHoldPoints)}
+                    fill="none"
+                    stroke="transparent"
+                  />
+                )}
+                <polyline
+                  points={pointsToSvgString(currentHoldPoints)}
+                  fill="none"
+                  stroke="rgba(255,255,255,0.95)"
+                  strokeWidth="1.2"
+                  strokeDasharray="2 1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                {currentHoldPoints.map((point, index) => (
+                  <circle
+                    key={`current-point-${index}`}
+                    cx={point.x}
+                    cy={point.y}
+                    r="0.7"
+                    fill="#ffffff"
+                    stroke="rgba(88, 232, 158, 0.95)"
+                    strokeWidth="0.35"
+                  />
+                ))}
+              </g>
+            )}
+          </svg>
+        </div>
       </div>
     );
   }
@@ -747,12 +782,22 @@ export default function CreatePage() {
             <div className="cq-wall-zoom-panel">
               <div className="cq-wall-zoom-head">
                 <p>Zoom Editor</p>
-                <button type="button" className="cq-secondary-btn" onClick={closeZoomEditor}>
-                  Done
-                </button>
+                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <span className="cq-hold-count">{Math.round(zoomScale * 100)}%</span>
+                  <button
+                    type="button"
+                    className="cq-secondary-btn"
+                    onClick={() => setZoomScale(1.65)}
+                  >
+                    Reset Zoom
+                  </button>
+                  <button type="button" className="cq-secondary-btn" onClick={closeZoomEditor}>
+                    Done
+                  </button>
+                </div>
               </div>
               <p className="cq-hold-count">
-                Draw in this enlarged view for more precise contour selection.
+                Use mouse wheel to zoom in/out, then draw for precise contour selection.
               </p>
               {renderWallCanvas({ zoomMode: true })}
             </div>
