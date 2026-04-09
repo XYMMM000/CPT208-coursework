@@ -6,7 +6,6 @@ import { firestoreDb } from "../lib/firebase";
 const CREATED_ROUTES_STORAGE_KEY = "climbquest_created_routes";
 const styleTagOptions = ["Balance", "Power", "Endurance", "Technique"];
 const levelOptions = ["Beginner", "Intermediate", "Advanced"];
-const holdTypeOptions = ["Hand", "Foot", "Start", "Finish"];
 
 function getDifficultyMeta(difficulty) {
   if (difficulty === "Easy") return { grade: "V0-V1", toneClass: "cq-difficulty-easy" };
@@ -14,37 +13,52 @@ function getDifficultyMeta(difficulty) {
   return { grade: "V5+", toneClass: "cq-difficulty-hard" };
 }
 
-function getHoldPolygonColors(type) {
-  if (type === "Foot") {
-    return {
-      fill: "rgba(58, 156, 255, 0.38)",
-      previewStroke: "rgba(37, 119, 207, 0.85)",
-      anchorFill: "rgba(58, 156, 255, 0.96)",
-      glow: "rgba(58, 156, 255, 0.45)"
-    };
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function hashSeed(value) {
+  // Small deterministic hash so each tap gets a stable blob shape.
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
   }
-  if (type === "Start") {
+  return hash;
+}
+
+function pseudoRandom(seed) {
+  // Deterministic pseudo-random generator (Mulberry32-style).
+  let t = (seed + 0x6d2b79f5) >>> 0;
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
+function createHoldContour(centerX, centerY, seedText) {
+  // Build an irregular contour polygon around the tapped hold position.
+  // Coordinates are still percentage-based, so the shape stays aligned on resize.
+  const seedBase = hashSeed(seedText);
+  const pointCount = 11;
+  const baseRadius = 3.9; // in SVG percentage units
+
+  const points = Array.from({ length: pointCount }, (_, index) => {
+    const angle = (Math.PI * 2 * index) / pointCount;
+
+    // Randomized radius + slight angle drift creates blob-like contour.
+    const radiusNoise = 0.65 + pseudoRandom(seedBase + index) * 0.95;
+    const angleNoise = (pseudoRandom(seedBase + 100 + index) - 0.5) * 0.22;
+
+    const radius = baseRadius * radiusNoise;
+    const x = centerX + Math.cos(angle + angleNoise) * radius;
+    const y = centerY + Math.sin(angle + angleNoise) * radius;
+
     return {
-      fill: "rgba(255, 180, 72, 0.38)",
-      previewStroke: "rgba(202, 127, 52, 0.85)",
-      anchorFill: "rgba(255, 180, 72, 0.95)",
-      glow: "rgba(255, 180, 72, 0.44)"
+      x: Number(clamp(x, 0.8, 99.2).toFixed(2)),
+      y: Number(clamp(y, 0.8, 99.2).toFixed(2))
     };
-  }
-  if (type === "Finish") {
-    return {
-      fill: "rgba(255, 97, 132, 0.38)",
-      previewStroke: "rgba(180, 74, 99, 0.85)",
-      anchorFill: "rgba(255, 97, 132, 0.95)",
-      glow: "rgba(255, 97, 132, 0.45)"
-    };
-  }
-  return {
-    fill: "rgba(81, 226, 146, 0.38)",
-    previewStroke: "rgba(46, 157, 111, 0.85)",
-    anchorFill: "rgba(81, 226, 146, 0.95)",
-    glow: "rgba(81, 226, 146, 0.45)"
-  };
+  });
+
+  return points;
 }
 
 function pointsToSvgString(points) {
@@ -59,7 +73,7 @@ function toLightweightLocalRoute(route) {
     styleTags: route.styleTags,
     description: route.description,
     suitableFor: route.suitableFor,
-    holdPolygons: route.holdPolygons,
+    holdContours: route.holdContours,
     createdAt: route.createdAt
   };
 }
@@ -97,15 +111,10 @@ export default function CreatePage() {
     imageDataUrl: ""
   });
 
-  // Polygon annotation states:
-  // 1) currentHoldPoints = anchors user is currently clicking
-  // 2) holdPolygons = confirmed holds (finished polygons)
-  const [selectedHoldType, setSelectedHoldType] = useState("Hand");
-  const [currentHoldPoints, setCurrentHoldPoints] = useState([]);
-  const [holdPolygons, setHoldPolygons] = useState([]);
+  // Each item in holdContours is one selected hold mask region.
+  const [holdContours, setHoldContours] = useState([]);
 
   const [errors, setErrors] = useState({});
-  const [annotationMessage, setAnnotationMessage] = useState("");
   const [submitFeedback, setSubmitFeedback] = useState({ type: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cloudSyncStatus, setCloudSyncStatus] = useState("idle");
@@ -151,10 +160,8 @@ export default function CreatePage() {
         imageDataUrl: String(reader.result || "")
       }));
 
-      // Reset polygons when image changes.
-      setCurrentHoldPoints([]);
-      setHoldPolygons([]);
-      setAnnotationMessage("");
+      // When a new wall image is uploaded, reset old hold masks.
+      setHoldContours([]);
       setSubmitFeedback({ type: "", message: "" });
     };
     reader.readAsDataURL(file);
@@ -163,46 +170,33 @@ export default function CreatePage() {
   function handleWallImageClick(event) {
     if (!formData.imageDataUrl) return;
 
-    // IMPORTANT: use image-wrap bounds so coordinates are image-relative.
+    // IMPORTANT: calculate click point relative to image container.
     const rect = event.currentTarget.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
 
-    const newPoint = {
-      x: Number(x.toFixed(2)),
-      y: Number(y.toFixed(2))
-    };
+    const centerX = Number(clamp(x, 1, 99).toFixed(2));
+    const centerY = Number(clamp(y, 1, 99).toFixed(2));
 
-    setCurrentHoldPoints((prev) => [...prev, newPoint]);
-    setAnnotationMessage("");
-  }
-
-  function clearCurrentHold() {
-    setCurrentHoldPoints([]);
-    setAnnotationMessage("");
-  }
-
-  function clearAllHolds() {
-    setCurrentHoldPoints([]);
-    setHoldPolygons([]);
-    setAnnotationMessage("");
-  }
-
-  function finishCurrentHold() {
-    if (currentHoldPoints.length < 3) {
-      setAnnotationMessage("Add at least 3 points to finish one hold polygon.");
-      return;
-    }
+    const seedText = `${centerX}-${centerY}-${Date.now()}-${holdContours.length}`;
+    const contourPoints = createHoldContour(centerX, centerY, seedText);
 
     const newHold = {
       id: `${Date.now()}-${Math.random()}`,
-      type: selectedHoldType,
-      points: currentHoldPoints
+      centerX,
+      centerY,
+      points: contourPoints
     };
 
-    setHoldPolygons((prev) => [...prev, newHold]);
-    setCurrentHoldPoints([]);
-    setAnnotationMessage("Hold polygon created. You can start drawing a new one.");
+    setHoldContours((prev) => [...prev, newHold]);
+  }
+
+  function clearAllHolds() {
+    setHoldContours([]);
+  }
+
+  function removeLastHold() {
+    setHoldContours((prev) => prev.slice(0, -1));
   }
 
   function validateForm() {
@@ -235,7 +229,7 @@ export default function CreatePage() {
       description: formData.description.trim(),
       suitableFor: formData.suitableFor,
       imageDataUrl: formData.imageDataUrl,
-      holdPolygons,
+      holdContours,
       createdAt: new Date().toISOString()
     };
 
@@ -254,22 +248,17 @@ export default function CreatePage() {
       createdTime: serverTimestamp()
     };
 
-    // Fast path:
-    // 1) Save lightweight data locally first (non-blocking) so UI can finish quickly.
-    // 2) Start Firestore sync in background.
+    // Fast save: local first, cloud sync in background.
     saveRouteToLocalStorageInBackground(lightweightLocalRoute);
-
     setSubmitFeedback({
       type: "success",
       message: "Route saved instantly on this device. Cloud sync is running..."
     });
     setCloudSyncStatus("syncing");
 
-    // Reset form immediately for better mobile UX.
+    // Reset immediately for faster UX.
     setErrors({});
-    setCurrentHoldPoints([]);
-    setHoldPolygons([]);
-    setAnnotationMessage("");
+    setHoldContours([]);
     setFormData({
       routeName: "",
       difficulty: "",
@@ -280,7 +269,6 @@ export default function CreatePage() {
     });
     setIsSubmitting(false);
 
-    // Background cloud sync (does not block user interaction).
     addDoc(collection(firestoreDb, "routes"), firestoreRoute)
       .then(() => {
         setCloudSyncStatus("synced");
@@ -305,7 +293,7 @@ export default function CreatePage() {
       <header className="cq-create-header">
         <p className="cq-page-eyebrow">Create</p>
         <h2>Build your own climbing route</h2>
-        <p>Create, annotate holds, and save your custom route.</p>
+        <p>Tap holds on the wall photo to create contour-style selection masks.</p>
       </header>
 
       {submitFeedback.type === "success" && (
@@ -401,48 +389,18 @@ export default function CreatePage() {
         </label>
 
         {formData.imageDataUrl && (
-          <div className="cq-field">
-            <span>Hold type for next polygon</span>
-            <div className="cq-tag-grid cq-hold-type-grid">
-              {holdTypeOptions.map((type) => (
-                <button
-                  key={type}
-                  type="button"
-                  className={`cq-tag-btn ${
-                    selectedHoldType === type ? "cq-tag-btn-active" : ""
-                  }`}
-                  onClick={() => setSelectedHoldType(type)}
-                >
-                  {type}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {formData.imageDataUrl && (
-          <section className="cq-wall-editor" aria-label="Wall polygon annotation editor">
+          <section className="cq-wall-editor" aria-label="Wall hold contour annotation editor">
             <div className="cq-wall-editor-head">
-              <p>Tap image to add anchors. Use Finish Hold to create one polygon.</p>
+              <p>Tap directly on a hold to add one contour highlight mask.</p>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button type="button" className="cq-reset-btn" onClick={removeLastHold}>
+                  Undo Last
+                </button>
+                <button type="button" className="cq-reset-btn" onClick={clearAllHolds}>
+                  Clear All
+                </button>
+              </div>
             </div>
-
-            <div className="cq-tag-grid" style={{ marginTop: 10 }}>
-              <button type="button" className="cq-tag-btn cq-tag-btn-active" onClick={finishCurrentHold}>
-                Finish Hold
-              </button>
-              <button type="button" className="cq-tag-btn" onClick={clearCurrentHold}>
-                Clear Current Hold
-              </button>
-              <button type="button" className="cq-tag-btn" onClick={clearAllHolds}>
-                Clear All Holds
-              </button>
-            </div>
-
-            {annotationMessage && (
-              <p className="cq-hold-count" style={{ marginTop: 10 }}>
-                {annotationMessage}
-              </p>
-            )}
 
             <div
               className="cq-wall-image-wrap"
@@ -455,14 +413,14 @@ export default function CreatePage() {
                 }
               }}
             >
+              {/* Base layer: original wall photo remains visible. */}
               <img className="cq-wall-image" src={formData.imageDataUrl} alt="Uploaded climbing wall" />
 
               {/*
-                SVG overlay logic (beginner-friendly):
-                1) All drawing uses 0..100 coordinates (percent-like system).
-                2) Because points are saved as image-relative percentages, polygons stay aligned on resize.
-                3) Saved holds are rendered as closed polygons.
-                4) Current hold-in-progress is rendered as polyline + anchor points.
+                Overlay rendering model:
+                1) Use an SVG layer with 0..100 coordinates (percentage-like space).
+                2) Each hold is an irregular polygon contour (no circular marker fallback).
+                3) Polygon style = thick white outline + bright semi-transparent fill + glow.
               */}
               <svg
                 className="cq-wall-svg-overlay"
@@ -471,9 +429,9 @@ export default function CreatePage() {
                 aria-hidden="true"
               >
                 <defs>
-                  {/* SVG-only glow filter for selected holds (no CSS dependency). */}
-                  <filter id="cqHoldGlow" x="-30%" y="-30%" width="160%" height="160%">
-                    <feGaussianBlur stdDeviation="1.2" result="blur" />
+                  {/* Subtle glow to make selected contours pop on textured wall photos. */}
+                  <filter id="cqHoldMaskGlow" x="-40%" y="-40%" width="180%" height="180%">
+                    <feGaussianBlur stdDeviation="1.4" result="blur" />
                     <feMerge>
                       <feMergeNode in="blur" />
                       <feMergeNode in="SourceGraphic" />
@@ -481,102 +439,42 @@ export default function CreatePage() {
                   </filter>
                 </defs>
 
-                {/* Render all finished hold polygons */}
-                {holdPolygons.map((hold, holdIndex) => {
-                  const colors = getHoldPolygonColors(hold.type);
-                  return (
-                    <g key={`hold-polygon-${hold.id}`}>
-                      {/* Bright glow base so selected areas stand out on wall texture. */}
-                      <polygon
-                        points={pointsToSvgString(hold.points)}
-                        fill={colors.glow}
-                        stroke="transparent"
-                        filter="url(#cqHoldGlow)"
-                      />
-
-                      {/* Main semi-transparent filled selection shape. */}
-                      <polygon
-                        points={pointsToSvgString(hold.points)}
-                        fill={colors.fill}
-                        stroke="#ffffff"
-                        strokeWidth="2"
-                        strokeLinejoin="round"
-                        filter="url(#cqHoldGlow)"
-                      />
-
-                      {/* Visible anchor points for each finished hold */}
-                      {hold.points.map((point, pointIndex) => (
-                        <circle
-                          key={`hold-anchor-${hold.id}-${pointIndex}`}
-                          cx={point.x}
-                          cy={point.y}
-                          r="1.45"
-                          fill={colors.anchorFill}
-                          stroke="#ffffff"
-                          strokeWidth="0.9"
-                          filter="url(#cqHoldGlow)"
-                        />
-                      ))}
-
-                      {/* Small label index for each completed hold */}
-                      {hold.points[0] && (
-                        <text
-                          x={hold.points[0].x}
-                          y={hold.points[0].y}
-                          dy="-1.6"
-                          fill="#ffffff"
-                          fontSize="2.5"
-                          fontWeight="700"
-                        >
-                          H{holdIndex + 1}
-                        </text>
-                      )}
-                    </g>
-                  );
-                })}
-
-                {/* Render current (unfinished) hold path */}
-                {currentHoldPoints.length > 0 && (
-                  <g>
-                    <polyline
-                      points={pointsToSvgString(currentHoldPoints)}
-                      fill="none"
-                      stroke={getHoldPolygonColors(selectedHoldType).previewStroke}
-                      strokeWidth="0.75"
-                      strokeDasharray="2 1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                {holdContours.map((hold) => (
+                  <g key={`hold-mask-${hold.id}`}>
+                    {/* Glow base */}
+                    <polygon
+                      points={pointsToSvgString(hold.points)}
+                      fill="rgba(88, 232, 158, 0.42)"
+                      stroke="transparent"
+                      filter="url(#cqHoldMaskGlow)"
                     />
 
-                    {currentHoldPoints.map((point, index) => (
-                      <circle
-                        key={`current-anchor-${index}`}
-                        cx={point.x}
-                        cy={point.y}
-                        r="1.35"
-                        fill={getHoldPolygonColors(selectedHoldType).anchorFill}
-                        stroke="#ffffff"
-                        strokeWidth="0.6"
-                      />
-                    ))}
+                    {/* Main contour mask */}
+                    <polygon
+                      points={pointsToSvgString(hold.points)}
+                      fill="rgba(88, 232, 158, 0.32)"
+                      stroke="#ffffff"
+                      strokeWidth="2.3"
+                      strokeLinejoin="round"
+                      filter="url(#cqHoldMaskGlow)"
+                    />
                   </g>
-                )}
+                ))}
               </svg>
             </div>
 
             <p className="cq-hold-count">
-              Current hold anchors: <strong>{currentHoldPoints.length}</strong> | Finished holds:{" "}
-              <strong>{holdPolygons.length}</strong>
+              Selected holds: <strong>{holdContours.length}</strong>
             </p>
 
-            <div className="cq-point-list-wrap" aria-label="Created hold list">
-              {holdPolygons.length === 0 ? (
-                <p className="cq-point-list-empty">No finished holds yet.</p>
+            <div className="cq-point-list-wrap" aria-label="Created hold contour list">
+              {holdContours.length === 0 ? (
+                <p className="cq-point-list-empty">No hold selected yet.</p>
               ) : (
                 <ul className="cq-point-list">
-                  {holdPolygons.map((hold, index) => (
-                    <li key={`hold-list-${hold.id}`}>
-                      Hold #{index + 1} - {hold.type} - {hold.points.length} anchor points
+                  {holdContours.map((hold, index) => (
+                    <li key={`contour-item-${hold.id}`}>
+                      Hold #{index + 1} contour at ({hold.centerX}%, {hold.centerY}%)
                     </li>
                   ))}
                 </ul>
@@ -613,7 +511,7 @@ export default function CreatePage() {
         </div>
         <p className="cq-route-description">{previewDescription}</p>
         <p className="cq-route-reason">Suitable for: {previewLevel}</p>
-        <p className="cq-route-reason">Annotated holds: {holdPolygons.length}</p>
+        <p className="cq-route-reason">Selected hold contours: {holdContours.length}</p>
       </article>
     </section>
   );
