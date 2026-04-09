@@ -17,50 +17,6 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
-function hashSeed(value) {
-  // Small deterministic hash so each tap gets a stable blob shape.
-  let hash = 0;
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
-  }
-  return hash;
-}
-
-function pseudoRandom(seed) {
-  // Deterministic pseudo-random generator (Mulberry32-style).
-  let t = (seed + 0x6d2b79f5) >>> 0;
-  t = Math.imul(t ^ (t >>> 15), t | 1);
-  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-}
-
-function createHoldContour(centerX, centerY, seedText) {
-  // Build an irregular contour polygon around the tapped hold position.
-  // Coordinates are still percentage-based, so the shape stays aligned on resize.
-  const seedBase = hashSeed(seedText);
-  const pointCount = 11;
-  const baseRadius = 3.9; // in SVG percentage units
-
-  const points = Array.from({ length: pointCount }, (_, index) => {
-    const angle = (Math.PI * 2 * index) / pointCount;
-
-    // Randomized radius + slight angle drift creates blob-like contour.
-    const radiusNoise = 0.65 + pseudoRandom(seedBase + index) * 0.95;
-    const angleNoise = (pseudoRandom(seedBase + 100 + index) - 0.5) * 0.22;
-
-    const radius = baseRadius * radiusNoise;
-    const x = centerX + Math.cos(angle + angleNoise) * radius;
-    const y = centerY + Math.sin(angle + angleNoise) * radius;
-
-    return {
-      x: Number(clamp(x, 0.8, 99.2).toFixed(2)),
-      y: Number(clamp(y, 0.8, 99.2).toFixed(2))
-    };
-  });
-
-  return points;
-}
-
 function pointsToSvgString(points) {
   return points.map((point) => `${point.x},${point.y}`).join(" ");
 }
@@ -113,8 +69,10 @@ export default function CreatePage() {
 
   // Each item in holdContours is one selected hold mask region.
   const [holdContours, setHoldContours] = useState([]);
+  const [currentHoldPoints, setCurrentHoldPoints] = useState([]);
 
   const [errors, setErrors] = useState({});
+  const [annotationMessage, setAnnotationMessage] = useState("");
   const [submitFeedback, setSubmitFeedback] = useState({ type: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cloudSyncStatus, setCloudSyncStatus] = useState("idle");
@@ -161,7 +119,9 @@ export default function CreatePage() {
       }));
 
       // When a new wall image is uploaded, reset old hold masks.
+      setCurrentHoldPoints([]);
       setHoldContours([]);
+      setAnnotationMessage("");
       setSubmitFeedback({ type: "", message: "" });
     };
     reader.readAsDataURL(file);
@@ -175,24 +135,52 @@ export default function CreatePage() {
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
 
-    const centerX = Number(clamp(x, 1, 99).toFixed(2));
-    const centerY = Number(clamp(y, 1, 99).toFixed(2));
+    const point = {
+      x: Number(clamp(x, 1, 99).toFixed(2)),
+      y: Number(clamp(y, 1, 99).toFixed(2))
+    };
 
-    const seedText = `${centerX}-${centerY}-${Date.now()}-${holdContours.length}`;
-    const contourPoints = createHoldContour(centerX, centerY, seedText);
+    // Manual contour mode: user traces real hold edge point-by-point.
+    setCurrentHoldPoints((prev) => [...prev, point]);
+    setAnnotationMessage("");
+  }
+
+  function finishCurrentHold() {
+    if (currentHoldPoints.length < 3) {
+      setAnnotationMessage("Add at least 3 points to finish one hold contour.");
+      return;
+    }
+
+    const centerX =
+      currentHoldPoints.reduce((sum, point) => sum + point.x, 0) / currentHoldPoints.length;
+    const centerY =
+      currentHoldPoints.reduce((sum, point) => sum + point.y, 0) / currentHoldPoints.length;
 
     const newHold = {
       id: `${Date.now()}-${Math.random()}`,
-      centerX,
-      centerY,
-      points: contourPoints
+      centerX: Number(centerX.toFixed(2)),
+      centerY: Number(centerY.toFixed(2)),
+      points: currentHoldPoints
     };
 
     setHoldContours((prev) => [...prev, newHold]);
+    setCurrentHoldPoints([]);
+    setAnnotationMessage("Hold contour saved. Start tapping a new hold edge.");
+  }
+
+  function undoLastPoint() {
+    setCurrentHoldPoints((prev) => prev.slice(0, -1));
+  }
+
+  function clearCurrentHold() {
+    setCurrentHoldPoints([]);
+    setAnnotationMessage("");
   }
 
   function clearAllHolds() {
+    setCurrentHoldPoints([]);
     setHoldContours([]);
+    setAnnotationMessage("");
   }
 
   function removeLastHold() {
@@ -258,7 +246,9 @@ export default function CreatePage() {
 
     // Reset immediately for faster UX.
     setErrors({});
+    setCurrentHoldPoints([]);
     setHoldContours([]);
+    setAnnotationMessage("");
     setFormData({
       routeName: "",
       difficulty: "",
@@ -391,8 +381,17 @@ export default function CreatePage() {
         {formData.imageDataUrl && (
           <section className="cq-wall-editor" aria-label="Wall hold contour annotation editor">
             <div className="cq-wall-editor-head">
-              <p>Tap directly on a hold to add one contour highlight mask.</p>
+              <p>Tap around one hold edge point-by-point, then press Finish Current Hold.</p>
               <div style={{ display: "flex", gap: 8 }}>
+                <button type="button" className="cq-reset-btn" onClick={finishCurrentHold}>
+                  Finish Current Hold
+                </button>
+                <button type="button" className="cq-reset-btn" onClick={undoLastPoint}>
+                  Undo Point
+                </button>
+                <button type="button" className="cq-reset-btn" onClick={clearCurrentHold}>
+                  Clear Current
+                </button>
                 <button type="button" className="cq-reset-btn" onClick={removeLastHold}>
                   Undo Last
                 </button>
@@ -401,6 +400,8 @@ export default function CreatePage() {
                 </button>
               </div>
             </div>
+
+            {annotationMessage && <p className="cq-hold-count">{annotationMessage}</p>}
 
             <div
               className="cq-wall-image-wrap"
@@ -460,11 +461,38 @@ export default function CreatePage() {
                     />
                   </g>
                 ))}
+
+                {/* Current hold being traced: polyline + tiny anchors for precision. */}
+                {currentHoldPoints.length > 0 && (
+                  <g>
+                    <polyline
+                      points={pointsToSvgString(currentHoldPoints)}
+                      fill="none"
+                      stroke="rgba(255,255,255,0.95)"
+                      strokeWidth="1.2"
+                      strokeDasharray="2 1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    {currentHoldPoints.map((point, index) => (
+                      <circle
+                        key={`current-point-${index}`}
+                        cx={point.x}
+                        cy={point.y}
+                        r="0.7"
+                        fill="#ffffff"
+                        stroke="rgba(88, 232, 158, 0.95)"
+                        strokeWidth="0.35"
+                      />
+                    ))}
+                  </g>
+                )}
               </svg>
             </div>
 
             <p className="cq-hold-count">
-              Selected holds: <strong>{holdContours.length}</strong>
+              Current hold points: <strong>{currentHoldPoints.length}</strong> | Selected holds:{" "}
+              <strong>{holdContours.length}</strong>
             </p>
 
             <div className="cq-point-list-wrap" aria-label="Created hold contour list">
