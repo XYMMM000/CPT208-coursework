@@ -16,6 +16,14 @@ const TRACE_SAMPLE_MIN_DISTANCE = 0.12;
 const MIN_ZOOM_SCALE = 1;
 const MAX_ZOOM_SCALE = 3;
 const ZOOM_STEP = 0.12;
+const ROUTE_POINT_TYPES = [
+  { key: "start", label: "Start" },
+  { key: "finish", label: "Finish" },
+  { key: "leftHand", label: "Left Hand" },
+  { key: "rightHand", label: "Right Hand" },
+  { key: "leftFoot", label: "Left Foot" },
+  { key: "rightFoot", label: "Right Foot" }
+];
 const WALL_ROUTE_ID_TO_INDEX = {
   "wall-1": 0,
   "wall-2": 1,
@@ -40,6 +48,40 @@ function distanceBetweenPoints(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
+function getHoldCenter(hold) {
+  if (Number.isFinite(hold.centerX) && Number.isFinite(hold.centerY)) {
+    return { x: hold.centerX, y: hold.centerY };
+  }
+
+  if (!Array.isArray(hold.points) || hold.points.length === 0) {
+    return { x: 50, y: 50 };
+  }
+
+  const centerX = hold.points.reduce((sum, point) => sum + point.x, 0) / hold.points.length;
+  const centerY = hold.points.reduce((sum, point) => sum + point.y, 0) / hold.points.length;
+  return { x: Number(centerX.toFixed(2)), y: Number(centerY.toFixed(2)) };
+}
+
+function isPointInsidePolygon(point, polygon) {
+  if (!Array.isArray(polygon) || polygon.length < 3) return false;
+  let isInside = false;
+
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+
+    const intersects =
+      yi > point.y !== yj > point.y &&
+      point.x < ((xj - xi) * (point.y - yi)) / (yj - yi + Number.EPSILON) + xi;
+
+    if (intersects) isInside = !isInside;
+  }
+
+  return isInside;
+}
+
 function shouldAutoCloseHold(points) {
   if (!Array.isArray(points) || points.length < 3) return false;
   const first = points[0];
@@ -57,6 +99,7 @@ function toLightweightLocalRoute(route) {
     suitableFor: route.suitableFor,
     wallPhotoIndex: route.wallPhotoIndex,
     holdContours: route.holdContours,
+    routePlan: route.routePlan || null,
     createdAt: route.createdAt
   };
 }
@@ -98,6 +141,9 @@ export default function CreatePage() {
   // Each item in holdContours is one selected hold mask region.
   const [holdContours, setHoldContours] = useState([]);
   const [currentHoldPoints, setCurrentHoldPoints] = useState([]);
+  const [editorMode, setEditorMode] = useState("trace");
+  const [activeRoutePointType, setActiveRoutePointType] = useState("start");
+  const [routePointsByType, setRoutePointsByType] = useState({});
   const [selectedWallPhotoIndex, setSelectedWallPhotoIndex] = useState(0);
 
   const [errors, setErrors] = useState({});
@@ -120,6 +166,19 @@ export default function CreatePage() {
     "Add a short description to help climbers understand this route.";
   const previewLevel = useMemo(() => formData.suitableFor, [formData.suitableFor]);
   const activeWallImageSrc = formData.imageDataUrl || WALL_GALLERY_PHOTOS[selectedWallPhotoIndex];
+  const routePlan = useMemo(() => {
+    const start = routePointsByType.start ? { x: routePointsByType.start.x, y: routePointsByType.start.y } : null;
+    const finish = routePointsByType.finish ? { x: routePointsByType.finish.x, y: routePointsByType.finish.y } : null;
+    const hands = [routePointsByType.leftHand, routePointsByType.rightHand]
+      .filter(Boolean)
+      .map((point) => ({ x: point.x, y: point.y }));
+    const feet = [routePointsByType.leftFoot, routePointsByType.rightFoot]
+      .filter(Boolean)
+      .map((point) => ({ x: point.x, y: point.y }));
+
+    if (!start && !finish && hands.length === 0 && feet.length === 0) return null;
+    return { start, finish, hands, feet };
+  }, [routePointsByType]);
 
   useEffect(() => {
     // Sync editor wall with route param from the wall selection page.
@@ -173,6 +232,8 @@ export default function CreatePage() {
       // When a new wall image is uploaded, reset old hold masks.
       setCurrentHoldPoints([]);
       setHoldContours([]);
+      setRoutePointsByType({});
+      setEditorMode("trace");
       setAnnotationMessage("");
       setSubmitFeedback({ type: "", message: "" });
     };
@@ -185,6 +246,8 @@ export default function CreatePage() {
     setFormData((prev) => ({ ...prev, imageDataUrl: "" }));
     setCurrentHoldPoints([]);
     setHoldContours([]);
+    setRoutePointsByType({});
+    setEditorMode("trace");
     setAnnotationMessage("Switched wall photo. Start tracing again for accurate matching.");
   }
 
@@ -209,8 +272,63 @@ export default function CreatePage() {
     setAnnotationMessage("");
   }
 
+  function getClosestHoldForPoint(point) {
+    if (!point || holdContours.length === 0) return null;
+
+    // First priority: if user taps inside a contour, use that hold directly.
+    const insideMatch = holdContours.find((hold) => isPointInsidePolygon(point, hold.points));
+    if (insideMatch) {
+      return { hold: insideMatch, center: getHoldCenter(insideMatch) };
+    }
+
+    // Fallback: snap to nearest hold center.
+    let closestHold = holdContours[0];
+    let closestCenter = getHoldCenter(closestHold);
+    let minDistance = distanceBetweenPoints(point, closestCenter);
+
+    for (const hold of holdContours.slice(1)) {
+      const center = getHoldCenter(hold);
+      const distance = distanceBetweenPoints(point, center);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestHold = hold;
+        closestCenter = center;
+      }
+    }
+
+    return { hold: closestHold, center: closestCenter };
+  }
+
+  function assignRoutePointByTap(point) {
+    const closest = getClosestHoldForPoint(point);
+    if (!closest) {
+      setAnnotationMessage("Please create hold contours first, then assign route points.");
+      return;
+    }
+
+    setRoutePointsByType((prev) => ({
+      ...prev,
+      [activeRoutePointType]: {
+        holdId: closest.hold.id,
+        x: closest.center.x,
+        y: closest.center.y
+      }
+    }));
+
+    const activeType = ROUTE_POINT_TYPES.find((item) => item.key === activeRoutePointType);
+    setAnnotationMessage(`${activeType?.label || "Route point"} assigned to nearest selected hold.`);
+  }
+
   function handleWallPointerDown(event) {
     if (!activeWallImageSrc) return;
+    const point = getRelativePointFromPointerEvent(event);
+    if (!point) return;
+
+    if (editorMode === "route-points") {
+      assignRoutePointByTap(point);
+      return;
+    }
+
     setIsTracing(true);
     traceLastPointRef.current = null;
 
@@ -219,11 +337,11 @@ export default function CreatePage() {
       event.currentTarget.setPointerCapture(event.pointerId);
     }
 
-    addPointToCurrentHold(getRelativePointFromPointerEvent(event));
+    addPointToCurrentHold(point);
   }
 
   function handleWallPointerMove(event) {
-    if (!isTracing || !activeWallImageSrc) return;
+    if (!isTracing || !activeWallImageSrc || editorMode !== "trace") return;
 
     const point = getRelativePointFromPointerEvent(event);
     const lastPoint = traceLastPointRef.current;
@@ -235,6 +353,8 @@ export default function CreatePage() {
   }
 
   function handleWallPointerUp(event) {
+    if (editorMode === "route-points") return;
+
     setIsTracing(false);
     traceLastPointRef.current = null;
     if (event.currentTarget.releasePointerCapture) {
@@ -298,11 +418,33 @@ export default function CreatePage() {
   function clearAllHolds() {
     setCurrentHoldPoints([]);
     setHoldContours([]);
+    setRoutePointsByType({});
+    setEditorMode("trace");
     setAnnotationMessage("");
   }
 
   function removeLastHold() {
-    setHoldContours((prev) => prev.slice(0, -1));
+    setHoldContours((prev) => {
+      if (prev.length === 0) return prev;
+      const removed = prev[prev.length - 1];
+      if (removed?.id) {
+        setRoutePointsByType((pointsPrev) => {
+          const next = { ...pointsPrev };
+          Object.keys(next).forEach((key) => {
+            if (next[key]?.holdId === removed.id) {
+              delete next[key];
+            }
+          });
+          return next;
+        });
+      }
+      return prev.slice(0, -1);
+    });
+  }
+
+  function clearRoutePoints() {
+    setRoutePointsByType({});
+    setAnnotationMessage("Route points cleared. You can assign start/finish/hands/feet again.");
   }
 
   function openZoomEditor() {
@@ -357,6 +499,7 @@ export default function CreatePage() {
       imageDataUrl: formData.imageDataUrl,
       wallPhotoIndex: selectedWallPhotoIndex,
       holdContours,
+      routePlan,
       createdAt: new Date().toISOString()
     };
 
@@ -373,6 +516,7 @@ export default function CreatePage() {
         currentUser?.email?.split("@")[0] ||
         "Anonymous Climber",
       holdContours: newRoute.holdContours,
+      routePlan: newRoute.routePlan,
       wallPhotoIndex: newRoute.wallPhotoIndex,
       createdTime: serverTimestamp()
     };
@@ -389,6 +533,8 @@ export default function CreatePage() {
     setErrors({});
     setCurrentHoldPoints([]);
     setHoldContours([]);
+    setRoutePointsByType({});
+    setEditorMode("trace");
     setAnnotationMessage("");
     setFormData({
       routeName: "",
@@ -421,6 +567,7 @@ export default function CreatePage() {
 
   function renderWallCanvas({ zoomMode = false } = {}) {
     const zoomedWidthPercent = zoomMode ? `${Math.round(zoomScale * 100)}%` : "100%";
+    const routePointEntries = Object.entries(routePointsByType).filter(([, point]) => Boolean(point));
 
     return (
       <div
@@ -512,8 +659,43 @@ export default function CreatePage() {
               </g>
             ))}
 
+            {/* Route plan points: start/finish/hands/feet snap to selected hold centers. */}
+            {routePointEntries.map(([key, point]) => {
+              const label = ROUTE_POINT_TYPES.find((type) => type.key === key)?.label || key;
+              let pointClassName = "cq-wall-svg-point-hand";
+              let textLabel = "H";
+
+              if (key === "start") {
+                pointClassName = "cq-wall-svg-point-start";
+                textLabel = "S";
+              } else if (key === "finish") {
+                pointClassName = "cq-wall-svg-point-finish";
+                textLabel = "TOP";
+              } else if (key.toLowerCase().includes("foot")) {
+                pointClassName = "cq-wall-svg-point-foot";
+                textLabel = key === "leftFoot" ? "LF" : "RF";
+              } else {
+                textLabel = key === "leftHand" ? "LH" : "RH";
+              }
+
+              return (
+                <g key={`route-point-${key}`}>
+                  <circle
+                    cx={point.x}
+                    cy={point.y}
+                    r={key === "finish" ? "1.35" : "1.1"}
+                    className={`cq-wall-svg-point ${pointClassName}`}
+                  />
+                  <text x={point.x} y={point.y - 1.7} className="cq-wall-svg-point-label">
+                    {textLabel}
+                  </text>
+                  <title>{label}</title>
+                </g>
+              );
+            })}
+
             {/* Current hold being traced: polyline + tiny anchors for precision. */}
-            {currentHoldPoints.length > 0 && (
+            {editorMode === "trace" && currentHoldPoints.length > 0 && (
               <g>
                 {currentHoldPoints.length >= 3 && (
                   <polygon
@@ -675,30 +857,96 @@ export default function CreatePage() {
           <section className="cq-wall-editor" aria-label="Wall hold contour annotation editor">
             <div className="cq-wall-editor-head">
               <p>
-                Tap the wall image to open zoom mode, then trace around one hold edge for precise
-                selection.
+                Step 1: trace hold contours. Step 2: switch to route point mode and assign start,
+                finish, left/right hand and left/right foot points.
               </p>
-              <div style={{ display: "flex", gap: 8 }}>
-                <button type="button" className="cq-reset-btn" onClick={finishCurrentHold}>
-                  Finish Current Hold
+              <div className="cq-tag-grid" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+                <button
+                  type="button"
+                  className={`cq-tag-btn ${editorMode === "trace" ? "cq-tag-btn-active" : ""}`}
+                  onClick={() => setEditorMode("trace")}
+                >
+                  Trace Hold Contours
                 </button>
-                <button type="button" className="cq-reset-btn" onClick={undoLastPoint}>
-                  Undo Point
-                </button>
-                <button type="button" className="cq-reset-btn" onClick={clearCurrentHold}>
-                  Clear Current
-                </button>
-                <button type="button" className="cq-reset-btn" onClick={removeLastHold}>
-                  Undo Last
-                </button>
-                <button type="button" className="cq-reset-btn" onClick={clearAllHolds}>
-                  Clear All
+                <button
+                  type="button"
+                  className={`cq-tag-btn ${editorMode === "route-points" ? "cq-tag-btn-active" : ""}`}
+                  onClick={() => {
+                    if (holdContours.length === 0) {
+                      setAnnotationMessage("Create at least one hold contour before setting route points.");
+                      return;
+                    }
+                    setEditorMode("route-points");
+                    setAnnotationMessage("Route point mode active. Tap a hold to assign selected point type.");
+                  }}
+                >
+                  Set Route Points
                 </button>
               </div>
             </div>
 
+            <div className="cq-tag-grid" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
+              {ROUTE_POINT_TYPES.map((type) => (
+                <button
+                  key={type.key}
+                  type="button"
+                  className={`cq-tag-btn ${
+                    activeRoutePointType === type.key ? "cq-tag-btn-active" : ""
+                  }`}
+                  onClick={() => setActiveRoutePointType(type.key)}
+                  disabled={editorMode !== "route-points"}
+                >
+                  {type.label}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button
+                type="button"
+                className="cq-reset-btn"
+                onClick={finishCurrentHold}
+                disabled={editorMode !== "trace"}
+              >
+                Finish Current Hold
+              </button>
+              <button
+                type="button"
+                className="cq-reset-btn"
+                onClick={undoLastPoint}
+                disabled={editorMode !== "trace"}
+              >
+                Undo Point
+              </button>
+              <button
+                type="button"
+                className="cq-reset-btn"
+                onClick={clearCurrentHold}
+                disabled={editorMode !== "trace"}
+              >
+                Clear Current
+              </button>
+              <button type="button" className="cq-reset-btn" onClick={removeLastHold}>
+                Undo Last Hold
+              </button>
+              <button type="button" className="cq-reset-btn" onClick={clearAllHolds}>
+                Clear All Holds
+              </button>
+              <button type="button" className="cq-reset-btn" onClick={clearRoutePoints}>
+                Clear Route Points
+              </button>
+            </div>
+
             {annotationMessage && <p className="cq-hold-count">{annotationMessage}</p>}
-            {isTracing && <p className="cq-hold-count">Tracing hold contour...</p>}
+            {isTracing && editorMode === "trace" && (
+              <p className="cq-hold-count">Tracing hold contour...</p>
+            )}
+            {editorMode === "route-points" && (
+              <p className="cq-hold-count">
+                Active point type: <strong>{ROUTE_POINT_TYPES.find((type) => type.key === activeRoutePointType)?.label}</strong>.
+                Tap any selected hold to place it.
+              </p>
+            )}
 
             {renderWallCanvas()}
 
@@ -711,6 +959,11 @@ export default function CreatePage() {
               <strong>{holdContours.length}</strong>
             </p>
 
+            <p className="cq-hold-count">
+              Route points set:{" "}
+              <strong>{Object.keys(routePointsByType).length}</strong>/6
+            </p>
+
             <div className="cq-point-list-wrap" aria-label="Created hold contour list">
               {holdContours.length === 0 ? (
                 <p className="cq-point-list-empty">No hold selected yet.</p>
@@ -719,6 +972,22 @@ export default function CreatePage() {
                   {holdContours.map((hold, index) => (
                     <li key={`contour-item-${hold.id}`}>
                       Hold #{index + 1} contour at ({hold.centerX}%, {hold.centerY}%)
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="cq-point-list-wrap" aria-label="Selected route point list">
+              {Object.keys(routePointsByType).length === 0 ? (
+                <p className="cq-point-list-empty">No route points assigned yet.</p>
+              ) : (
+                <ul className="cq-point-list">
+                  {ROUTE_POINT_TYPES.filter((type) => routePointsByType[type.key]).map((type) => (
+                    <li key={`route-point-item-${type.key}`}>
+                      {type.label}: hold center ({routePointsByType[type.key].x}%,
+                      {" "}
+                      {routePointsByType[type.key].y}%)
                     </li>
                   ))}
                 </ul>
@@ -784,6 +1053,7 @@ export default function CreatePage() {
         <p className="cq-route-description">{previewDescription}</p>
         <p className="cq-route-reason">Suitable for: {previewLevel}</p>
         <p className="cq-route-reason">Selected hold contours: {holdContours.length}</p>
+        <p className="cq-route-reason">Route points configured: {Object.keys(routePointsByType).length}/6</p>
       </article>
     </section>
   );
