@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 // Quiz questions for the Discover page.
@@ -88,10 +88,10 @@ const quizQuestions = [
 
 const profileResults = {
   flow: {
-    emoji: "🧘‍♂️🧗",
+    emoji: "馃鈥嶁檪锔忦煣?,
     mascot: {
       name: "Aero",
-      avatars: ["🧗‍♀️", "🌊", "🍃"],
+      avatars: ["馃鈥嶁檧锔?, "馃寠", "馃崈"],
       role: "Flow Coach",
       lines: [
         "Keep your breathing calm and trust your feet.",
@@ -130,10 +130,10 @@ const profileResults = {
     ]
   },
   power: {
-    emoji: "⚡💪",
+    emoji: "鈿○煉?,
     mascot: {
       name: "Blaze",
-      avatars: ["🦸", "⚡", "🦁"],
+      avatars: ["馃Ω", "鈿?, "馃"],
       role: "Power Coach",
       lines: [
         "Commit fast, stay tight, and drive from your core.",
@@ -172,10 +172,10 @@ const profileResults = {
     ]
   },
   endurance: {
-    emoji: "🔥⛰️",
+    emoji: "馃敟鉀帮笍",
     mascot: {
       name: "Pace",
-      avatars: ["🏃", "⛰️", "🔥"],
+      avatars: ["馃弮", "鉀帮笍", "馃敟"],
       role: "Endurance Coach",
       lines: [
         "Stay efficient and keep moving with steady rhythm.",
@@ -214,10 +214,10 @@ const profileResults = {
     ]
   },
   tech: {
-    emoji: "🧠🪢",
+    emoji: "馃馃",
     mascot: {
       name: "Nori",
-      avatars: ["🧩", "🧠", "🛰️"],
+      avatars: ["馃З", "馃", "馃洶锔?],
       role: "Technique Coach",
       lines: [
         "Solve the sequence first, then execute with precision.",
@@ -256,10 +256,10 @@ const profileResults = {
     ]
   },
   social: {
-    emoji: "🤝🎉",
+    emoji: "馃馃帀",
     mascot: {
       name: "Milo",
-      avatars: ["😄", "🎉", "🤝"],
+      avatars: ["馃槃", "馃帀", "馃"],
       role: "Community Coach",
       lines: [
         "Share beta, cheer each other on, and send together.",
@@ -303,52 +303,157 @@ function getMascotVariant(result, seed) {
   const avatars = result.mascot.avatars || [];
   const lines = result.mascot.lines || [];
   const safeSeed = Math.abs(Number(seed) || 0);
-  const avatar = avatars.length > 0 ? avatars[safeSeed % avatars.length] : "🧗";
+  const avatar = avatars.length > 0 ? avatars[safeSeed % avatars.length] : "馃";
   const line = lines.length > 0 ? lines[(safeSeed + 1) % lines.length] : "";
   return { avatar, line };
 }
 
 const mascotVisualByProfile = {
-  flow: { shirt: "#4ba3d9", accent: "#7dd3fc", hair: "#3b2d1f", skin: "#f4c7a5" },
-  power: { shirt: "#ef4444", accent: "#f97316", hair: "#2a1b14", skin: "#e9b48f" },
-  endurance: { shirt: "#22c55e", accent: "#84cc16", hair: "#3a2a1d", skin: "#f1c49c" },
-  tech: { shirt: "#8b5cf6", accent: "#6366f1", hair: "#1f2937", skin: "#edc19b" },
-  social: { shirt: "#f59e0b", accent: "#ec4899", hair: "#4b2e20", skin: "#f2c6a0" }
+  flow: { shirt: "#4ba3d9", accent: "#7dd3fc", hair: "#3b2d1f", skin: "#f4c7a5", prop: "#0ea5e9" },
+  power: { shirt: "#ef4444", accent: "#f97316", hair: "#2a1b14", skin: "#e9b48f", prop: "#dc2626" },
+  endurance: { shirt: "#22c55e", accent: "#84cc16", hair: "#3a2a1d", skin: "#f1c49c", prop: "#65a30d" },
+  tech: { shirt: "#8b5cf6", accent: "#6366f1", hair: "#1f2937", skin: "#edc19b", prop: "#4338ca" },
+  social: { shirt: "#f59e0b", accent: "#ec4899", hair: "#4b2e20", skin: "#f2c6a0", prop: "#db2777" }
 };
+
+function AvatarFace({ style, smileCurve = 6 }) {
+  return (
+    <>
+      <circle cx="60" cy="42" r="16" fill={style.skin} />
+      <path
+        d="M45 41c1.8-9.8 8.4-14.4 15-14.4 6.6 0 13.2 4.6 15 14.4-3.6-2.4-8.2-3.8-15-3.8s-11.4 1.4-15 3.8z"
+        fill={style.hair}
+      />
+      <circle cx="55" cy="42" r="1.3" fill="#1f2937" />
+      <circle cx="65" cy="42" r="1.3" fill="#1f2937" />
+      <path d={`M54 48q6 ${smileCurve} 12 0`} stroke="#7c3f2a" strokeWidth="1.8" fill="none" />
+    </>
+  );
+}
 
 function VirtualClimberAvatar({ profileKey, seed }) {
   const style = mascotVisualByProfile[profileKey] || mascotVisualByProfile.flow;
   const safeSeed = Math.abs(Number(seed) || 0);
-  const eyeCurve = safeSeed % 3 === 0 ? 0 : safeSeed % 3 === 1 ? 0.8 : -0.6;
-  const hasHeadband = safeSeed % 2 === 0;
-  const hasChalkBag = safeSeed % 5 !== 0;
+  const variant = safeSeed % 2;
+  const gradientId = `bg-${profileKey}-${safeSeed % 1000}`;
 
   return (
     <svg viewBox="0 0 120 120" className="cq-mbti-avatar-svg" aria-hidden="true">
       <defs>
-        <linearGradient id={`bg-${profileKey}`} x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0%" stopColor={style.accent} stopOpacity="0.32" />
+        <linearGradient id={gradientId} x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stopColor={style.accent} stopOpacity="0.34" />
           <stop offset="100%" stopColor={style.shirt} stopOpacity="0.2" />
         </linearGradient>
       </defs>
 
-      <rect x="2" y="2" width="116" height="116" rx="24" fill={`url(#bg-${profileKey})`} />
-      <rect x="36" y="64" width="48" height="34" rx="16" fill={style.shirt} />
-      <circle cx="60" cy="50" r="20" fill={style.skin} />
-      <path d="M42 48c2-12 10-18 18-18 8 0 16 6 18 18-4-3-9-5-18-5s-14 2-18 5z" fill={style.hair} />
+      <rect x="2" y="2" width="116" height="116" rx="24" fill={`url(#${gradientId})`} />
+      <path
+        d="M10 92c24-10 45-8 64 0s23 8 36 0"
+        stroke="rgba(255,255,255,0.45)"
+        strokeWidth="3"
+        fill="none"
+      />
 
-      {hasHeadband && <rect x="42" y="46" width="36" height="5" rx="2.5" fill={style.accent} />}
+      {profileKey === "flow" && (
+        <>
+          <AvatarFace style={style} smileCurve={5} />
+          <rect x="44" y="57" width="32" height="25" rx="12" fill={style.shirt} />
+          <rect
+            x="38"
+            y="60"
+            width="8"
+            height="20"
+            rx="4"
+            fill={style.shirt}
+            transform="rotate(-16 42 70)"
+          />
+          <rect
+            x="74"
+            y="60"
+            width="8"
+            height="20"
+            rx="4"
+            fill={style.shirt}
+            transform="rotate(16 78 70)"
+          />
+          <rect x="50" y="81" width="7" height="22" rx="3.5" fill="#334155" />
+          <rect x="63" y="81" width="7" height="22" rx="3.5" fill="#334155" />
+          <ellipse cx="94" cy="54" rx="7" ry="9" fill={style.prop} />
+        </>
+      )}
 
-      <path d={`M52 52q3 ${eyeCurve} 6 0`} stroke="#1f2937" strokeWidth="2" fill="none" />
-      <path d={`M62 52q3 ${eyeCurve} 6 0`} stroke="#1f2937" strokeWidth="2" fill="none" />
-      <path d="M54 60q6 6 12 0" stroke="#7c3f2a" strokeWidth="2" fill="none" />
+      {profileKey === "power" && (
+        <>
+          <AvatarFace style={style} smileCurve={3} />
+          <rect x="42" y="56" width="36" height="27" rx="10" fill={style.shirt} />
+          <rect
+            x="30"
+            y="60"
+            width="10"
+            height="24"
+            rx="5"
+            fill={style.shirt}
+            transform="rotate(-32 35 72)"
+          />
+          <rect
+            x="80"
+            y="58"
+            width="10"
+            height="26"
+            rx="5"
+            fill={style.shirt}
+            transform="rotate(30 85 71)"
+          />
+          <rect x="49" y="82" width="8" height="22" rx="4" fill="#1f2937" />
+          <rect x="63" y="82" width="8" height="22" rx="4" fill="#1f2937" />
+          <polygon
+            points="92,31 96,40 106,41 98,48 100,58 92,52 84,58 86,48 78,41 88,40"
+            fill={style.prop}
+          />
+        </>
+      )}
 
-      <rect x="30" y="72" width="10" height="24" rx="5" fill={style.shirt} />
-      <rect x="80" y="72" width="10" height="24" rx="5" fill={style.shirt} />
+      {profileKey === "endurance" && (
+        <>
+          <AvatarFace style={style} smileCurve={7} />
+          <rect x="45" y="57" width="30" height="26" rx="11" fill={style.shirt} />
+          <rect x="35" y="60" width="8" height="23" rx="4" fill={style.shirt} />
+          <rect x="77" y="60" width="8" height="23" rx="4" fill={style.shirt} />
+          <rect x="49" y="82" width="8" height="22" rx="4" fill="#0f172a" />
+          <rect x="63" y="82" width="8" height="22" rx="4" fill="#0f172a" />
+          <circle cx="28" cy="64" r="6" fill="none" stroke={style.prop} strokeWidth="2.6" />
+          <circle cx="92" cy="64" r="6" fill="none" stroke={style.prop} strokeWidth="2.6" />
+        </>
+      )}
 
-      {hasChalkBag && <circle cx="83" cy="84" r="5" fill="#e5e7eb" stroke="#9ca3af" strokeWidth="1.5" />}
-      <circle cx="24" cy="80" r="5" fill={style.accent} />
-      <circle cx="96" cy="78" r="5" fill={style.accent} />
+      {profileKey === "tech" && (
+        <>
+          <AvatarFace style={style} smileCurve={4} />
+          <rect x="44" y="58" width="32" height="24" rx="10" fill={style.shirt} />
+          <rect x="36" y="61" width="8" height="21" rx="4" fill={style.shirt} />
+          <rect x="76" y="61" width="8" height="21" rx="4" fill={style.shirt} />
+          <rect x="50" y="82" width="7" height="22" rx="3.5" fill="#111827" />
+          <rect x="63" y="82" width="7" height="22" rx="3.5" fill="#111827" />
+          <rect x="82" y="70" width="20" height="14" rx="3" fill="#e5e7eb" stroke={style.prop} strokeWidth="1.6" />
+          <circle cx="87" cy="75" r="1.6" fill={style.prop} />
+          <circle cx="94" cy="75" r="1.6" fill={style.prop} />
+          <path d="M84 80h14" stroke={style.prop} strokeWidth="1.3" />
+        </>
+      )}
+
+      {profileKey === "social" && (
+        <>
+          <AvatarFace style={style} smileCurve={8} />
+          <rect x="44" y="58" width="32" height="24" rx="10" fill={style.shirt} />
+          <rect x="35" y="61" width="8" height="21" rx="4" fill={style.shirt} />
+          <rect x="77" y="61" width="8" height="21" rx="4" fill={style.shirt} />
+          <rect x="50" y="82" width="7" height="22" rx="3.5" fill="#334155" />
+          <rect x="63" y="82" width="7" height="22" rx="3.5" fill="#334155" />
+          <circle cx="24" cy="55" r="6" fill={style.prop} />
+          <circle cx="96" cy="56" r="6" fill={style.accent} />
+          {variant === 1 && <rect x="49" y="32" width="22" height="4" rx="2" fill={style.accent} />}
+        </>
+      )}
     </svg>
   );
 }
@@ -539,3 +644,4 @@ export default function DiscoverPage() {
     </section>
   );
 }
+
