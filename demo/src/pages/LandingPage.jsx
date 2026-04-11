@@ -9,9 +9,9 @@ const welcomeTracks = [
     title: "Learn safely and enjoy your first sends",
     description:
       "Set your level, pick easy routes, and follow community beta with clear move tips.",
-    steps: ["Choose level in onboarding", "Open recommended challenge", "Track your first completion"],
-    ctaLabel: "Start Beginner Flow",
-    ctaLink: "/onboarding"
+    steps: ["Open Home dashboard", "Check today’s recommended challenge", "Track your first completion"],
+    ctaLabel: "Go to Home",
+    ctaLink: "/home"
   },
   {
     id: "setter",
@@ -19,9 +19,9 @@ const welcomeTracks = [
     title: "Design and publish your own route line",
     description:
       "Pick a wall, zoom in, outline holds manually, then save and share your route with the community.",
-    steps: ["Select wall photo", "Outline hold contours", "Publish to community feed"],
+    steps: ["Select a wall", "Outline hold contours", "Publish to community feed"],
     ctaLabel: "Build My Route",
-    ctaLink: "/onboarding"
+    ctaLink: "/create"
   },
   {
     id: "social",
@@ -29,16 +29,16 @@ const welcomeTracks = [
     title: "Discover trending routes and exchange beta",
     description:
       "Search route feed, open route details, rate and comment, then save your favorites for next session.",
-    steps: ["Open community feed", "Filter by style and level", "Save and rate useful routes"],
+    steps: ["Open community feed", "Filter by style and level", "Rate and save useful routes"],
     ctaLabel: "Join Community",
-    ctaLink: "/onboarding"
+    ctaLink: "/community"
   }
 ];
 
 const quickLinks = [
-  { label: "Create DIY Route", description: "Select a wall and draw your own line", to: "/onboarding" },
-  { label: "Discover Challenges", description: "Get personalized route recommendations", to: "/onboarding" },
-  { label: "Community Beta", description: "See ratings, feedback, and route details", to: "/onboarding" }
+  { label: "Create DIY Route", description: "Select a wall and draw your own line", to: "/create" },
+  { label: "Discover Challenges", description: "Get personalized route recommendations", to: "/discover" },
+  { label: "Community Beta", description: "See ratings, feedback, and route details", to: "/community" }
 ];
 
 const landingFeatures = [
@@ -47,21 +47,21 @@ const landingFeatures = [
     title: "Personalized Challenge",
     description:
       "Get route picks with level + style matching and a clear reason for each recommendation.",
-    to: "/onboarding"
+    to: "/discover"
   },
   {
     icon: "D",
     title: "DIY Route Creation",
     description:
       "Choose a wall, zoom in, trace hold contours, and publish your own line in minutes.",
-    to: "/onboarding"
+    to: "/create"
   },
   {
     icon: "C",
     title: "Community Rating",
     description:
       "Read beta tips, rate routes, and collect useful feedback from other climbers.",
-    to: "/onboarding"
+    to: "/community"
   }
 ];
 
@@ -87,7 +87,7 @@ export default function LandingPage() {
         </p>
 
         <div className="cq-hero-cta-row">
-          <Link className="cq-primary-btn" to="/onboarding">
+          <Link className="cq-primary-btn" to="/home">
             Start Quest Session
           </Link>
           <a className="cq-secondary-btn cq-hero-secondary-btn" href="#how-it-works">
