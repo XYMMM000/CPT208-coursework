@@ -1361,6 +1361,19 @@ a {
   line-height: 1.6;
 }
 
+.cq-hero-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.cq-hero-secondary-btn {
+  margin-top: 18px;
+  border-color: #d7c7ae;
+  background: rgba(255, 255, 255, 0.72);
+}
+
 .cq-primary-btn {
   display: inline-flex;
   position: relative;
@@ -1437,6 +1450,10 @@ a {
   gap: 12px;
 }
 
+.cq-feature-link-card {
+  text-decoration: none;
+}
+
 .cq-feature-card {
   background: var(--cq-surface-soft);
   border: 1px solid var(--cq-border);
@@ -1490,6 +1507,120 @@ a {
   margin: 8px 0 0;
   color: var(--cq-text-soft);
   line-height: 1.5;
+}
+
+.cq-feature-card-ink {
+  background: linear-gradient(145deg, #fff9ee, #fff4e2);
+}
+
+.cq-welcome-tracks {
+  margin-top: 14px;
+  border: 1px solid #ddccb0;
+  border-radius: 18px;
+  background: linear-gradient(155deg, #fff7ea 0%, #fff1dc 100%);
+  padding: 14px;
+  box-shadow: 0 12px 24px rgba(76, 53, 32, 0.1);
+}
+
+.cq-welcome-track-tabs {
+  margin-top: 6px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.cq-welcome-track-tab {
+  border: 1px solid #dbc6a8;
+  border-radius: 999px;
+  padding: 8px 11px;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #705437;
+  background: #fff8ec;
+  white-space: nowrap;
+}
+
+.cq-welcome-track-tab-active {
+  border-color: #c06a2e;
+  background: #f4d3ad;
+  color: #5f3618;
+}
+
+.cq-welcome-track-panel {
+  margin-top: 10px;
+  border: 1px solid #e4d3bb;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 12px;
+}
+
+.cq-welcome-track-panel h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.cq-welcome-track-panel p {
+  margin: 8px 0 0;
+  color: #6f5f4f;
+  line-height: 1.55;
+}
+
+.cq-welcome-step-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: #5f4d39;
+  font-size: 0.86rem;
+}
+
+.cq-welcome-track-cta {
+  margin-top: 12px;
+}
+
+.cq-welcome-quick-grid {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.cq-welcome-quick-card {
+  border: 1px solid #d3c3a9;
+  border-radius: 16px;
+  background: linear-gradient(165deg, #fffdf7, #fff7ea);
+  padding: 12px;
+  box-shadow: 0 10px 20px rgba(58, 44, 31, 0.08);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.cq-welcome-quick-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(58, 44, 31, 0.12);
+}
+
+.cq-welcome-quick-card h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.cq-welcome-quick-card p {
+  margin: 7px 0 0;
+  color: #6e5f4f;
+  line-height: 1.5;
+}
+
+.cq-welcome-quick-arrow {
+  margin-top: 9px;
+  display: inline-block;
+  border-radius: 999px;
+  border: 1px solid #d7c7ae;
+  background: #fff;
+  padding: 4px 9px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #71553a;
 }
 
 .cq-nav-mock {
@@ -1750,6 +1881,10 @@ a {
   }
 
   .cq-feature-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cq-welcome-quick-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
