@@ -558,6 +558,149 @@ a {
   text-decoration: none;
 }
 
+/* Discover quiz page */
+.cq-discover-quiz-page {
+  display: grid;
+  gap: 12px;
+}
+
+.cq-discover-quiz-header,
+.cq-discover-quiz-card,
+.cq-discover-result-card {
+  background: var(--cq-surface);
+  border: 1px solid var(--cq-border);
+  border-radius: var(--cq-radius-lg);
+  box-shadow: var(--cq-shadow);
+}
+
+.cq-discover-quiz-header {
+  padding: 18px 16px;
+}
+
+.cq-discover-quiz-header h2 {
+  margin: 4px 0 0;
+  font-size: 1.4rem;
+}
+
+.cq-discover-quiz-header p {
+  margin: 8px 0 0;
+  color: var(--cq-text-soft);
+  line-height: 1.5;
+}
+
+.cq-discover-quiz-card,
+.cq-discover-result-card {
+  padding: 14px;
+}
+
+.cq-discover-quiz-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #536a8a;
+}
+
+.cq-discover-quiz-card h3 {
+  margin: 12px 0 0;
+  font-size: 1.08rem;
+}
+
+.cq-discover-option-list {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.cq-discover-option-btn {
+  width: 100%;
+  text-align: left;
+  border: 1px solid #d2dff0;
+  border-radius: 12px;
+  background: #f8fbff;
+  padding: 11px;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #355175;
+}
+
+.cq-discover-option-btn-active {
+  border-color: #85b8ff;
+  background: #eaf3ff;
+  color: #204a81;
+}
+
+.cq-discover-action-row {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.cq-discover-next-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.cq-discover-next-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.cq-discover-result-card h3 {
+  margin: 4px 0 0;
+  font-size: 1.28rem;
+}
+
+.cq-discover-result-subtitle {
+  margin: 8px 0 0;
+  color: #3b5f89;
+  font-weight: 600;
+}
+
+.cq-discover-route-pick {
+  margin-top: 12px;
+  border: 1px dashed #d3c2a6;
+  border-radius: 12px;
+  background: #fff7ea;
+  padding: 10px;
+}
+
+.cq-discover-route-label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #6f5a40;
+}
+
+.cq-discover-route-name {
+  margin: 6px 0 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #2f261d;
+}
+
+.cq-discover-route-reason {
+  margin: 8px 0 0;
+  color: #5f5243;
+  line-height: 1.55;
+}
+
+.cq-discover-result-actions {
+  margin-top: 12px;
+  display: grid;
+  gap: 9px;
+}
+
+.cq-discover-result-btn {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
 /* Profile dashboard page */
 .cq-profile-page {
   display: grid;

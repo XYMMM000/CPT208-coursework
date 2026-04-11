@@ -1,211 +1,258 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 
-const ONBOARDING_STORAGE_KEY = "climbquest_onboarding_preferences";
-
-// Mock route data for the recommendation cards.
-const mockRoutes = [
+// Quiz questions for the Discover page.
+// Each option contributes points to one or more climbing profiles.
+const quizQuestions = [
   {
-    id: "route-1",
-    name: "Sunrise Slab Flow",
-    difficulty: "Easy",
-    style: "Balance",
-    description: "A calm slab route focused on smooth footwork and body control.",
-    matchRules: { level: "Beginner", style: "Balance", goal: "Learn" }
+    id: "q1",
+    title: "When you enter a gym, which wall attracts you first?",
+    options: [
+      { label: "Simple slab to warm up", scores: { flow: 2, social: 1 } },
+      { label: "Overhang with powerful moves", scores: { power: 2 } },
+      { label: "Long endurance circuit", scores: { endurance: 2 } },
+      { label: "Creative technical volumes", scores: { tech: 2, flow: 1 } }
+    ]
   },
   {
-    id: "route-2",
-    name: "Core Burst Traverse",
-    difficulty: "Medium",
-    style: "Strength",
-    description: "A short but punchy traverse with power-focused movement.",
-    matchRules: { level: "Intermediate", style: "Strength", goal: "Challenge" }
+    id: "q2",
+    title: "What is your ideal climbing session vibe?",
+    options: [
+      { label: "Calm and focused", scores: { flow: 2 } },
+      { label: "High energy challenge", scores: { power: 2 } },
+      { label: "Steady pace for many attempts", scores: { endurance: 2 } },
+      { label: "Trying movement puzzles with friends", scores: { social: 2, tech: 1 } }
+    ]
   },
   {
-    id: "route-3",
-    name: "Endurance Ladder",
-    difficulty: "Medium",
-    style: "Endurance",
-    description: "Long sequence climbing to build pacing and stamina.",
-    matchRules: {
-      level: "Intermediate",
-      style: "Endurance",
-      goal: "Improve technique"
-    }
+    id: "q3",
+    title: "If you fail a move, what do you usually do?",
+    options: [
+      { label: "Refine footwork and retry", scores: { flow: 2, tech: 1 } },
+      { label: "Commit with more strength", scores: { power: 2 } },
+      { label: "Shake out and keep climbing", scores: { endurance: 2 } },
+      { label: "Ask for beta and discuss", scores: { social: 2 } }
+    ]
   },
   {
-    id: "route-4",
-    name: "Technique Maze",
-    difficulty: "Hard",
-    style: "Technique",
-    description: "Precision-heavy moves that reward patience and smart sequencing.",
-    matchRules: { level: "Advanced", style: "Technique", goal: "Improve technique" }
-  },
-  {
-    id: "route-5",
-    name: "Fun Team Circuit",
-    difficulty: "Easy",
-    style: "Fun",
-    description: "A social circuit designed for playful climbs with friends.",
-    matchRules: { level: "Beginner", style: "Fun", goal: "Socialize" }
+    id: "q4",
+    title: "What do you want from ClimbQuest today?",
+    options: [
+      { label: "A smooth confidence route", scores: { flow: 2 } },
+      { label: "A hard move challenge", scores: { power: 2 } },
+      { label: "A longer stamina route", scores: { endurance: 2 } },
+      { label: "Community ideas and ratings", scores: { social: 2, tech: 1 } }
+    ]
   }
 ];
 
-function getDifficultyMeta(difficulty) {
-  if (difficulty === "Easy") return { grade: "V0-V1", toneClass: "cq-difficulty-easy" };
-  if (difficulty === "Medium") return { grade: "V2-V4", toneClass: "cq-difficulty-medium" };
-  return { grade: "V5+", toneClass: "cq-difficulty-hard" };
-}
-
-function readUserPreferences() {
-  try {
-    const rawValue = localStorage.getItem(ONBOARDING_STORAGE_KEY);
-    if (!rawValue) return { level: "", style: "", goal: "" };
-
-    const parsed = JSON.parse(rawValue);
-    return {
-      level: parsed.level || "",
-      style: parsed.style || "",
-      goal: parsed.goal || ""
-    };
-  } catch {
-    return { level: "", style: "", goal: "" };
+const profileResults = {
+  flow: {
+    name: "Flow Climber",
+    subtitle: "Balanced and precise movement style",
+    routePick: "Blue Slab Rhythm",
+    reason:
+      "You prefer control, stable pacing, and clean body positioning on technical lines.",
+    primaryLink: "/create",
+    primaryLabel: "Create a Smooth Route",
+    secondaryLink: "/community",
+    secondaryLabel: "Read Community Beta"
+  },
+  power: {
+    name: "Power Climber",
+    subtitle: "Explosive and committed style",
+    routePick: "Crimson Power Burst",
+    reason:
+      "You enjoy direct movement, dynamic attempts, and higher intensity problem solving.",
+    primaryLink: "/discover",
+    primaryLabel: "Try Power Challenge",
+    secondaryLink: "/community",
+    secondaryLabel: "See Hard Route Ratings"
+  },
+  endurance: {
+    name: "Endurance Climber",
+    subtitle: "Consistent and persistent style",
+    routePick: "Long Traverse Engine",
+    reason:
+      "You focus on sustained effort, smooth recovery, and finishing longer sequences.",
+    primaryLink: "/discover",
+    primaryLabel: "Open Endurance Challenge",
+    secondaryLink: "/create",
+    secondaryLabel: "Design a Long Route"
+  },
+  tech: {
+    name: "Technique Climber",
+    subtitle: "Puzzle-driven and thoughtful style",
+    routePick: "Volume Logic Maze",
+    reason:
+      "You like complex movement decisions, micro-adjustments, and clever sequencing.",
+    primaryLink: "/create",
+    primaryLabel: "Build Technical Route",
+    secondaryLink: "/community",
+    secondaryLabel: "Explore Technical Beta"
+  },
+  social: {
+    name: "Community Climber",
+    subtitle: "Collaborative and feedback-oriented style",
+    routePick: "Partner Session Circuit",
+    reason:
+      "You value route sharing, collaborative attempts, and learning from community feedback.",
+    primaryLink: "/community",
+    primaryLabel: "Open Community Feed",
+    secondaryLink: "/create",
+    secondaryLabel: "Publish a New Route"
   }
-}
+};
 
-function scoreRoute(route, preferences) {
-  let score = 0;
-
-  if (route.matchRules.level === preferences.level) score += 2;
-  if (route.matchRules.style === preferences.style) score += 2;
-  if (route.matchRules.goal === preferences.goal) score += 2;
-
-  return score;
-}
-
-function buildReason(route, preferences) {
-  const reasons = [];
-
-  if (preferences.level && route.matchRules.level === preferences.level) {
-    reasons.push(`matches your ${preferences.level} level`);
-  }
-  if (preferences.style && route.matchRules.style === preferences.style) {
-    reasons.push(`fits your ${preferences.style.toLowerCase()} style`);
-  }
-  if (preferences.goal && route.matchRules.goal === preferences.goal) {
-    reasons.push(`supports your goal to ${preferences.goal.toLowerCase()}`);
-  }
-
-  if (reasons.length === 0) {
-    return "Recommended as a fresh route to explore today.";
-  }
-
-  return `Recommended because it ${reasons.join(" and ")}.`;
-}
-
-function getStartProgressByDifficulty(difficulty) {
-  if (difficulty === "Easy") return 30;
-  if (difficulty === "Medium") return 20;
-  return 12;
+function getTopProfileKey(scoreBoard) {
+  return Object.entries(scoreBoard).sort((a, b) => b[1] - a[1])[0]?.[0] || "flow";
 }
 
 export default function DiscoverPage() {
-  // Read onboarding preferences once for this page.
-  const preferences = useMemo(() => readUserPreferences(), []);
+  // answerMap stores selected option index by question id.
+  const [answerMap, setAnswerMap] = useState({});
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [isFinished, setIsFinished] = useState(false);
 
-  // Build the top 3 recommendations using simple scoring based on preferences.
-  const recommendedRoutes = useMemo(() => {
-    return [...mockRoutes]
-      .sort((a, b) => scoreRoute(b, preferences) - scoreRoute(a, preferences))
-      .slice(0, 3)
-      .map((route) => ({
-        ...route,
-        recommendationReason: buildReason(route, preferences)
-      }));
-  }, [preferences]);
+  const currentQuestion = quizQuestions[currentQuestionIndex];
+  const answeredCount = Object.keys(answerMap).length;
+  const progressPercent = Math.round((answeredCount / quizQuestions.length) * 100);
 
-  // Track which route the user starts as today's active quest.
-  const [activeQuestId, setActiveQuestId] = useState(null);
-  const [challengeProgress, setChallengeProgress] = useState(0);
+  const scoreBoard = useMemo(() => {
+    const base = { flow: 0, power: 0, endurance: 0, tech: 0, social: 0 };
 
-  const activeQuest = recommendedRoutes.find((route) => route.id === activeQuestId);
+    for (const question of quizQuestions) {
+      const selectedIndex = answerMap[question.id];
+      if (typeof selectedIndex !== "number") continue;
+      const selectedOption = question.options[selectedIndex];
+      if (!selectedOption?.scores) continue;
 
-  function handleStartChallenge(route) {
-    setActiveQuestId(route.id);
-    setChallengeProgress(getStartProgressByDifficulty(route.difficulty));
+      for (const [profileKey, score] of Object.entries(selectedOption.scores)) {
+        base[profileKey] += score;
+      }
+    }
+
+    return base;
+  }, [answerMap]);
+
+  const topProfileKey = useMemo(() => getTopProfileKey(scoreBoard), [scoreBoard]);
+  const result = profileResults[topProfileKey];
+
+  function handleSelectOption(optionIndex) {
+    setAnswerMap((prev) => ({
+      ...prev,
+      [currentQuestion.id]: optionIndex
+    }));
+  }
+
+  function handleNext() {
+    if (currentQuestionIndex >= quizQuestions.length - 1) {
+      setIsFinished(true);
+      return;
+    }
+    setCurrentQuestionIndex((prev) => prev + 1);
+  }
+
+  function handleBack() {
+    setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0));
+  }
+
+  function handleRestartQuiz() {
+    setAnswerMap({});
+    setCurrentQuestionIndex(0);
+    setIsFinished(false);
   }
 
   return (
-    <section className="cq-reco-page">
-      <header className="cq-reco-header">
+    <section className="cq-discover-quiz-page">
+      <header className="cq-discover-quiz-header">
         <p className="cq-page-eyebrow">Discover</p>
-        <h2>Welcome back, climber</h2>
-        <p>Recommended routes picked from your profile and today's climbing goal.</p>
+        <h2>Climb Style Quiz</h2>
+        <p>Answer a few quick questions to find your climbing profile and best next action.</p>
       </header>
 
-      {/* Conditional text: if we have onboarding choices, show the current profile summary. */}
-      {(preferences.level || preferences.style || preferences.goal) && (
-        <p className="cq-reco-profile-note">
-          Your profile: {preferences.level || "Any level"} / {preferences.style || "Any style"} /
-          {` ${preferences.goal || "Any goal"}`}
-        </p>
+      {!isFinished && (
+        <article className="cq-discover-quiz-card">
+          <div className="cq-discover-quiz-meta">
+            <span>
+              Question {currentQuestionIndex + 1} / {quizQuestions.length}
+            </span>
+            <span>{progressPercent}%</span>
+          </div>
+
+          <div className="cq-quest-progress-track" aria-label="Quiz progress">
+            <div className="cq-quest-progress-fill" style={{ width: `${progressPercent}%` }} />
+          </div>
+
+          <h3>{currentQuestion.title}</h3>
+
+          <div className="cq-discover-option-list">
+            {currentQuestion.options.map((option, optionIndex) => {
+              const isSelected = answerMap[currentQuestion.id] === optionIndex;
+
+              return (
+                <button
+                  key={`${currentQuestion.id}-option-${optionIndex}`}
+                  type="button"
+                  className={`cq-discover-option-btn ${
+                    isSelected ? "cq-discover-option-btn-active" : ""
+                  }`}
+                  onClick={() => handleSelectOption(optionIndex)}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="cq-discover-action-row">
+            <button
+              type="button"
+              className="cq-secondary-btn"
+              onClick={handleBack}
+              disabled={currentQuestionIndex === 0}
+            >
+              Back
+            </button>
+            <button
+              type="button"
+              className="cq-primary-btn cq-discover-next-btn"
+              onClick={handleNext}
+              disabled={typeof answerMap[currentQuestion.id] !== "number"}
+            >
+              {currentQuestionIndex === quizQuestions.length - 1 ? "See My Result" : "Next"}
+            </button>
+          </div>
+        </article>
       )}
 
-      <section className="cq-todays-quest" aria-label="Today's quest">
-        <div className="cq-todays-quest-head">
-          <h3>Today's Quest</h3>
-          <span>{challengeProgress}%</span>
-        </div>
+      {isFinished && (
+        <article className="cq-discover-result-card">
+          <p className="cq-page-eyebrow">Your Result</p>
+          <h3>{result.name}</h3>
+          <p className="cq-discover-result-subtitle">{result.subtitle}</p>
 
-        <p className="cq-todays-quest-title">
-          {activeQuest ? activeQuest.name : "Choose a route to start your challenge"}
-        </p>
+          <section className="cq-discover-route-pick">
+            <p className="cq-discover-route-label">Suggested route vibe</p>
+            <p className="cq-discover-route-name">{result.routePick}</p>
+            <p className="cq-discover-route-reason">{result.reason}</p>
+          </section>
 
-        {/* Challenge progress bar updates when user starts a route. */}
-        <div className="cq-quest-progress-track" aria-label="Challenge progress">
-          <div className="cq-quest-progress-fill" style={{ width: `${challengeProgress}%` }} />
-        </div>
-      </section>
+          <div className="cq-discover-result-actions">
+            <Link className="cq-primary-btn cq-discover-result-btn" to={result.primaryLink}>
+              {result.primaryLabel}
+            </Link>
+            <Link className="cq-secondary-btn cq-discover-result-btn" to={result.secondaryLink}>
+              {result.secondaryLabel}
+            </Link>
+          </div>
 
-      <section className="cq-route-grid" aria-label="Recommended routes">
-        {recommendedRoutes.map((route) => {
-          const isActiveRoute = activeQuestId === route.id;
-          const difficultyMeta = getDifficultyMeta(route.difficulty);
-
-          return (
-            <article key={route.id} className="cq-route-card">
-              <div className="cq-route-top-row">
-                <h3>{route.name}</h3>
-                <span className={`cq-route-difficulty ${difficultyMeta.toneClass}`}>
-                  {route.difficulty} | {difficultyMeta.grade}
-                </span>
-              </div>
-
-              <span className="cq-route-style-tag">{route.style}</span>
-
-              {/* Mini topology line: gives a quick movement-path feeling. */}
-              <div className="cq-route-line" aria-hidden="true">
-                <span className="cq-route-line-node cq-route-line-node-start" />
-                <span className="cq-route-line-segment" />
-                <span className="cq-route-line-node cq-route-line-node-mid" />
-                <span className="cq-route-line-segment" />
-                <span className="cq-route-line-node cq-route-line-node-finish" />
-              </div>
-
-              <p className="cq-route-description">{route.description}</p>
-              <p className="cq-route-reason">{route.recommendationReason}</p>
-
-              <button
-                type="button"
-                className="cq-primary-btn cq-route-btn"
-                onClick={() => handleStartChallenge(route)}
-                disabled={isActiveRoute}
-              >
-                {isActiveRoute ? "Challenge Started" : "Start Challenge"}
-              </button>
-            </article>
-          );
-        })}
-      </section>
+          <button type="button" className="cq-reset-btn" onClick={handleRestartQuiz}>
+            Retake Quiz
+          </button>
+        </article>
+      )}
     </section>
   );
 }
+
