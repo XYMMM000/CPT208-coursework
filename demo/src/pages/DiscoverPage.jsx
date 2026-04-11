@@ -88,10 +88,10 @@ const quizQuestions = [
 
 const profileResults = {
   flow: {
-    emoji: "馃鈥嶁檪锔忦煣?,
+    emoji: "\u{1F9D7}",
     mascot: {
       name: "Aero",
-      avatars: ["馃鈥嶁檧锔?, "馃寠", "馃崈"],
+      avatars: ["\u{1F9D7}", "\u{1F30A}", "\u{1F343}"],
       role: "Flow Coach",
       lines: [
         "Keep your breathing calm and trust your feet.",
@@ -109,31 +109,16 @@ const profileResults = {
     secondaryLink: "/community",
     secondaryLabel: "Read Community Beta",
     routes: [
-      {
-        name: "Blue Slab Rhythm",
-        difficulty: "Easy | V0-V1",
-        style: "Balance",
-        reason: "Great for smooth body position and precise feet."
-      },
-      {
-        name: "Silent Corner Flow",
-        difficulty: "Easy | V0-V1",
-        style: "Technique",
-        reason: "Helps you refine quiet movement and weight transfer."
-      },
-      {
-        name: "Glass Wall Glide",
-        difficulty: "Medium | V2-V4",
-        style: "Balance",
-        reason: "Adds confidence on small footholds with controlled pacing."
-      }
+      { name: "Blue Slab Rhythm", difficulty: "Easy | V0-V1", style: "Balance", reason: "Great for smooth body position and precise feet." },
+      { name: "Silent Corner Flow", difficulty: "Easy | V0-V1", style: "Technique", reason: "Helps you refine quiet movement and weight transfer." },
+      { name: "Glass Wall Glide", difficulty: "Medium | V2-V4", style: "Balance", reason: "Adds confidence on small footholds with controlled pacing." }
     ]
   },
   power: {
-    emoji: "鈿○煉?,
+    emoji: "\u{1F4AA}",
     mascot: {
       name: "Blaze",
-      avatars: ["馃Ω", "鈿?, "馃"],
+      avatars: ["\u{1F525}", "\u26A1", "\u{1F981}"],
       role: "Power Coach",
       lines: [
         "Commit fast, stay tight, and drive from your core.",
@@ -151,31 +136,16 @@ const profileResults = {
     secondaryLink: "/community",
     secondaryLabel: "See Hard Route Ratings",
     routes: [
-      {
-        name: "Crimson Power Burst",
-        difficulty: "Hard | V5+",
-        style: "Power",
-        reason: "Explosive pulls and short, high-intensity sequences."
-      },
-      {
-        name: "Volume Dyno Punch",
-        difficulty: "Medium | V2-V4",
-        style: "Power",
-        reason: "Builds confidence in dynamic movement and lock-offs."
-      },
-      {
-        name: "Overhang Strike Line",
-        difficulty: "Hard | V5+",
-        style: "Strength",
-        reason: "Perfect for body tension and powerful finishing moves."
-      }
+      { name: "Crimson Power Burst", difficulty: "Hard | V5+", style: "Power", reason: "Explosive pulls and short, high-intensity sequences." },
+      { name: "Volume Dyno Punch", difficulty: "Medium | V2-V4", style: "Power", reason: "Builds confidence in dynamic movement and lock-offs." },
+      { name: "Overhang Strike Line", difficulty: "Hard | V5+", style: "Strength", reason: "Perfect for body tension and powerful finishing moves." }
     ]
   },
   endurance: {
-    emoji: "馃敟鉀帮笍",
+    emoji: "\u{1F525}",
     mascot: {
       name: "Pace",
-      avatars: ["馃弮", "鉀帮笍", "馃敟"],
+      avatars: ["\u{1F3C3}", "\u26F0", "\u{1F525}"],
       role: "Endurance Coach",
       lines: [
         "Stay efficient and keep moving with steady rhythm.",
@@ -193,31 +163,16 @@ const profileResults = {
     secondaryLink: "/create",
     secondaryLabel: "Design a Long Route",
     routes: [
-      {
-        name: "Long Traverse Engine",
-        difficulty: "Medium | V2-V4",
-        style: "Endurance",
-        reason: "Sustained movement with limited resting positions."
-      },
-      {
-        name: "Circuit River",
-        difficulty: "Medium | V2-V4",
-        style: "Endurance",
-        reason: "Great for pacing and maintaining form under fatigue."
-      },
-      {
-        name: "Wall Marathon Lite",
-        difficulty: "Easy | V0-V1",
-        style: "Flow",
-        reason: "Builds session volume while preserving technique quality."
-      }
+      { name: "Long Traverse Engine", difficulty: "Medium | V2-V4", style: "Endurance", reason: "Sustained movement with limited resting positions." },
+      { name: "Circuit River", difficulty: "Medium | V2-V4", style: "Endurance", reason: "Great for pacing and maintaining form under fatigue." },
+      { name: "Wall Marathon Lite", difficulty: "Easy | V0-V1", style: "Flow", reason: "Builds session volume while preserving technique quality." }
     ]
   },
   tech: {
-    emoji: "馃馃",
+    emoji: "\u{1F9E0}",
     mascot: {
       name: "Nori",
-      avatars: ["馃З", "馃", "馃洶锔?],
+      avatars: ["\u{1F9E0}", "\u{1F9E9}", "\u{1F4D0}"],
       role: "Technique Coach",
       lines: [
         "Solve the sequence first, then execute with precision.",
@@ -235,31 +190,16 @@ const profileResults = {
     secondaryLink: "/community",
     secondaryLabel: "Explore Technical Beta",
     routes: [
-      {
-        name: "Volume Logic Maze",
-        difficulty: "Medium | V2-V4",
-        style: "Technique",
-        reason: "Designed for body positioning and subtle foot decisions."
-      },
-      {
-        name: "Heel Hook Study",
-        difficulty: "Hard | V5+",
-        style: "Technique",
-        reason: "Focuses on sequencing with advanced foot and hip control."
-      },
-      {
-        name: "Micro Beta Lab",
-        difficulty: "Medium | V2-V4",
-        style: "Technique",
-        reason: "Encourages route reading and efficient move planning."
-      }
+      { name: "Volume Logic Maze", difficulty: "Medium | V2-V4", style: "Technique", reason: "Designed for body positioning and subtle foot decisions." },
+      { name: "Heel Hook Study", difficulty: "Hard | V5+", style: "Technique", reason: "Focuses on sequencing with advanced foot and hip control." },
+      { name: "Micro Beta Lab", difficulty: "Medium | V2-V4", style: "Technique", reason: "Encourages route reading and efficient move planning." }
     ]
   },
   social: {
-    emoji: "馃馃帀",
+    emoji: "\u{1F91D}",
     mascot: {
       name: "Milo",
-      avatars: ["馃槃", "馃帀", "馃"],
+      avatars: ["\u{1F60A}", "\u{1F389}", "\u{1F91D}"],
       role: "Community Coach",
       lines: [
         "Share beta, cheer each other on, and send together.",
@@ -277,24 +217,9 @@ const profileResults = {
     secondaryLink: "/create",
     secondaryLabel: "Publish a New Route",
     routes: [
-      {
-        name: "Partner Session Circuit",
-        difficulty: "Easy | V0-V1",
-        style: "Fun",
-        reason: "Great for climbing in pairs and exchanging beta quickly."
-      },
-      {
-        name: "Crowd Favorite Ladder",
-        difficulty: "Medium | V2-V4",
-        style: "Social",
-        reason: "Popular line with lots of community feedback and variations."
-      },
-      {
-        name: "Group Warmup Relay",
-        difficulty: "Easy | V0-V1",
-        style: "Flow",
-        reason: "Perfect for team sessions and confidence building."
-      }
+      { name: "Partner Session Circuit", difficulty: "Easy | V0-V1", style: "Fun", reason: "Great for climbing in pairs and exchanging beta quickly." },
+      { name: "Crowd Favorite Ladder", difficulty: "Medium | V2-V4", style: "Social", reason: "Popular line with lots of community feedback and variations." },
+      { name: "Group Warmup Relay", difficulty: "Easy | V0-V1", style: "Flow", reason: "Perfect for team sessions and confidence building." }
     ]
   }
 };
@@ -303,7 +228,7 @@ function getMascotVariant(result, seed) {
   const avatars = result.mascot.avatars || [];
   const lines = result.mascot.lines || [];
   const safeSeed = Math.abs(Number(seed) || 0);
-  const avatar = avatars.length > 0 ? avatars[safeSeed % avatars.length] : "馃";
+  const avatar = avatars.length > 0 ? avatars[safeSeed % avatars.length] : "\u{1F9D7}";
   const line = lines.length > 0 ? lines[(safeSeed + 1) % lines.length] : "";
   return { avatar, line };
 }
