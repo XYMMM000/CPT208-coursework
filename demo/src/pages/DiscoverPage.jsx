@@ -91,9 +91,13 @@ const profileResults = {
     emoji: "🧘‍♂️🧗",
     mascot: {
       name: "Aero",
-      avatar: "🧗‍♀️",
+      avatars: ["🧗‍♀️", "🌊", "🍃"],
       role: "Flow Coach",
-      line: "Keep your breathing calm and trust your feet."
+      lines: [
+        "Keep your breathing calm and trust your feet.",
+        "Slow is smooth. Smooth is fast.",
+        "Find balance first, then commit."
+      ]
     },
     name: "Flow Climber",
     subtitle: "Balanced and precise movement style",
@@ -129,9 +133,13 @@ const profileResults = {
     emoji: "⚡💪",
     mascot: {
       name: "Blaze",
-      avatar: "🦸",
+      avatars: ["🦸", "⚡", "🦁"],
       role: "Power Coach",
-      line: "Commit fast, stay tight, and drive from your core."
+      lines: [
+        "Commit fast, stay tight, and drive from your core.",
+        "Explode with confidence and own the move.",
+        "Strong hips, strong finish."
+      ]
     },
     name: "Power Climber",
     subtitle: "Explosive and committed style",
@@ -167,9 +175,13 @@ const profileResults = {
     emoji: "🔥⛰️",
     mascot: {
       name: "Pace",
-      avatar: "🏃",
+      avatars: ["🏃", "⛰️", "🔥"],
       role: "Endurance Coach",
-      line: "Stay efficient and keep moving with steady rhythm."
+      lines: [
+        "Stay efficient and keep moving with steady rhythm.",
+        "Save energy on every move.",
+        "Consistency beats intensity over long routes."
+      ]
     },
     name: "Endurance Climber",
     subtitle: "Consistent and persistent style",
@@ -205,9 +217,13 @@ const profileResults = {
     emoji: "🧠🪢",
     mascot: {
       name: "Nori",
-      avatar: "🧩",
+      avatars: ["🧩", "🧠", "🛰️"],
       role: "Technique Coach",
-      line: "Solve the sequence first, then execute with precision."
+      lines: [
+        "Solve the sequence first, then execute with precision.",
+        "Read the wall before you pull.",
+        "Tiny adjustments unlock big sends."
+      ]
     },
     name: "Technique Climber",
     subtitle: "Puzzle-driven and thoughtful style",
@@ -243,9 +259,13 @@ const profileResults = {
     emoji: "🤝🎉",
     mascot: {
       name: "Milo",
-      avatar: "😄",
+      avatars: ["😄", "🎉", "🤝"],
       role: "Community Coach",
-      line: "Share beta, cheer each other on, and send together."
+      lines: [
+        "Share beta, cheer each other on, and send together.",
+        "Great sessions are built with teammates.",
+        "Feedback and fun make progress faster."
+      ]
     },
     name: "Community Climber",
     subtitle: "Collaborative and feedback-oriented style",
@@ -279,6 +299,15 @@ const profileResults = {
   }
 };
 
+function getMascotVariant(result, seed) {
+  const avatars = result.mascot.avatars || [];
+  const lines = result.mascot.lines || [];
+  const safeSeed = Math.abs(Number(seed) || 0);
+  const avatar = avatars.length > 0 ? avatars[safeSeed % avatars.length] : "🧗";
+  const line = lines.length > 0 ? lines[(safeSeed + 1) % lines.length] : "";
+  return { avatar, line };
+}
+
 function getTopProfileKey(scoreBoard) {
   return Object.entries(scoreBoard).sort((a, b) => b[1] - a[1])[0]?.[0] || "flow";
 }
@@ -288,6 +317,7 @@ export default function DiscoverPage() {
   const [answerMap, setAnswerMap] = useState({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const [mascotSeed, setMascotSeed] = useState(Date.now());
 
   const currentQuestion = quizQuestions[currentQuestionIndex];
   const answeredCount = Object.keys(answerMap).length;
@@ -312,6 +342,10 @@ export default function DiscoverPage() {
 
   const topProfileKey = useMemo(() => getTopProfileKey(scoreBoard), [scoreBoard]);
   const result = profileResults[topProfileKey];
+  const mascotVariant = useMemo(
+    () => getMascotVariant(result, mascotSeed),
+    [result, mascotSeed]
+  );
 
   function handleSelectOption(optionIndex) {
     setAnswerMap((prev) => ({
@@ -322,6 +356,7 @@ export default function DiscoverPage() {
 
   function handleNext() {
     if (currentQuestionIndex >= quizQuestions.length - 1) {
+      setMascotSeed(Date.now());
       setIsFinished(true);
       return;
     }
@@ -336,6 +371,7 @@ export default function DiscoverPage() {
     setAnswerMap({});
     setCurrentQuestionIndex(0);
     setIsFinished(false);
+    setMascotSeed(Date.now());
   }
 
   return (
@@ -411,13 +447,13 @@ export default function DiscoverPage() {
 
           <section className="cq-discover-mascot-card" aria-label="Virtual coach">
             <div className="cq-discover-mascot-avatar" aria-hidden="true">
-              {result.mascot.avatar}
+              {mascotVariant.avatar}
             </div>
             <div>
               <p className="cq-discover-mascot-name">
                 {result.mascot.name} · {result.mascot.role}
               </p>
-              <p className="cq-discover-mascot-line">{result.mascot.line}</p>
+              <p className="cq-discover-mascot-line">{mascotVariant.line}</p>
             </div>
           </section>
 
