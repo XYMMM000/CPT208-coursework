@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import BottomNavPreview from "../components/ui/BottomNavPreview";
 
 const welcomeTracks = [
   {
@@ -161,8 +160,6 @@ export default function LandingPage() {
           </Link>
         ))}
       </section>
-
-      <BottomNavPreview />
     </div>
   );
 }
