@@ -1,5 +1,5 @@
 ﻿import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // Quiz questions for the Discover page.
 // Each option contributes points to one or more climbing profiles.
@@ -600,6 +600,7 @@ function buildRouteDetailState(route, result) {
 }
 
 export default function DiscoverPage() {
+  const navigate = useNavigate();
   // answerMap stores selected option index by question id.
   const [answerMap, setAnswerMap] = useState({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -659,6 +660,14 @@ export default function DiscoverPage() {
     setCurrentQuestionIndex(0);
     setIsFinished(false);
     setMascotSeed(Date.now());
+  }
+
+  function openRecommendedRoute(route) {
+    navigate("/route-detail", {
+      state: {
+        route: buildRouteDetailState(route, result)
+      }
+    });
   }
 
   return (
@@ -755,27 +764,31 @@ export default function DiscoverPage() {
             {result.routes.map((route) => (
               <Link
                 key={`${result.name}-${route.name}`}
-                className="cq-discover-reco-link"
+                className="cq-discover-reco-link cq-discover-reco-card"
                 to="/route-detail"
-                state={{ route: buildRouteDetailState(route, result) }}
+                state={{
+                  route: buildRouteDetailState(route, result)
+                }}
               >
-                <article className="cq-discover-reco-card">
                 <div className="cq-route-top-row">
                   <h4>{route.name}</h4>
                   <span className="cq-route-difficulty">{route.difficulty}</span>
                 </div>
                 <span className="cq-route-style-tag">{route.style}</span>
                 <p className="cq-route-description">{route.reason}</p>
-                  <p className="cq-route-reason">Tap to view start/finish + hand/foot points</p>
-                </article>
+                <p className="cq-route-reason">Tap to view start/finish + hand/foot points</p>
               </Link>
             ))}
           </section>
 
           <div className="cq-discover-result-actions">
-            <Link className="cq-primary-btn cq-discover-result-btn" to={result.primaryLink}>
+            <button
+              type="button"
+              className="cq-primary-btn cq-discover-result-btn"
+              onClick={() => openRecommendedRoute(result.routes[0])}
+            >
               {result.primaryLabel}
-            </Link>
+            </button>
             <Link className="cq-secondary-btn cq-discover-result-btn" to={result.secondaryLink}>
               {result.secondaryLabel}
             </Link>

@@ -744,6 +744,9 @@ a {
 
 .cq-discover-reco-link {
   text-decoration: none;
+  display: block;
+  color: inherit;
+  cursor: pointer;
 }
 
 .cq-discover-reco-card {
