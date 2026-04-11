@@ -43,11 +43,52 @@ const quizQuestions = [
       { label: "A longer stamina route", scores: { endurance: 2 } },
       { label: "Community ideas and ratings", scores: { social: 2, tech: 1 } }
     ]
+  },
+  {
+    id: "q5",
+    title: "Which move style sounds most fun to you?",
+    options: [
+      { label: "Slow weight shifts and balance control", scores: { flow: 2 } },
+      { label: "Big dynamic reaches and lock-offs", scores: { power: 2 } },
+      { label: "Continuous movement with little rest", scores: { endurance: 2 } },
+      { label: "Heel hooks, toe hooks, and body puzzles", scores: { tech: 2 } }
+    ]
+  },
+  {
+    id: "q6",
+    title: "What makes a route feel successful for you?",
+    options: [
+      { label: "Clean technique with no panic", scores: { flow: 2, tech: 1 } },
+      { label: "Sending a move that felt impossible", scores: { power: 2 } },
+      { label: "Finishing after many linked moves", scores: { endurance: 2 } },
+      { label: "Sharing beta and helping friends send", scores: { social: 2 } }
+    ]
+  },
+  {
+    id: "q7",
+    title: "How do you usually warm up?",
+    options: [
+      { label: "Quiet easy slab and movement drills", scores: { flow: 2 } },
+      { label: "A few hard pulls to activate power", scores: { power: 2 } },
+      { label: "Long easy circuits to build rhythm", scores: { endurance: 2 } },
+      { label: "Different hold types to test body positions", scores: { tech: 2 } }
+    ]
+  },
+  {
+    id: "q8",
+    title: "After climbing, what do you most want to do?",
+    options: [
+      { label: "Reflect on movement quality", scores: { flow: 2 } },
+      { label: "Plan a stronger project for next time", scores: { power: 2 } },
+      { label: "Track volume and consistency", scores: { endurance: 2 } },
+      { label: "Post route notes and discuss beta", scores: { social: 2, tech: 1 } }
+    ]
   }
 ];
 
 const profileResults = {
   flow: {
+    emoji: "🧘‍♂️🧗",
     name: "Flow Climber",
     subtitle: "Balanced and precise movement style",
     routePick: "Blue Slab Rhythm",
@@ -59,6 +100,7 @@ const profileResults = {
     secondaryLabel: "Read Community Beta"
   },
   power: {
+    emoji: "⚡💪",
     name: "Power Climber",
     subtitle: "Explosive and committed style",
     routePick: "Crimson Power Burst",
@@ -70,6 +112,7 @@ const profileResults = {
     secondaryLabel: "See Hard Route Ratings"
   },
   endurance: {
+    emoji: "🔥⛰️",
     name: "Endurance Climber",
     subtitle: "Consistent and persistent style",
     routePick: "Long Traverse Engine",
@@ -81,6 +124,7 @@ const profileResults = {
     secondaryLabel: "Design a Long Route"
   },
   tech: {
+    emoji: "🧠🪢",
     name: "Technique Climber",
     subtitle: "Puzzle-driven and thoughtful style",
     routePick: "Volume Logic Maze",
@@ -92,6 +136,7 @@ const profileResults = {
     secondaryLabel: "Explore Technical Beta"
   },
   social: {
+    emoji: "🤝🎉",
     name: "Community Climber",
     subtitle: "Collaborative and feedback-oriented style",
     routePick: "Partner Session Circuit",
@@ -229,7 +274,9 @@ export default function DiscoverPage() {
       {isFinished && (
         <article className="cq-discover-result-card">
           <p className="cq-page-eyebrow">Your Result</p>
-          <h3>{result.name}</h3>
+          <h3>
+            {result.name} {result.emoji}
+          </h3>
           <p className="cq-discover-result-subtitle">{result.subtitle}</p>
 
           <section className="cq-discover-route-pick">
@@ -255,4 +302,3 @@ export default function DiscoverPage() {
     </section>
   );
 }
-
