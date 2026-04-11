@@ -742,11 +742,21 @@ a {
   gap: 8px;
 }
 
+.cq-discover-reco-link {
+  text-decoration: none;
+}
+
 .cq-discover-reco-card {
   border: 1px solid #e4d5be;
   border-radius: 12px;
   background: #fffaef;
   padding: 10px;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.cq-discover-reco-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 18px rgba(58, 44, 31, 0.12);
 }
 
 .cq-discover-reco-card h4 {
@@ -1456,6 +1466,61 @@ a {
   color: #5a6f8e;
   font-size: 0.85rem;
   text-align: center;
+}
+
+.cq-route-plan-point {
+  stroke: #ffffff;
+  stroke-width: 0.3;
+}
+
+.cq-route-plan-point-start {
+  fill: #22c55e;
+}
+
+.cq-route-plan-point-hand {
+  fill: #3b82f6;
+}
+
+.cq-route-plan-point-foot {
+  fill: #f59e0b;
+}
+
+.cq-route-plan-point-finish {
+  fill: #ef4444;
+}
+
+.cq-route-plan-label {
+  fill: #ffffff;
+  font-size: 1.9px;
+  font-weight: 700;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(19, 30, 49, 0.9);
+  stroke-width: 0.38;
+}
+
+.cq-route-plan-legend {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.78rem;
+  color: #486486;
+  font-weight: 700;
+}
+
+.cq-route-plan-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cq-route-plan-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid #ffffff;
 }
 
 /* Bottom tab navigation (mobile-first) */

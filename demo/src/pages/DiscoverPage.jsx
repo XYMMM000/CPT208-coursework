@@ -462,6 +462,143 @@ function getTopProfileKey(scoreBoard) {
   return Object.entries(scoreBoard).sort((a, b) => b[1] - a[1])[0]?.[0] || "flow";
 }
 
+const routePlanPresets = {
+  "Blue Slab Rhythm": {
+    wallPhotoIndex: 0,
+    start: { x: 18, y: 79 },
+    finish: { x: 71, y: 22 },
+    hands: [{ x: 29, y: 67 }, { x: 45, y: 52 }, { x: 58, y: 38 }],
+    feet: [{ x: 21, y: 83 }, { x: 35, y: 74 }]
+  },
+  "Silent Corner Flow": {
+    wallPhotoIndex: 1,
+    start: { x: 16, y: 81 },
+    finish: { x: 62, y: 27 },
+    hands: [{ x: 24, y: 67 }, { x: 39, y: 51 }, { x: 53, y: 39 }],
+    feet: [{ x: 19, y: 84 }, { x: 31, y: 72 }]
+  },
+  "Glass Wall Glide": {
+    wallPhotoIndex: 2,
+    start: { x: 23, y: 77 },
+    finish: { x: 78, y: 31 },
+    hands: [{ x: 35, y: 64 }, { x: 50, y: 49 }, { x: 65, y: 38 }],
+    feet: [{ x: 26, y: 80 }, { x: 41, y: 68 }]
+  },
+  "Crimson Power Burst": {
+    wallPhotoIndex: 0,
+    start: { x: 34, y: 74 },
+    finish: { x: 82, y: 26 },
+    hands: [{ x: 41, y: 60 }, { x: 55, y: 46 }, { x: 70, y: 34 }],
+    feet: [{ x: 31, y: 78 }, { x: 45, y: 67 }]
+  },
+  "Volume Dyno Punch": {
+    wallPhotoIndex: 1,
+    start: { x: 28, y: 76 },
+    finish: { x: 76, y: 33 },
+    hands: [{ x: 37, y: 63 }, { x: 52, y: 50 }, { x: 64, y: 39 }],
+    feet: [{ x: 26, y: 80 }, { x: 40, y: 68 }]
+  },
+  "Overhang Strike Line": {
+    wallPhotoIndex: 2,
+    start: { x: 33, y: 73 },
+    finish: { x: 84, y: 28 },
+    hands: [{ x: 44, y: 61 }, { x: 59, y: 47 }, { x: 73, y: 35 }],
+    feet: [{ x: 31, y: 77 }, { x: 47, y: 67 }]
+  },
+  "Long Traverse Engine": {
+    wallPhotoIndex: 0,
+    start: { x: 11, y: 69 },
+    finish: { x: 86, y: 60 },
+    hands: [{ x: 24, y: 66 }, { x: 39, y: 63 }, { x: 56, y: 62 }, { x: 72, y: 61 }],
+    feet: [{ x: 15, y: 76 }, { x: 31, y: 72 }]
+  },
+  "Circuit River": {
+    wallPhotoIndex: 1,
+    start: { x: 12, y: 67 },
+    finish: { x: 84, y: 58 },
+    hands: [{ x: 26, y: 64 }, { x: 42, y: 62 }, { x: 58, y: 61 }, { x: 72, y: 60 }],
+    feet: [{ x: 16, y: 75 }, { x: 34, y: 70 }]
+  },
+  "Wall Marathon Lite": {
+    wallPhotoIndex: 2,
+    start: { x: 13, y: 68 },
+    finish: { x: 81, y: 53 },
+    hands: [{ x: 27, y: 64 }, { x: 44, y: 60 }, { x: 61, y: 57 }],
+    feet: [{ x: 18, y: 76 }, { x: 35, y: 70 }]
+  },
+  "Volume Logic Maze": {
+    wallPhotoIndex: 2,
+    start: { x: 25, y: 79 },
+    finish: { x: 69, y: 25 },
+    hands: [{ x: 34, y: 66 }, { x: 47, y: 53 }, { x: 58, y: 40 }],
+    feet: [{ x: 26, y: 82 }, { x: 40, y: 71 }]
+  },
+  "Heel Hook Study": {
+    wallPhotoIndex: 1,
+    start: { x: 31, y: 80 },
+    finish: { x: 74, y: 29 },
+    hands: [{ x: 40, y: 66 }, { x: 52, y: 52 }, { x: 64, y: 38 }],
+    feet: [{ x: 30, y: 84 }, { x: 45, y: 72 }]
+  },
+  "Micro Beta Lab": {
+    wallPhotoIndex: 0,
+    start: { x: 22, y: 77 },
+    finish: { x: 67, y: 30 },
+    hands: [{ x: 32, y: 65 }, { x: 45, y: 53 }, { x: 57, y: 41 }],
+    feet: [{ x: 22, y: 81 }, { x: 36, y: 70 }]
+  },
+  "Partner Session Circuit": {
+    wallPhotoIndex: 0,
+    start: { x: 17, y: 78 },
+    finish: { x: 75, y: 34 },
+    hands: [{ x: 28, y: 65 }, { x: 43, y: 52 }, { x: 58, y: 42 }],
+    feet: [{ x: 19, y: 82 }, { x: 34, y: 71 }]
+  },
+  "Crowd Favorite Ladder": {
+    wallPhotoIndex: 1,
+    start: { x: 20, y: 79 },
+    finish: { x: 68, y: 30 },
+    hands: [{ x: 30, y: 67 }, { x: 42, y: 55 }, { x: 54, y: 44 }],
+    feet: [{ x: 21, y: 83 }, { x: 36, y: 73 }]
+  },
+  "Group Warmup Relay": {
+    wallPhotoIndex: 2,
+    start: { x: 18, y: 78 },
+    finish: { x: 63, y: 33 },
+    hands: [{ x: 29, y: 67 }, { x: 40, y: 56 }, { x: 52, y: 45 }],
+    feet: [{ x: 20, y: 82 }, { x: 33, y: 72 }]
+  }
+};
+
+function parseDifficultyLabel(difficultyLabel) {
+  if (difficultyLabel.includes("Hard")) return "Hard";
+  if (difficultyLabel.includes("Medium")) return "Medium";
+  return "Easy";
+}
+
+function buildRouteDetailState(route, result) {
+  const plan = routePlanPresets[route.name] || null;
+
+  return {
+    title: route.name,
+    difficulty: parseDifficultyLabel(route.difficulty),
+    tags: [route.style],
+    description: route.reason,
+    suitableFor: "Quiz Recommendation",
+    holdContours: [],
+    wallPhotoIndex: plan?.wallPhotoIndex ?? 0,
+    createdTimeLabel: "Recommended now",
+    source: "AI",
+    creator: {
+      name: result.mascot.name,
+      club: "ClimbQuest Quiz Coach"
+    },
+    averageRating: 4.4,
+    ratingCount: 32,
+    routePlan: plan
+  };
+}
+
 export default function DiscoverPage() {
   // answerMap stores selected option index by question id.
   const [answerMap, setAnswerMap] = useState({});
@@ -616,14 +753,22 @@ export default function DiscoverPage() {
 
           <section className="cq-discover-reco-list" aria-label="Recommended routes by profile">
             {result.routes.map((route) => (
-              <article key={`${result.name}-${route.name}`} className="cq-discover-reco-card">
+              <Link
+                key={`${result.name}-${route.name}`}
+                className="cq-discover-reco-link"
+                to="/route-detail"
+                state={{ route: buildRouteDetailState(route, result) }}
+              >
+                <article className="cq-discover-reco-card">
                 <div className="cq-route-top-row">
                   <h4>{route.name}</h4>
                   <span className="cq-route-difficulty">{route.difficulty}</span>
                 </div>
                 <span className="cq-route-style-tag">{route.style}</span>
                 <p className="cq-route-description">{route.reason}</p>
-              </article>
+                  <p className="cq-route-reason">Tap to view start/finish + hand/foot points</p>
+                </article>
+              </Link>
             ))}
           </section>
 

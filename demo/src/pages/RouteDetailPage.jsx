@@ -14,6 +14,7 @@ const initialRoute = {
     "A smooth slab-focused route with controlled shifts, precise feet, and steady rhythm.",
   suitableFor: "Beginner",
   holdContours: [],
+  routePlan: null,
   imageDataUrl: "",
   wallPhotoIndex: 0,
   source: "Community",
@@ -324,6 +325,25 @@ function pointsToSvgString(points) {
   return points.map((point) => `${point.x},${point.y}`).join(" ");
 }
 
+function getRoutePlanPoints(plan) {
+  if (!plan) return [];
+
+  const points = [];
+  if (plan.start) points.push({ ...plan.start, kind: "start", label: "S" });
+  if (Array.isArray(plan.hands)) {
+    plan.hands.forEach((point, index) => {
+      points.push({ ...point, kind: "hand", label: `H${index + 1}` });
+    });
+  }
+  if (Array.isArray(plan.feet)) {
+    plan.feet.forEach((point, index) => {
+      points.push({ ...point, kind: "foot", label: `F${index + 1}` });
+    });
+  }
+  if (plan.finish) points.push({ ...plan.finish, kind: "finish", label: "TOP" });
+  return points;
+}
+
 function clampPercent(value) {
   return Math.min(99, Math.max(1, value));
 }
@@ -579,6 +599,18 @@ export default function RouteDetailPage() {
     () => getContoursForPhoto(routeState, selectedWallPhotoIndex),
     [routeState, selectedWallPhotoIndex]
   );
+  const routePlanPoints = useMemo(
+    () => getRoutePlanPoints(routeState.routePlan),
+    [routeState.routePlan]
+  );
+  const routePlanLinePoints = useMemo(() => {
+    if (!routeState.routePlan) return "";
+    const sequence = [];
+    if (routeState.routePlan.start) sequence.push(routeState.routePlan.start);
+    if (Array.isArray(routeState.routePlan.hands)) sequence.push(...routeState.routePlan.hands);
+    if (routeState.routePlan.finish) sequence.push(routeState.routePlan.finish);
+    return sequence.map((point) => `${point.x},${point.y}`).join(" ");
+  }, [routeState.routePlan]);
   const [displayedContours, setDisplayedContours] = useState(baseContours);
 
   useEffect(() => {
@@ -734,6 +766,12 @@ export default function RouteDetailPage() {
         <p className="cq-detail-creator">
           Hold contours: {displayedContourCount}
         </p>
+        {routeState.routePlan && (
+          <p className="cq-detail-creator">
+            Route points: start + {routeState.routePlan.hands?.length || 0} hand points +{" "}
+            {routeState.routePlan.feet?.length || 0} foot points + finish
+          </p>
+        )}
       </section>
 
       <section className="cq-detail-card">
@@ -760,6 +798,18 @@ export default function RouteDetailPage() {
             preserveAspectRatio="none"
             aria-hidden="true"
           >
+            {routePlanLinePoints && (
+              <polyline
+                points={routePlanLinePoints}
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.85)"
+                strokeWidth="0.55"
+                strokeDasharray="1.4 1.1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            )}
+
             {displayedContours.map((hold, index) => (
               <polygon
                 key={`detail-hold-${hold.id || index}`}
@@ -770,8 +820,43 @@ export default function RouteDetailPage() {
                 strokeLinejoin="round"
               />
             ))}
+
+            {routePlanPoints.map((point) => (
+              <g key={`route-plan-point-${point.label}`}>
+                <circle
+                  cx={point.x}
+                  cy={point.y}
+                  r={point.kind === "finish" ? 1.2 : 1.05}
+                  className={`cq-route-plan-point cq-route-plan-point-${point.kind}`}
+                />
+                <text x={point.x} y={point.y - 1.75} className="cq-route-plan-label">
+                  {point.label}
+                </text>
+              </g>
+            ))}
           </svg>
         </div>
+
+        {routeState.routePlan && (
+          <div className="cq-route-plan-legend" aria-label="Route point legend">
+            <span>
+              <i className="cq-route-plan-dot cq-route-plan-point-start" />
+              Start
+            </span>
+            <span>
+              <i className="cq-route-plan-dot cq-route-plan-point-hand" />
+              Hands
+            </span>
+            <span>
+              <i className="cq-route-plan-dot cq-route-plan-point-foot" />
+              Feet
+            </span>
+            <span>
+              <i className="cq-route-plan-dot cq-route-plan-point-finish" />
+              Finish
+            </span>
+          </div>
+        )}
       </section>
 
       <section className="cq-detail-card">
