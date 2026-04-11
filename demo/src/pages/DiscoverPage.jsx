@@ -308,6 +308,51 @@ function getMascotVariant(result, seed) {
   return { avatar, line };
 }
 
+const mascotVisualByProfile = {
+  flow: { shirt: "#4ba3d9", accent: "#7dd3fc", hair: "#3b2d1f", skin: "#f4c7a5" },
+  power: { shirt: "#ef4444", accent: "#f97316", hair: "#2a1b14", skin: "#e9b48f" },
+  endurance: { shirt: "#22c55e", accent: "#84cc16", hair: "#3a2a1d", skin: "#f1c49c" },
+  tech: { shirt: "#8b5cf6", accent: "#6366f1", hair: "#1f2937", skin: "#edc19b" },
+  social: { shirt: "#f59e0b", accent: "#ec4899", hair: "#4b2e20", skin: "#f2c6a0" }
+};
+
+function VirtualClimberAvatar({ profileKey, seed }) {
+  const style = mascotVisualByProfile[profileKey] || mascotVisualByProfile.flow;
+  const safeSeed = Math.abs(Number(seed) || 0);
+  const eyeCurve = safeSeed % 3 === 0 ? 0 : safeSeed % 3 === 1 ? 0.8 : -0.6;
+  const hasHeadband = safeSeed % 2 === 0;
+  const hasChalkBag = safeSeed % 5 !== 0;
+
+  return (
+    <svg viewBox="0 0 120 120" className="cq-mbti-avatar-svg" aria-hidden="true">
+      <defs>
+        <linearGradient id={`bg-${profileKey}`} x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stopColor={style.accent} stopOpacity="0.32" />
+          <stop offset="100%" stopColor={style.shirt} stopOpacity="0.2" />
+        </linearGradient>
+      </defs>
+
+      <rect x="2" y="2" width="116" height="116" rx="24" fill={`url(#bg-${profileKey})`} />
+      <rect x="36" y="64" width="48" height="34" rx="16" fill={style.shirt} />
+      <circle cx="60" cy="50" r="20" fill={style.skin} />
+      <path d="M42 48c2-12 10-18 18-18 8 0 16 6 18 18-4-3-9-5-18-5s-14 2-18 5z" fill={style.hair} />
+
+      {hasHeadband && <rect x="42" y="46" width="36" height="5" rx="2.5" fill={style.accent} />}
+
+      <path d={`M52 52q3 ${eyeCurve} 6 0`} stroke="#1f2937" strokeWidth="2" fill="none" />
+      <path d={`M62 52q3 ${eyeCurve} 6 0`} stroke="#1f2937" strokeWidth="2" fill="none" />
+      <path d="M54 60q6 6 12 0" stroke="#7c3f2a" strokeWidth="2" fill="none" />
+
+      <rect x="30" y="72" width="10" height="24" rx="5" fill={style.shirt} />
+      <rect x="80" y="72" width="10" height="24" rx="5" fill={style.shirt} />
+
+      {hasChalkBag && <circle cx="83" cy="84" r="5" fill="#e5e7eb" stroke="#9ca3af" strokeWidth="1.5" />}
+      <circle cx="24" cy="80" r="5" fill={style.accent} />
+      <circle cx="96" cy="78" r="5" fill={style.accent} />
+    </svg>
+  );
+}
+
 function getTopProfileKey(scoreBoard) {
   return Object.entries(scoreBoard).sort((a, b) => b[1] - a[1])[0]?.[0] || "flow";
 }
@@ -447,13 +492,14 @@ export default function DiscoverPage() {
 
           <section className="cq-discover-mascot-card" aria-label="Virtual coach">
             <div className="cq-discover-mascot-avatar" aria-hidden="true">
-              {mascotVariant.avatar}
+              <VirtualClimberAvatar profileKey={topProfileKey} seed={mascotSeed} />
             </div>
             <div>
               <p className="cq-discover-mascot-name">
                 {result.mascot.name} · {result.mascot.role}
               </p>
               <p className="cq-discover-mascot-line">{mascotVariant.line}</p>
+              <p className="cq-discover-mascot-emoji">{result.emoji}</p>
             </div>
           </section>
 

@@ -674,14 +674,20 @@ a {
 }
 
 .cq-discover-mascot-avatar {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
+  width: 88px;
+  height: 88px;
+  border-radius: 18px;
   display: grid;
   place-items: center;
-  font-size: 1.3rem;
+  overflow: hidden;
   background: #ffffff;
   border: 1px solid #cfe0f6;
+}
+
+.cq-mbti-avatar-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .cq-discover-mascot-name {
@@ -695,6 +701,11 @@ a {
   margin: 4px 0 0;
   font-size: 0.84rem;
   color: #516f93;
+}
+
+.cq-discover-mascot-emoji {
+  margin: 6px 0 0;
+  font-size: 1rem;
 }
 
 .cq-discover-route-pick {
