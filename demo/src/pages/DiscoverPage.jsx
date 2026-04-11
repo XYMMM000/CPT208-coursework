@@ -89,6 +89,12 @@ const quizQuestions = [
 const profileResults = {
   flow: {
     emoji: "🧘‍♂️🧗",
+    mascot: {
+      name: "Aero",
+      avatar: "🧗‍♀️",
+      role: "Flow Coach",
+      line: "Keep your breathing calm and trust your feet."
+    },
     name: "Flow Climber",
     subtitle: "Balanced and precise movement style",
     routePick: "Blue Slab Rhythm",
@@ -97,10 +103,36 @@ const profileResults = {
     primaryLink: "/create",
     primaryLabel: "Create a Smooth Route",
     secondaryLink: "/community",
-    secondaryLabel: "Read Community Beta"
+    secondaryLabel: "Read Community Beta",
+    routes: [
+      {
+        name: "Blue Slab Rhythm",
+        difficulty: "Easy | V0-V1",
+        style: "Balance",
+        reason: "Great for smooth body position and precise feet."
+      },
+      {
+        name: "Silent Corner Flow",
+        difficulty: "Easy | V0-V1",
+        style: "Technique",
+        reason: "Helps you refine quiet movement and weight transfer."
+      },
+      {
+        name: "Glass Wall Glide",
+        difficulty: "Medium | V2-V4",
+        style: "Balance",
+        reason: "Adds confidence on small footholds with controlled pacing."
+      }
+    ]
   },
   power: {
     emoji: "⚡💪",
+    mascot: {
+      name: "Blaze",
+      avatar: "🦸",
+      role: "Power Coach",
+      line: "Commit fast, stay tight, and drive from your core."
+    },
     name: "Power Climber",
     subtitle: "Explosive and committed style",
     routePick: "Crimson Power Burst",
@@ -109,10 +141,36 @@ const profileResults = {
     primaryLink: "/discover",
     primaryLabel: "Try Power Challenge",
     secondaryLink: "/community",
-    secondaryLabel: "See Hard Route Ratings"
+    secondaryLabel: "See Hard Route Ratings",
+    routes: [
+      {
+        name: "Crimson Power Burst",
+        difficulty: "Hard | V5+",
+        style: "Power",
+        reason: "Explosive pulls and short, high-intensity sequences."
+      },
+      {
+        name: "Volume Dyno Punch",
+        difficulty: "Medium | V2-V4",
+        style: "Power",
+        reason: "Builds confidence in dynamic movement and lock-offs."
+      },
+      {
+        name: "Overhang Strike Line",
+        difficulty: "Hard | V5+",
+        style: "Strength",
+        reason: "Perfect for body tension and powerful finishing moves."
+      }
+    ]
   },
   endurance: {
     emoji: "🔥⛰️",
+    mascot: {
+      name: "Pace",
+      avatar: "🏃",
+      role: "Endurance Coach",
+      line: "Stay efficient and keep moving with steady rhythm."
+    },
     name: "Endurance Climber",
     subtitle: "Consistent and persistent style",
     routePick: "Long Traverse Engine",
@@ -121,10 +179,36 @@ const profileResults = {
     primaryLink: "/discover",
     primaryLabel: "Open Endurance Challenge",
     secondaryLink: "/create",
-    secondaryLabel: "Design a Long Route"
+    secondaryLabel: "Design a Long Route",
+    routes: [
+      {
+        name: "Long Traverse Engine",
+        difficulty: "Medium | V2-V4",
+        style: "Endurance",
+        reason: "Sustained movement with limited resting positions."
+      },
+      {
+        name: "Circuit River",
+        difficulty: "Medium | V2-V4",
+        style: "Endurance",
+        reason: "Great for pacing and maintaining form under fatigue."
+      },
+      {
+        name: "Wall Marathon Lite",
+        difficulty: "Easy | V0-V1",
+        style: "Flow",
+        reason: "Builds session volume while preserving technique quality."
+      }
+    ]
   },
   tech: {
     emoji: "🧠🪢",
+    mascot: {
+      name: "Nori",
+      avatar: "🧩",
+      role: "Technique Coach",
+      line: "Solve the sequence first, then execute with precision."
+    },
     name: "Technique Climber",
     subtitle: "Puzzle-driven and thoughtful style",
     routePick: "Volume Logic Maze",
@@ -133,10 +217,36 @@ const profileResults = {
     primaryLink: "/create",
     primaryLabel: "Build Technical Route",
     secondaryLink: "/community",
-    secondaryLabel: "Explore Technical Beta"
+    secondaryLabel: "Explore Technical Beta",
+    routes: [
+      {
+        name: "Volume Logic Maze",
+        difficulty: "Medium | V2-V4",
+        style: "Technique",
+        reason: "Designed for body positioning and subtle foot decisions."
+      },
+      {
+        name: "Heel Hook Study",
+        difficulty: "Hard | V5+",
+        style: "Technique",
+        reason: "Focuses on sequencing with advanced foot and hip control."
+      },
+      {
+        name: "Micro Beta Lab",
+        difficulty: "Medium | V2-V4",
+        style: "Technique",
+        reason: "Encourages route reading and efficient move planning."
+      }
+    ]
   },
   social: {
     emoji: "🤝🎉",
+    mascot: {
+      name: "Milo",
+      avatar: "😄",
+      role: "Community Coach",
+      line: "Share beta, cheer each other on, and send together."
+    },
     name: "Community Climber",
     subtitle: "Collaborative and feedback-oriented style",
     routePick: "Partner Session Circuit",
@@ -145,7 +255,27 @@ const profileResults = {
     primaryLink: "/community",
     primaryLabel: "Open Community Feed",
     secondaryLink: "/create",
-    secondaryLabel: "Publish a New Route"
+    secondaryLabel: "Publish a New Route",
+    routes: [
+      {
+        name: "Partner Session Circuit",
+        difficulty: "Easy | V0-V1",
+        style: "Fun",
+        reason: "Great for climbing in pairs and exchanging beta quickly."
+      },
+      {
+        name: "Crowd Favorite Ladder",
+        difficulty: "Medium | V2-V4",
+        style: "Social",
+        reason: "Popular line with lots of community feedback and variations."
+      },
+      {
+        name: "Group Warmup Relay",
+        difficulty: "Easy | V0-V1",
+        style: "Flow",
+        reason: "Perfect for team sessions and confidence building."
+      }
+    ]
   }
 };
 
@@ -279,10 +409,35 @@ export default function DiscoverPage() {
           </h3>
           <p className="cq-discover-result-subtitle">{result.subtitle}</p>
 
+          <section className="cq-discover-mascot-card" aria-label="Virtual coach">
+            <div className="cq-discover-mascot-avatar" aria-hidden="true">
+              {result.mascot.avatar}
+            </div>
+            <div>
+              <p className="cq-discover-mascot-name">
+                {result.mascot.name} · {result.mascot.role}
+              </p>
+              <p className="cq-discover-mascot-line">{result.mascot.line}</p>
+            </div>
+          </section>
+
           <section className="cq-discover-route-pick">
             <p className="cq-discover-route-label">Suggested route vibe</p>
             <p className="cq-discover-route-name">{result.routePick}</p>
             <p className="cq-discover-route-reason">{result.reason}</p>
+          </section>
+
+          <section className="cq-discover-reco-list" aria-label="Recommended routes by profile">
+            {result.routes.map((route) => (
+              <article key={`${result.name}-${route.name}`} className="cq-discover-reco-card">
+                <div className="cq-route-top-row">
+                  <h4>{route.name}</h4>
+                  <span className="cq-route-difficulty">{route.difficulty}</span>
+                </div>
+                <span className="cq-route-style-tag">{route.style}</span>
+                <p className="cq-route-description">{route.reason}</p>
+              </article>
+            ))}
           </section>
 
           <div className="cq-discover-result-actions">
