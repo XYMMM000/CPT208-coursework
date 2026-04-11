@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import BottomTabNav from "../navigation/BottomTabNav";
 import { useAuth } from "../../context/AuthContext";
 
@@ -14,9 +14,18 @@ export default function MobileAppLayout() {
       {/* Simple top bar with current account and logout action */}
       <header className="cq-app-topbar">
         <p className="cq-app-user">{currentUser?.email || "Signed in user"}</p>
-        <button type="button" className="cq-secondary-btn cq-logout-btn" onClick={handleLogout}>
-          Logout
-        </button>
+        <div className="cq-topbar-actions">
+          <Link to="/" className="cq-secondary-btn cq-topbar-btn">
+            Welcome
+          </Link>
+          <button
+            type="button"
+            className="cq-secondary-btn cq-logout-btn cq-topbar-btn"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
       </header>
 
       {/* Main content area for each route */}

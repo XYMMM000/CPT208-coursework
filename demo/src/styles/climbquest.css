@@ -85,6 +85,18 @@ a {
   font-size: 0.8rem;
 }
 
+.cq-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cq-topbar-btn {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
 .cq-app-main {
   flex: 1;
 }
