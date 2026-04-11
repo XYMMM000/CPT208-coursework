@@ -136,6 +136,132 @@ a {
   line-height: 1.55;
 }
 
+/* Home page (mixed dashboard) */
+.cq-home-page {
+  display: grid;
+  gap: 12px;
+}
+
+.cq-home-header,
+.cq-home-quest-card,
+.cq-home-coach-card,
+.cq-home-feed-card {
+  background: var(--cq-surface);
+  border: 1px solid var(--cq-border);
+  border-radius: var(--cq-radius-lg);
+  box-shadow: var(--cq-shadow);
+}
+
+.cq-home-header,
+.cq-home-quest-card,
+.cq-home-coach-card,
+.cq-home-feed-card {
+  padding: 16px;
+}
+
+.cq-home-header h2 {
+  margin: 4px 0 0;
+  font-size: 1.4rem;
+}
+
+.cq-home-header p {
+  margin: 8px 0 0;
+  color: var(--cq-text-soft);
+}
+
+.cq-home-quest-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.cq-home-section-label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--cq-primary-strong);
+  letter-spacing: 0.02em;
+}
+
+.cq-home-quest-head h3,
+.cq-home-coach-card h3 {
+  margin: 6px 0 0;
+  font-size: 1.05rem;
+}
+
+.cq-home-coach-card p {
+  margin: 8px 0 0;
+  color: var(--cq-text-soft);
+  line-height: 1.5;
+}
+
+.cq-home-progress-text {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: #456287;
+  font-weight: 600;
+}
+
+.cq-home-quest-actions {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.cq-home-btn {
+  margin-top: 0;
+  justify-content: center;
+}
+
+.cq-home-inline-btn {
+  margin-top: 12px;
+  display: inline-flex;
+  text-decoration: none;
+}
+
+.cq-home-quick-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.cq-home-quick-card {
+  display: block;
+  border: 1px solid #dfd0bb;
+  border-radius: 14px;
+  background: #fff7ea;
+  padding: 12px;
+  text-decoration: none;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.cq-home-quick-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(58, 44, 31, 0.11);
+}
+
+.cq-home-quick-card h4 {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.cq-home-quick-card p {
+  margin: 7px 0 0;
+  color: #675745;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.cq-home-feed-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: #5f503f;
+  font-size: 0.84rem;
+}
+
 /* Auth pages */
 .cq-auth-page {
   min-height: 100vh;
@@ -2190,6 +2316,14 @@ a {
   }
 
   .cq-route-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cq-home-quick-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cq-home-quest-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
