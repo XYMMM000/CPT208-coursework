@@ -344,6 +344,15 @@ function getRoutePlanPoints(plan) {
   return points;
 }
 
+function buildPathFromContours(contours) {
+  if (!Array.isArray(contours) || contours.length === 0) return "";
+  const centers = contours
+    .map((contour) => getPolygonCenter(contour.points))
+    // Route path should visually go from lower holds to upper holds.
+    .sort((a, b) => b.y - a.y);
+  return centers.map((point) => `${point.x},${point.y}`).join(" ");
+}
+
 function clampPercent(value) {
   return Math.min(99, Math.max(1, value));
 }
@@ -611,6 +620,12 @@ export default function RouteDetailPage() {
     if (routeState.routePlan.finish) sequence.push(routeState.routePlan.finish);
     return sequence.map((point) => `${point.x},${point.y}`).join(" ");
   }, [routeState.routePlan]);
+  const contourPathPoints = useMemo(() => buildPathFromContours(baseContours), [baseContours]);
+  const shouldShowRoutePointMarkers = useMemo(() => {
+    const source = String(routeState.source || "").toLowerCase();
+    // In Community view, focus on the overall route path instead of individual point markers.
+    return source.includes("discover");
+  }, [routeState.source]);
   const [displayedContours, setDisplayedContours] = useState(baseContours);
 
   useEffect(() => {
@@ -766,10 +781,15 @@ export default function RouteDetailPage() {
         <p className="cq-detail-creator">
           Hold contours: {displayedContourCount}
         </p>
-        {routeState.routePlan && (
+        {routeState.routePlan && shouldShowRoutePointMarkers && (
           <p className="cq-detail-creator">
             Route points: start + {routeState.routePlan.hands?.length || 0} hand points +{" "}
             {routeState.routePlan.feet?.length || 0} foot points + finish
+          </p>
+        )}
+        {!shouldShowRoutePointMarkers && (
+          <p className="cq-detail-creator">
+            Showing a full route path generated from selected holds.
           </p>
         )}
       </section>
@@ -798,9 +818,9 @@ export default function RouteDetailPage() {
             preserveAspectRatio="none"
             aria-hidden="true"
           >
-            {routePlanLinePoints && (
+            {(routePlanLinePoints || contourPathPoints) && (
               <polyline
-                points={routePlanLinePoints}
+                points={routePlanLinePoints || contourPathPoints}
                 fill="none"
                 stroke="rgba(255, 255, 255, 0.85)"
                 strokeWidth="0.55"
@@ -821,7 +841,8 @@ export default function RouteDetailPage() {
               />
             ))}
 
-            {routePlanPoints.map((point) => (
+            {shouldShowRoutePointMarkers &&
+              routePlanPoints.map((point) => (
               <g key={`route-plan-point-${point.label}`}>
                 <circle
                   cx={point.x}
@@ -837,7 +858,7 @@ export default function RouteDetailPage() {
           </svg>
         </div>
 
-        {routeState.routePlan && (
+        {routeState.routePlan && shouldShowRoutePointMarkers && (
           <div className="cq-route-plan-legend" aria-label="Route point legend">
             <span>
               <i className="cq-route-plan-dot cq-route-plan-point-start" />
