@@ -764,73 +764,14 @@ export default function CreatePage() {
       )}
 
       <form className="cq-create-form" onSubmit={handleSubmit} noValidate>
-        <label className="cq-field">
-          <span>Route name *</span>
-          <input
-            type="text"
-            value={formData.routeName}
-            onChange={(event) => updateField("routeName", event.target.value)}
-            placeholder="e.g. Moonlight Traverse"
-          />
-          {errors.routeName && <small className="cq-field-error">{errors.routeName}</small>}
-        </label>
-
-        <label className="cq-field">
-          <span>Difficulty *</span>
-          <select
-            value={formData.difficulty}
-            onChange={(event) => updateField("difficulty", event.target.value)}
-          >
-            <option value="">Choose difficulty</option>
-            <option value="Easy">Easy (V0-V1)</option>
-            <option value="Medium">Medium (V2-V4)</option>
-            <option value="Hard">Hard (V5+)</option>
-          </select>
-          {errors.difficulty && <small className="cq-field-error">{errors.difficulty}</small>}
-        </label>
-
-        <div className="cq-field">
-          <span>Style tags</span>
-          <div className="cq-tag-grid">
-            {styleTagOptions.map((tag) => {
-              const isActive = formData.styleTags.includes(tag);
-              return (
-                <button
-                  key={tag}
-                  type="button"
-                  className={`cq-tag-btn ${isActive ? "cq-tag-btn-active" : ""}`}
-                  onClick={() => toggleStyleTag(tag)}
-                >
-                  {tag}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <label className="cq-field">
-          <span>Description</span>
-          <textarea
-            rows={4}
-            value={formData.description}
-            onChange={(event) => updateField("description", event.target.value)}
-            placeholder="Describe the moves, pacing, and feeling of this route."
-          />
-        </label>
-
-        <label className="cq-field">
-          <span>Suitable for</span>
-          <select
-            value={formData.suitableFor}
-            onChange={(event) => updateField("suitableFor", event.target.value)}
-          >
-            {levelOptions.map((level) => (
-              <option key={level} value={level}>
-                {level}
-              </option>
-            ))}
-          </select>
-        </label>
+        <section className="cq-diy-focus-banner" aria-label="DIY wall first workflow">
+          <p className="cq-page-eyebrow">DIY Wall First</p>
+          <h3>1. Choose Wall  2. Draw Holds  3. Set Start/Finish + Hands/Feet</h3>
+          <p>
+            The wall editor is the main area below. Route name and other metadata can be filled
+            after you finish drawing.
+          </p>
+        </section>
 
         <label className="cq-field">
           <span>Upload climbing wall image (optional)</span>
@@ -857,8 +798,7 @@ export default function CreatePage() {
           <section className="cq-wall-editor" aria-label="Wall hold contour annotation editor">
             <div className="cq-wall-editor-head">
               <p>
-                Step 1: trace hold contours. Step 2: switch to route point mode and assign start,
-                finish, left/right hand and left/right foot points.
+                DIY editor: trace real hold contours first, then assign route points to those holds.
               </p>
               <div className="cq-tag-grid" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
                 <button
@@ -943,7 +883,8 @@ export default function CreatePage() {
             )}
             {editorMode === "route-points" && (
               <p className="cq-hold-count">
-                Active point type: <strong>{ROUTE_POINT_TYPES.find((type) => type.key === activeRoutePointType)?.label}</strong>.
+                Active point type:{" "}
+                <strong>{ROUTE_POINT_TYPES.find((type) => type.key === activeRoutePointType)?.label}</strong>.
                 Tap any selected hold to place it.
               </p>
             )}
@@ -995,6 +936,78 @@ export default function CreatePage() {
             </div>
           </section>
         )}
+
+        <section className="cq-create-meta-card" aria-label="Route metadata form">
+          <h3>Route Details</h3>
+
+          <label className="cq-field">
+            <span>Route name *</span>
+            <input
+              type="text"
+              value={formData.routeName}
+              onChange={(event) => updateField("routeName", event.target.value)}
+              placeholder="e.g. Moonlight Traverse"
+            />
+            {errors.routeName && <small className="cq-field-error">{errors.routeName}</small>}
+          </label>
+
+          <label className="cq-field">
+            <span>Difficulty *</span>
+            <select
+              value={formData.difficulty}
+              onChange={(event) => updateField("difficulty", event.target.value)}
+            >
+              <option value="">Choose difficulty</option>
+              <option value="Easy">Easy (V0-V1)</option>
+              <option value="Medium">Medium (V2-V4)</option>
+              <option value="Hard">Hard (V5+)</option>
+            </select>
+            {errors.difficulty && <small className="cq-field-error">{errors.difficulty}</small>}
+          </label>
+
+          <div className="cq-field">
+            <span>Style tags</span>
+            <div className="cq-tag-grid">
+              {styleTagOptions.map((tag) => {
+                const isActive = formData.styleTags.includes(tag);
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    className={`cq-tag-btn ${isActive ? "cq-tag-btn-active" : ""}`}
+                    onClick={() => toggleStyleTag(tag)}
+                  >
+                    {tag}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <label className="cq-field">
+            <span>Description</span>
+            <textarea
+              rows={4}
+              value={formData.description}
+              onChange={(event) => updateField("description", event.target.value)}
+              placeholder="Describe the moves, pacing, and feeling of this route."
+            />
+          </label>
+
+          <label className="cq-field">
+            <span>Suitable for</span>
+            <select
+              value={formData.suitableFor}
+              onChange={(event) => updateField("suitableFor", event.target.value)}
+            >
+              {levelOptions.map((level) => (
+                <option key={level} value={level}>
+                  {level}
+                </option>
+              ))}
+            </select>
+          </label>
+        </section>
 
         {/* Full-screen zoom editor: larger view for easier hold selection on mobile. */}
         {isZoomEditorOpen && activeWallImageSrc && (
