@@ -1876,12 +1876,69 @@ a {
   border-radius: 18px;
   padding: 14px;
   box-shadow: 0 12px 22px rgba(58, 44, 31, 0.09);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.cq-landing-spotlight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 26px rgba(58, 44, 31, 0.14);
 }
 
 .cq-landing-spotlight-card p {
   margin: 8px 0 0;
   color: #665542;
   line-height: 1.55;
+}
+
+.cq-landing-spotlight-meta {
+  margin-top: 9px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.cq-landing-status-pill {
+  border-radius: 999px;
+  border: 1px solid #c5e7d2;
+  background: #ecfbf2;
+  color: #1f6a45;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 4px 9px;
+}
+
+.cq-landing-progress-value {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #2c5787;
+}
+
+.cq-landing-progress-block {
+  margin-top: 8px;
+}
+
+.cq-landing-progress-block p {
+  margin: 0;
+  font-size: 0.76rem;
+  color: #5a6f8e;
+  font-weight: 600;
+}
+
+.cq-landing-progress-track {
+  margin-top: 5px;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e8dcc9;
+}
+
+.cq-landing-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #257ff0, #2ea66f);
+  transition: width 300ms ease;
 }
 
 .cq-landing-spotlight-cta {

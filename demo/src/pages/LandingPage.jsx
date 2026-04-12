@@ -8,6 +8,9 @@ const spotlightFeatures = [
     description:
       "Pick a real wall, zoom in, trace hold contours, then set start/finish and hand-foot points.",
     bullets: ["Select wall first", "Trace real holds", "Publish route in one flow"],
+    status: "Builder mode ready",
+    progressLabel: "Workflow readiness",
+    progress: 92,
     to: "/create",
     cta: "Start DIY Route"
   },
@@ -18,6 +21,9 @@ const spotlightFeatures = [
     description:
       "Take the style quiz, unlock your climbing character, and receive personalized route picks.",
     bullets: ["More quiz questions", "Persona result + emoji", "Custom route recommendations"],
+    status: "Quiz engine upgraded",
+    progressLabel: "Personalization quality",
+    progress: 88,
     to: "/discover",
     cta: "Take Persona Quiz"
   }
@@ -85,7 +91,20 @@ export default function LandingPage() {
               <span className="cq-feature-icon">{feature.icon}</span>
               <h3>{feature.title}</h3>
             </div>
+            <div className="cq-landing-spotlight-meta">
+              <span className="cq-landing-status-pill">{feature.status}</span>
+              <span className="cq-landing-progress-value">{feature.progress}%</span>
+            </div>
             <p>{feature.description}</p>
+            <div className="cq-landing-progress-block" aria-label={feature.progressLabel}>
+              <p>{feature.progressLabel}</p>
+              <div className="cq-landing-progress-track">
+                <div
+                  className="cq-landing-progress-fill"
+                  style={{ width: `${feature.progress}%` }}
+                />
+              </div>
+            </div>
             <ul className="cq-welcome-step-list">
               {feature.bullets.map((item) => (
                 <li key={`${feature.id}-${item}`}>{item}</li>
