@@ -1,16 +1,18 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import BottomTabNav from "../navigation/BottomTabNav";
 import { useAuth } from "../../context/AuthContext";
 
 export default function MobileAppLayout() {
   const { currentUser, logoutUser } = useAuth();
+  const location = useLocation();
+  const isCreateEditorPage = location.pathname.startsWith("/create/editor/");
 
   async function handleLogout() {
     await logoutUser();
   }
 
   return (
-    <div className="cq-app-shell">
+    <div className={`cq-app-shell ${isCreateEditorPage ? "cq-app-shell-wide" : ""}`}>
       {/* Simple top bar with current account and logout action */}
       <header className="cq-app-topbar">
         <p className="cq-app-user">{currentUser?.email || "Signed in user"}</p>

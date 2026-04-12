@@ -63,6 +63,11 @@ a {
   padding: 16px 16px 92px;
 }
 
+/* Wide shell for complex editor screens (keeps other pages mobile-styled). */
+.cq-app-shell-wide {
+  max-width: 1120px;
+}
+
 .cq-app-topbar {
   margin-bottom: 12px;
   display: flex;
@@ -1710,6 +1715,10 @@ a {
   background: rgba(255, 255, 255, 0.94);
   box-shadow: var(--cq-shadow);
   backdrop-filter: blur(8px);
+}
+
+.cq-app-shell-wide .cq-bottom-nav {
+  width: min(calc(100% - 24px), 860px);
 }
 
 .cq-tab-item {
