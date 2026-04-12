@@ -1864,6 +1864,44 @@ a {
   gap: 12px;
 }
 
+.cq-landing-spotlight {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.cq-landing-spotlight-card {
+  background: linear-gradient(155deg, #fff8ec 0%, #fff1dd 100%);
+  border: 1px solid #dfccb0;
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 12px 22px rgba(58, 44, 31, 0.09);
+}
+
+.cq-landing-spotlight-card p {
+  margin: 8px 0 0;
+  color: #665542;
+  line-height: 1.55;
+}
+
+.cq-landing-spotlight-cta {
+  margin-top: 12px;
+}
+
+.cq-feature-grid-compact .cq-feature-card {
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff8ef;
+}
+
+.cq-feature-grid-compact .cq-feature-card h3 {
+  font-size: 0.98rem;
+}
+
+.cq-feature-grid-compact .cq-feature-card p {
+  font-size: 0.84rem;
+}
+
 .cq-feature-link-card {
   text-decoration: none;
 }
@@ -2296,6 +2334,10 @@ a {
 
   .cq-feature-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cq-landing-spotlight {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .cq-welcome-quick-grid {

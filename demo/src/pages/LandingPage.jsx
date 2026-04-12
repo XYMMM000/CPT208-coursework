@@ -1,76 +1,50 @@
-import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-const welcomeTracks = [
+const spotlightFeatures = [
   {
-    id: "new",
-    label: "New Climber",
-    title: "Learn safely and enjoy your first sends",
+    id: "diy",
+    icon: "D",
+    title: "DIY Wall Route Builder",
     description:
-      "Set your level, pick easy routes, and follow community beta with clear move tips.",
-    steps: ["Open Home dashboard", "Check today’s recommended challenge", "Track your first completion"],
-    ctaLabel: "Go to Home",
-    ctaLink: "/home"
+      "Pick a real wall, zoom in, trace hold contours, then set start/finish and hand-foot points.",
+    bullets: ["Select wall first", "Trace real holds", "Publish route in one flow"],
+    to: "/create",
+    cta: "Start DIY Route"
   },
   {
-    id: "setter",
-    label: "Route Setter",
-    title: "Design and publish your own route line",
+    id: "persona",
+    icon: "P",
+    title: "Climbing Persona + Customization",
     description:
-      "Pick a wall, zoom in, outline holds manually, then save and share your route with the community.",
-    steps: ["Select a wall", "Outline hold contours", "Publish to community feed"],
-    ctaLabel: "Build My Route",
-    ctaLink: "/create"
-  },
-  {
-    id: "social",
-    label: "Social Climber",
-    title: "Discover trending routes and exchange beta",
-    description:
-      "Search route feed, open route details, rate and comment, then save your favorites for next session.",
-    steps: ["Open community feed", "Filter by style and level", "Rate and save useful routes"],
-    ctaLabel: "Join Community",
-    ctaLink: "/community"
+      "Take the style quiz, unlock your climbing character, and receive personalized route picks.",
+    bullets: ["More quiz questions", "Persona result + emoji", "Custom route recommendations"],
+    to: "/discover",
+    cta: "Take Persona Quiz"
   }
 ];
 
-const quickLinks = [
-  { label: "Create DIY Route", description: "Select a wall and draw your own line", to: "/create" },
-  { label: "Discover Challenges", description: "Get personalized route recommendations", to: "/discover" },
-  { label: "Community Beta", description: "See ratings, feedback, and route details", to: "/community" }
-];
-
-const landingFeatures = [
+const secondaryFeatures = [
   {
-    icon: "P",
-    title: "Personalized Challenge",
-    description:
-      "Get route picks with level + style matching and a clear reason for each recommendation.",
-    to: "/discover"
-  },
-  {
-    icon: "D",
-    title: "DIY Route Creation",
-    description:
-      "Choose a wall, zoom in, trace hold contours, and publish your own line in minutes.",
-    to: "/create"
+    icon: "H",
+    title: "Daily Home Quest",
+    description: "Check today's challenge and session progress.",
+    to: "/home"
   },
   {
     icon: "C",
-    title: "Community Rating",
-    description:
-      "Read beta tips, rate routes, and collect useful feedback from other climbers.",
+    title: "Community Feed",
+    description: "Explore routes from climbers and AI setters.",
     to: "/community"
+  },
+  {
+    icon: "U",
+    title: "Profile Growth",
+    description: "Track badges, weekly climbs, and milestones.",
+    to: "/profile"
   }
 ];
 
 export default function LandingPage() {
-  const [activeTrackId, setActiveTrackId] = useState("new");
-  const activeTrack = useMemo(
-    () => welcomeTracks.find((track) => track.id === activeTrackId) || welcomeTracks[0],
-    [activeTrackId]
-  );
-
   return (
     <div className="cq-landing-page">
       <section className="cq-hero-card">
@@ -81,17 +55,17 @@ export default function LandingPage() {
         <h1>ClimbQuest</h1>
 
         <p className="cq-subtitle">
-          A playful climbing app for route building, challenge discovery, and social beta sharing.
-          Pick your path below and we will guide you step by step.
+          ClimbQuest focuses on two core experiences: building your own DIY route on real walls,
+          and discovering your personalized climbing persona.
         </p>
 
         <div className="cq-hero-cta-row">
-          <Link className="cq-primary-btn" to="/home">
-            Start Quest Session
+          <Link className="cq-primary-btn" to="/create">
+            Start DIY Route
           </Link>
-          <a className="cq-secondary-btn cq-hero-secondary-btn" href="#how-it-works">
-            How It Works
-          </a>
+          <Link className="cq-secondary-btn cq-hero-secondary-btn" to="/discover">
+            Start Persona Quiz
+          </Link>
         </div>
 
         <div className="cq-social-proof" aria-label="Social proof">
@@ -104,53 +78,30 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="cq-welcome-tracks" id="how-it-works">
-        <p className="cq-page-eyebrow">Choose Your Welcome Path</p>
-        <div className="cq-welcome-track-tabs" role="tablist" aria-label="Welcome path tabs">
-          {welcomeTracks.map((track) => (
-            <button
-              key={track.id}
-              type="button"
-              role="tab"
-              className={`cq-welcome-track-tab ${
-                activeTrackId === track.id ? "cq-welcome-track-tab-active" : ""
-              }`}
-              onClick={() => setActiveTrackId(track.id)}
-              aria-selected={activeTrackId === track.id}
-            >
-              {track.label}
-            </button>
-          ))}
-        </div>
-
-        <article className="cq-welcome-track-panel" role="tabpanel">
-          <h3>{activeTrack.title}</h3>
-          <p>{activeTrack.description}</p>
-          <ol className="cq-welcome-step-list">
-            {activeTrack.steps.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-          </ol>
-          <Link className="cq-primary-btn cq-welcome-track-cta" to={activeTrack.ctaLink}>
-            {activeTrack.ctaLabel}
-          </Link>
-        </article>
-      </section>
-
-      <section className="cq-welcome-quick-grid" aria-label="Quick start links">
-        {quickLinks.map((item) => (
-          <Link key={item.label} className="cq-welcome-quick-card" to={item.to}>
-            <h3>{item.label}</h3>
-            <p>{item.description}</p>
-            <span className="cq-welcome-quick-arrow">Open</span>
-          </Link>
+      <section className="cq-landing-spotlight" aria-label="Main welcome features">
+        {spotlightFeatures.map((feature) => (
+          <article key={feature.id} className="cq-landing-spotlight-card">
+            <div className="cq-feature-header">
+              <span className="cq-feature-icon">{feature.icon}</span>
+              <h3>{feature.title}</h3>
+            </div>
+            <p>{feature.description}</p>
+            <ul className="cq-welcome-step-list">
+              {feature.bullets.map((item) => (
+                <li key={`${feature.id}-${item}`}>{item}</li>
+              ))}
+            </ul>
+            <Link className="cq-primary-btn cq-landing-spotlight-cta" to={feature.to}>
+              {feature.cta}
+            </Link>
+          </article>
         ))}
       </section>
 
-      <section className="cq-feature-grid" aria-label="Core features">
-        {landingFeatures.map((feature) => (
+      <section className="cq-feature-grid cq-feature-grid-compact" aria-label="Other features">
+        {secondaryFeatures.map((feature) => (
           <Link key={feature.title} className="cq-feature-link-card" to={feature.to}>
-            <article className="cq-feature-card cq-feature-card-ink">
+            <article className="cq-feature-card">
               <div className="cq-feature-header">
                 <span className="cq-feature-icon">{feature.icon}</span>
                 <h3>{feature.title}</h3>
