@@ -1773,6 +1773,29 @@ a {
   animation: cq-fade-up 420ms ease both;
 }
 
+.cq-hero-card-with-bg {
+  /* Put your exported Figma image at: demo/public/images/welcome-hero-bg.png */
+  background-image:
+    linear-gradient(180deg, rgba(255, 250, 242, 0.9), rgba(255, 244, 226, 0.9)),
+    url("/images/welcome-hero-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.cq-hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 250, 242, 0.28) 0%,
+    rgba(255, 247, 235, 0.18) 45%,
+    rgba(255, 250, 242, 0.34) 100%
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+
 .cq-hero-glow {
   position: absolute;
   border-radius: 50%;
