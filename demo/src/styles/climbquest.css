@@ -1763,6 +1763,13 @@ a {
   background-repeat: no-repeat;
 }
 
+.cq-landing-scroll {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+}
+
 .cq-landing-interactive {
   --cq-motion-ease-standard: cubic-bezier(0.22, 0.61, 0.36, 1);
   --cq-motion-ease-snappy: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -1782,6 +1789,50 @@ a {
   max-width: 460px;
   margin: 0 auto;
   padding: 18px 16px 26px;
+}
+
+.cq-landing-page-scroll {
+  display: grid;
+  gap: 20px;
+}
+
+.cq-scroll-stage {
+  scroll-snap-align: start;
+}
+
+.cq-scroll-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+}
+
+.cq-scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--cq-motion-mid) var(--cq-motion-ease-standard),
+    transform var(--cq-motion-mid) var(--cq-motion-ease-standard);
+}
+
+.cq-welcome-cover {
+  min-height: calc(100vh - 36px);
+  display: grid;
+  place-content: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.cq-welcome-cover h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 9vw, 4.4rem);
+  line-height: 1.05;
+  color: #1f2023;
+  text-shadow: 0 8px 20px rgba(255, 255, 255, 0.55);
+}
+
+.cq-welcome-cover p {
+  margin: 0;
+  color: #4b5b72;
+  font-weight: 600;
 }
 
 .cq-hero-card {
@@ -1865,6 +1916,14 @@ a {
   margin: 12px 0 0;
   font-size: 2rem;
   line-height: 1.05;
+}
+
+.cq-hero-card h2 {
+  position: relative;
+  z-index: 1;
+  margin: 10px 0 0;
+  font-size: 1.5rem;
+  line-height: 1.15;
 }
 
 .cq-subtitle {
@@ -2609,6 +2668,11 @@ a {
   .cq-landing-progress-fill {
     animation: none !important;
     transition: none !important;
+  }
+
+  .cq-scroll-reveal {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 

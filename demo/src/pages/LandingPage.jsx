@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 const spotlightFeatures = [
@@ -88,11 +88,32 @@ export default function LandingPage() {
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
   const [activeHotspotId, setActiveHotspotId] = useState(hotspots[0].id);
   const [flippedCardId, setFlippedCardId] = useState("");
+  const [visibleSections, setVisibleSections] = useState({});
 
   const activeHotspot = useMemo(
     () => hotspots.find((item) => item.id === activeHotspotId) || hotspots[0],
     [activeHotspotId]
   );
+
+  useEffect(() => {
+    const targets = document.querySelectorAll("[data-reveal-id]");
+    if (targets.length === 0) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const revealId = entry.target.getAttribute("data-reveal-id");
+          if (!revealId) return;
+          setVisibleSections((prev) => ({ ...prev, [revealId]: true }));
+        });
+      },
+      { threshold: 0.25 }
+    );
+
+    targets.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
 
   function handleParallaxMove(event) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -115,7 +136,7 @@ export default function LandingPage() {
 
   return (
     <div
-      className="cq-landing-bg cq-landing-interactive"
+      className="cq-landing-bg cq-landing-interactive cq-landing-scroll"
       onMouseMove={handleParallaxMove}
       onMouseLeave={handleParallaxLeave}
       style={{
@@ -123,13 +144,24 @@ export default function LandingPage() {
         "--parallax-y": `${parallax.y}px`
       }}
     >
-      <div className="cq-landing-page">
-        <section className="cq-hero-card cq-landing-hero-card">
+      <div className="cq-landing-page cq-landing-page-scroll">
+        <section className="cq-welcome-cover cq-scroll-stage">
+          <p className="cq-eyebrow">Human-Centered Climbing App</p>
+          <h1>ClimbQuest</h1>
+          <p>Scroll down to explore features</p>
+        </section>
+
+        <section
+          className={`cq-hero-card cq-landing-hero-card cq-scroll-stage cq-scroll-reveal ${
+            visibleSections.hero ? "is-visible" : ""
+          }`}
+          data-reveal-id="hero"
+        >
           <div className="cq-hero-glow cq-hero-glow-blue" aria-hidden="true" />
           <div className="cq-hero-glow cq-hero-glow-green" aria-hidden="true" />
 
           <p className="cq-eyebrow">Welcome to ClimbQuest</p>
-          <h1>ClimbQuest</h1>
+          <h2>Interactive Climbing Experience</h2>
 
           <p className="cq-subtitle">
             A climbing app with strong interaction focus: draw routes on real wall photos and
@@ -176,7 +208,13 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="cq-landing-spotlight" aria-label="Main welcome features">
+        <section
+          className={`cq-landing-spotlight cq-scroll-stage cq-scroll-reveal ${
+            visibleSections.spotlight ? "is-visible" : ""
+          }`}
+          aria-label="Main welcome features"
+          data-reveal-id="spotlight"
+        >
           {spotlightFeatures.map((feature) => {
             const flipped = flippedCardId === feature.id;
             return (
@@ -235,7 +273,13 @@ export default function LandingPage() {
           })}
         </section>
 
-        <section className="cq-feature-grid cq-feature-grid-compact" aria-label="Other features">
+        <section
+          className={`cq-feature-grid cq-feature-grid-compact cq-scroll-stage cq-scroll-reveal ${
+            visibleSections.secondary ? "is-visible" : ""
+          }`}
+          aria-label="Other features"
+          data-reveal-id="secondary"
+        >
           {secondaryFeatures.map((feature) => (
             <Link key={feature.title} className="cq-feature-link-card" to={feature.to}>
               <article className="cq-feature-card">
