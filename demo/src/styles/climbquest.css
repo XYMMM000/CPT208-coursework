@@ -1760,9 +1760,11 @@ a {
   background-image:
     linear-gradient(180deg, rgba(248, 242, 232, 0.82), rgba(248, 242, 232, 0.88)),
     url("/background%20picture.png");
-  background-size: cover;
-  background-position: center;
+  /* Use contain so the full artwork is more recognizable and less cropped. */
+  background-size: auto, contain;
+  background-position: center, top center;
   background-repeat: no-repeat;
+  background-color: #f3ecde;
 }
 
 .cq-landing-page {
