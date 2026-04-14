@@ -1755,6 +1755,16 @@ a {
 }
 
 /* Landing page */
+.cq-landing-bg {
+  min-height: 100vh;
+  background-image:
+    linear-gradient(180deg, rgba(248, 242, 232, 0.82), rgba(248, 242, 232, 0.88)),
+    url("/background%20picture.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 .cq-landing-page {
   min-height: 100vh;
   max-width: 460px;

@@ -52,9 +52,9 @@ const secondaryFeatures = [
 
 export default function LandingPage() {
   return (
-    <div className="cq-landing-page">
-      <section className="cq-hero-card cq-hero-card-with-bg">
-        <div className="cq-hero-bg-overlay" aria-hidden="true" />
+    <div className="cq-landing-bg">
+      <div className="cq-landing-page">
+      <section className="cq-hero-card">
         <div className="cq-hero-glow cq-hero-glow-blue" aria-hidden="true" />
         <div className="cq-hero-glow cq-hero-glow-green" aria-hidden="true" />
 
@@ -131,6 +131,7 @@ export default function LandingPage() {
           </Link>
         ))}
       </section>
+      </div>
     </div>
   );
 }
