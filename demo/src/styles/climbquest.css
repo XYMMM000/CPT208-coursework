@@ -2018,10 +2018,10 @@ a {
   animation-delay: 1.9s;
 }
 
-.cq-hotspot-layer {
-  position: absolute;
+.cq-bg-hotspot-layer {
+  position: fixed;
   inset: 0;
-  z-index: 2;
+  z-index: 8;
   pointer-events: none;
 }
 
@@ -2053,19 +2053,23 @@ a {
   box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.12);
 }
 
-.cq-hotspot-panel {
-  margin-top: 10px;
-  position: relative;
-  z-index: 2;
+.cq-bg-hotspot-panel {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 9;
+  width: min(320px, calc(100vw - 28px));
   border: 1px solid #d2dff0;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   padding: 10px;
   display: grid;
   gap: 8px;
+  box-shadow: 0 12px 24px rgba(27, 44, 69, 0.16);
+  backdrop-filter: blur(6px);
 }
 
-.cq-hotspot-panel p {
+.cq-bg-hotspot-panel p {
   margin: 0;
   color: #3b5475;
   line-height: 1.45;

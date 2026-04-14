@@ -144,6 +144,27 @@ export default function LandingPage() {
         "--parallax-y": `${parallax.y}px`
       }}
     >
+      <div className="cq-bg-hotspot-layer" aria-label="Background hotspots">
+        {hotspots.map((hotspot) => (
+          <button
+            key={hotspot.id}
+            type="button"
+            className={`cq-hotspot-btn ${activeHotspotId === hotspot.id ? "cq-hotspot-btn-active" : ""}`}
+            style={{ left: `${hotspot.x}%`, top: `${hotspot.y}%` }}
+            onClick={() => setActiveHotspotId(hotspot.id)}
+          >
+            {hotspot.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="cq-bg-hotspot-panel">
+        <p>{activeHotspot.summary}</p>
+        <Link className="cq-secondary-btn" to={activeHotspot.to}>
+          Open {activeHotspot.label}
+        </Link>
+      </div>
+
       <div className="cq-landing-page cq-landing-page-scroll">
         <section className="cq-welcome-cover cq-scroll-stage">
           <p className="cq-eyebrow">Human-Centered Climbing App</p>
@@ -174,27 +195,6 @@ export default function LandingPage() {
             </Link>
             <Link className="cq-secondary-btn cq-hero-secondary-btn" to="/discover">
               Start Persona Quiz
-            </Link>
-          </div>
-
-          <div className="cq-hotspot-layer" aria-label="Interactive feature hotspots">
-            {hotspots.map((hotspot) => (
-              <button
-                key={hotspot.id}
-                type="button"
-                className={`cq-hotspot-btn ${activeHotspotId === hotspot.id ? "cq-hotspot-btn-active" : ""}`}
-                style={{ left: `${hotspot.x}%`, top: `${hotspot.y}%` }}
-                onClick={() => setActiveHotspotId(hotspot.id)}
-              >
-                {hotspot.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="cq-hotspot-panel">
-            <p>{activeHotspot.summary}</p>
-            <Link className="cq-secondary-btn" to={activeHotspot.to}>
-              Open {activeHotspot.label}
             </Link>
           </div>
 
