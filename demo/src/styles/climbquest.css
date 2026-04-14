@@ -1763,6 +1763,14 @@ a {
   background-repeat: no-repeat;
 }
 
+.cq-landing-interactive .cq-hero-card,
+.cq-landing-interactive .cq-landing-spotlight-card,
+.cq-landing-interactive .cq-landing-timeline,
+.cq-landing-interactive .cq-landing-mini-demo {
+  transform: translate3d(var(--parallax-x, 0px), var(--parallax-y, 0px), 0);
+  transition: transform 220ms ease;
+}
+
 .cq-landing-page {
   min-height: 100vh;
   max-width: 460px;
@@ -1773,12 +1781,16 @@ a {
 .cq-hero-card {
   position: relative;
   overflow: hidden;
-  background: var(--cq-surface);
+  background: rgba(255, 250, 242, 0.9);
   border: 1px solid var(--cq-border);
   border-radius: var(--cq-radius-lg);
   box-shadow: var(--cq-shadow);
   padding: 22px 18px;
   animation: cq-fade-up 420ms ease both;
+}
+
+.cq-landing-hero-card {
+  backdrop-filter: blur(2px);
 }
 
 .cq-hero-card-with-bg {
@@ -1853,7 +1865,7 @@ a {
   position: relative;
   z-index: 1;
   margin: 12px 0 0;
-  color: var(--cq-text-soft);
+  color: #4f5f74;
   line-height: 1.6;
 }
 
@@ -1910,6 +1922,178 @@ a {
   color: var(--cq-text-soft);
 }
 
+.cq-hero-route-svg {
+  position: relative;
+  z-index: 1;
+  margin-top: 12px;
+  width: 100%;
+  height: 84px;
+}
+
+.cq-hero-route-line {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.96);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.75));
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: cq-route-draw 2200ms ease forwards;
+}
+
+.cq-hero-route-node {
+  fill: #3ea975;
+  stroke: #ffffff;
+  stroke-width: 0.4;
+  opacity: 0;
+  animation: cq-route-node-pop 520ms ease forwards;
+  animation-delay: 1.9s;
+}
+
+.cq-hotspot-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cq-hotspot-btn {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: rgba(19, 33, 54, 0.74);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55);
+  animation: cq-hotspot-pulse 1.8s infinite;
+}
+
+.cq-hotspot-btn-active {
+  background: linear-gradient(135deg, #2580ef, #29a56f);
+}
+
+.cq-hotspot-panel {
+  margin-top: 10px;
+  position: relative;
+  z-index: 2;
+  border: 1px solid #d2dff0;
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 12px;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.cq-hotspot-panel p {
+  margin: 0;
+  color: #3b5475;
+  line-height: 1.45;
+}
+
+.cq-landing-timeline,
+.cq-landing-mini-demo {
+  margin-top: 14px;
+  background: rgba(255, 250, 242, 0.9);
+  border: 1px solid var(--cq-border);
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(58, 44, 31, 0.11);
+  padding: 14px;
+}
+
+.cq-landing-timeline h3,
+.cq-landing-mini-demo h3 {
+  margin: 0;
+  font-size: 1.06rem;
+}
+
+.cq-landing-timeline p,
+.cq-landing-mini-demo p {
+  margin: 8px 0 0;
+  color: #4e6078;
+  line-height: 1.5;
+}
+
+.cq-timeline-slider {
+  margin-top: 12px;
+  width: 100%;
+  accent-color: #2b8aea;
+}
+
+.cq-timeline-labels {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.74rem;
+  color: #6f7f95;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cq-timeline-label-active {
+  color: #204d83;
+  font-weight: 700;
+}
+
+.cq-landing-timeline-cta {
+  margin-top: 12px;
+}
+
+.cq-mini-wall {
+  margin-top: 10px;
+  border: 1px solid #d2dfef;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #f5f9ff, #edf3ff);
+}
+
+.cq-mini-wall-svg {
+  width: 100%;
+  height: 180px;
+  display: block;
+}
+
+.cq-mini-wall-path {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 4 2;
+}
+
+.cq-mini-wall-hold {
+  fill: #5c748f;
+  stroke: #ffffff;
+  stroke-width: 0.6;
+  cursor: pointer;
+  transition: transform 160ms ease, fill 160ms ease;
+}
+
+.cq-mini-wall-hold-active {
+  fill: #1ea66f;
+}
+
+.cq-mini-wall-label {
+  fill: #ffffff;
+  font-size: 2.2px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.cq-mini-demo-actions {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .cq-avatar-group {
   display: flex;
 }
@@ -1959,6 +2143,7 @@ a {
   padding: 14px;
   box-shadow: 0 12px 22px rgba(58, 44, 31, 0.09);
   transition: transform 180ms ease, box-shadow 180ms ease;
+  perspective: 1100px;
 }
 
 .cq-landing-spotlight-card:hover {
@@ -2025,6 +2210,43 @@ a {
 
 .cq-landing-spotlight-cta {
   margin-top: 12px;
+}
+
+.cq-flip-card {
+  position: relative;
+  min-height: 420px;
+}
+
+.cq-flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 460ms ease;
+}
+
+.cq-flip-card-active .cq-flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.cq-flip-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.cq-flip-face-back {
+  transform: rotateY(180deg);
+  justify-content: center;
+}
+
+.cq-flip-card-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .cq-feature-grid-compact .cq-feature-card {
@@ -2324,6 +2546,35 @@ a {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes cq-route-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes cq-route-node-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes cq-hotspot-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
   }
 }
 
