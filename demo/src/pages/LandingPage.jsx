@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const spotlightFeatures = [
@@ -59,43 +59,10 @@ const secondaryFeatures = [
   }
 ];
 
-const hotspots = [
-  {
-    id: "hs-diy",
-    label: "DIY",
-    summary: "Jump into wall editor and draw your route on real holds.",
-    to: "/create",
-    x: 14,
-    y: 70
-  },
-  {
-    id: "hs-quiz",
-    label: "Quiz",
-    summary: "Discover your climbing persona and personalized challenges.",
-    to: "/discover",
-    x: 46,
-    y: 52
-  },
-  {
-    id: "hs-community",
-    label: "Beta",
-    summary: "Open community routes and view route path overlays.",
-    to: "/community",
-    x: 80,
-    y: 36
-  }
-];
-
 export default function LandingPage() {
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
-  const [activeHotspotId, setActiveHotspotId] = useState(hotspots[0].id);
   const [flippedCardId, setFlippedCardId] = useState("");
   const [visibleSections, setVisibleSections] = useState({});
-
-  const activeHotspot = useMemo(
-    () => hotspots.find((item) => item.id === activeHotspotId) || hotspots[0],
-    [activeHotspotId]
-  );
 
   useEffect(() => {
     const targets = document.querySelectorAll("[data-reveal-id]");
@@ -146,27 +113,6 @@ export default function LandingPage() {
         "--parallax-y": `${parallax.y}px`
       }}
     >
-      <div className="cq-bg-hotspot-layer" aria-label="Background hotspots">
-        {hotspots.map((hotspot) => (
-          <button
-            key={hotspot.id}
-            type="button"
-            className={`cq-hotspot-btn ${activeHotspotId === hotspot.id ? "cq-hotspot-btn-active" : ""}`}
-            style={{ left: `${hotspot.x}%`, top: `${hotspot.y}%` }}
-            onClick={() => setActiveHotspotId(hotspot.id)}
-          >
-            {hotspot.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="cq-bg-hotspot-panel">
-        <p>{activeHotspot.summary}</p>
-        <Link className="cq-secondary-btn" to={activeHotspot.to}>
-          Open {activeHotspot.label}
-        </Link>
-      </div>
-
       <div className="cq-landing-page cq-landing-page-scroll">
         <section className="cq-welcome-cover cq-scroll-stage">
           <p className="cq-eyebrow">Human-Centered Climbing App</p>
