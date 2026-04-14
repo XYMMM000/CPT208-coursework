@@ -226,9 +226,6 @@ export default function LandingPage() {
               >
                 <div className="cq-flip-card-inner">
                   <div className="cq-flip-face cq-flip-face-front">
-                    <div className="cq-flip-cover">
-                      <img src={feature.coverImage} alt={`${feature.title} cover`} />
-                    </div>
                     <div className="cq-feature-header">
                       <span className="cq-feature-icon">{feature.icon}</span>
                       <h3>{feature.title}</h3>
@@ -260,16 +257,26 @@ export default function LandingPage() {
                   </div>
 
                   <div className="cq-flip-face cq-flip-face-back">
-                    <p className="cq-page-eyebrow">Deep View</p>
-                    <h3>{feature.backTitle}</h3>
-                    <p>{feature.backText}</p>
-                    <div className="cq-flip-card-actions">
-                      <Link className="cq-primary-btn cq-landing-spotlight-cta" to={feature.to}>
-                        {feature.backAction}
-                      </Link>
-                      <button type="button" className="cq-secondary-btn" onClick={() => toggleCardFlip(feature.id)}>
-                        Back
-                      </button>
+                    <div className="cq-flip-back-media">
+                      <img src={feature.coverImage} alt={`${feature.title} back cover`} />
+                      <div className="cq-flip-back-overlay" />
+                    </div>
+                    <div className="cq-flip-back-content">
+                      <p className="cq-page-eyebrow">Card Back</p>
+                      <h3>{feature.backTitle}</h3>
+                      <p>{feature.backText}</p>
+                      <div className="cq-flip-card-actions">
+                        <Link className="cq-primary-btn cq-landing-spotlight-cta" to={feature.to}>
+                          {feature.backAction}
+                        </Link>
+                        <button
+                          type="button"
+                          className="cq-secondary-btn"
+                          onClick={() => toggleCardFlip(feature.id)}
+                        >
+                          Back
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
