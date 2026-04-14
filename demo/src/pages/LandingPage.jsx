@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 const spotlightFeatures = [
@@ -84,65 +84,15 @@ const hotspots = [
   }
 ];
 
-const timelineSteps = [
-  {
-    id: "new",
-    title: "New Climber Start",
-    text: "Start with persona quiz, then open an easy DIY template wall.",
-    ctaLabel: "Start with Quiz",
-    ctaTo: "/discover"
-  },
-  {
-    id: "builder",
-    title: "Builder Session",
-    text: "Go straight to DIY editor, trace holds, and assign start/finish points.",
-    ctaLabel: "Open DIY Editor",
-    ctaTo: "/create"
-  },
-  {
-    id: "social",
-    title: "Community Loop",
-    text: "Publish route, get feedback, then improve with fresh persona suggestions.",
-    ctaLabel: "View Community",
-    ctaTo: "/community"
-  }
-];
-
-const miniDemoHolds = [
-  { id: "a", x: 14, y: 72 },
-  { id: "b", x: 25, y: 60 },
-  { id: "c", x: 38, y: 48 },
-  { id: "d", x: 52, y: 40 },
-  { id: "e", x: 66, y: 32 },
-  { id: "f", x: 81, y: 22 }
-];
-
 export default function LandingPage() {
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
   const [activeHotspotId, setActiveHotspotId] = useState(hotspots[0].id);
-  const [timelineIndex, setTimelineIndex] = useState(0);
   const [flippedCardId, setFlippedCardId] = useState("");
-  const [routeAnimateKey, setRouteAnimateKey] = useState(0);
-  const [miniPickedIds, setMiniPickedIds] = useState(["a", "c", "e"]);
 
   const activeHotspot = useMemo(
     () => hotspots.find((item) => item.id === activeHotspotId) || hotspots[0],
     [activeHotspotId]
   );
-
-  const currentTimeline = timelineSteps[timelineIndex] || timelineSteps[0];
-
-  const miniPath = useMemo(() => {
-    const selected = miniDemoHolds.filter((hold) => miniPickedIds.includes(hold.id));
-    return selected.map((hold) => `${hold.x},${hold.y}`).join(" ");
-  }, [miniPickedIds]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setRouteAnimateKey((prev) => prev + 1);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
 
   function handleParallaxMove(event) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -161,15 +111,6 @@ export default function LandingPage() {
 
   function toggleCardFlip(cardId) {
     setFlippedCardId((prev) => (prev === cardId ? "" : cardId));
-  }
-
-  function toggleMiniHold(holdId) {
-    setMiniPickedIds((prev) => {
-      if (prev.includes(holdId)) {
-        return prev.filter((id) => id !== holdId);
-      }
-      return [...prev, holdId];
-    });
   }
 
   return (
@@ -202,30 +143,7 @@ export default function LandingPage() {
             <Link className="cq-secondary-btn cq-hero-secondary-btn" to="/discover">
               Start Persona Quiz
             </Link>
-            <button
-              type="button"
-              className="cq-secondary-btn cq-hero-secondary-btn"
-              onClick={() => setRouteAnimateKey((prev) => prev + 1)}
-            >
-              Replay Route Intro
-            </button>
           </div>
-
-          <svg
-            key={`hero-route-${routeAnimateKey}`}
-            className="cq-hero-route-svg"
-            viewBox="0 0 100 36"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <polyline
-              className="cq-hero-route-line"
-              points="8,30 20,26 30,20 40,23 54,15 66,12 79,8 92,5"
-            />
-            <circle className="cq-hero-route-node" cx="8" cy="30" r="1.3" />
-            <circle className="cq-hero-route-node" cx="40" cy="23" r="1.3" />
-            <circle className="cq-hero-route-node" cx="92" cy="5" r="1.5" />
-          </svg>
 
           <div className="cq-hotspot-layer" aria-label="Interactive feature hotspots">
             {hotspots.map((hotspot) => (
@@ -255,69 +173,6 @@ export default function LandingPage() {
               <span>M</span>
             </div>
             <p>Trusted by beginner bouldering groups on campus</p>
-          </div>
-        </section>
-
-        <section className="cq-landing-timeline" aria-label="Quest timeline selector">
-          <p className="cq-page-eyebrow">Quest Timeline</p>
-          <h3>{currentTimeline.title}</h3>
-          <p>{currentTimeline.text}</p>
-          <input
-            type="range"
-            min="0"
-            max={timelineSteps.length - 1}
-            step="1"
-            value={timelineIndex}
-            onChange={(event) => setTimelineIndex(Number(event.target.value))}
-            className="cq-timeline-slider"
-            aria-label="Select timeline phase"
-          />
-          <div className="cq-timeline-labels" aria-hidden="true">
-            {timelineSteps.map((step, index) => (
-              <span key={step.id} className={index === timelineIndex ? "cq-timeline-label-active" : ""}>
-                {step.id}
-              </span>
-            ))}
-          </div>
-          <Link className="cq-primary-btn cq-landing-timeline-cta" to={currentTimeline.ctaTo}>
-            {currentTimeline.ctaLabel}
-          </Link>
-        </section>
-
-        <section className="cq-landing-mini-demo" aria-label="Mini wall interaction demo">
-          <div className="cq-feature-header">
-            <span className="cq-feature-icon">M</span>
-            <h3>Mini Wall Demo</h3>
-          </div>
-          <p>Tap holds to preview a route path. This simulates the DIY interaction flow.</p>
-
-          <div className="cq-mini-wall">
-            <svg className="cq-mini-wall-svg" viewBox="0 0 100 80" preserveAspectRatio="none">
-              {miniPath && <polyline className="cq-mini-wall-path" points={miniPath} />}
-              {miniDemoHolds.map((hold) => (
-                <g key={hold.id}>
-                  <circle
-                    className={`cq-mini-wall-hold ${miniPickedIds.includes(hold.id) ? "cq-mini-wall-hold-active" : ""}`}
-                    cx={hold.x}
-                    cy={hold.y}
-                    r="4.1"
-                    onClick={() => toggleMiniHold(hold.id)}
-                  />
-                  <text x={hold.x} y={hold.y + 0.7} className="cq-mini-wall-label">
-                    {hold.id.toUpperCase()}
-                  </text>
-                </g>
-              ))}
-            </svg>
-          </div>
-
-          <div className="cq-mini-demo-actions">
-            <button type="button" className="cq-secondary-btn" onClick={() => setMiniPickedIds(["a", "c", "e"])}>
-              Reset Demo
-            </button>
-            <Link className="cq-primary-btn" to="/create">
-              Open Full DIY Editor
-            </Link>
           </div>
         </section>
 

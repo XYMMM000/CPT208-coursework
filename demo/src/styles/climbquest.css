@@ -1971,10 +1971,16 @@ a {
   font-weight: 700;
   box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55);
   animation: cq-hotspot-pulse 1.8s infinite;
+  transition: transform 120ms ease, box-shadow 120ms ease;
 }
 
 .cq-hotspot-btn-active {
   background: linear-gradient(135deg, #2580ef, #29a56f);
+}
+
+.cq-hotspot-btn:active {
+  transform: translate(-50%, -50%) scale(0.92);
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.12);
 }
 
 .cq-hotspot-panel {
