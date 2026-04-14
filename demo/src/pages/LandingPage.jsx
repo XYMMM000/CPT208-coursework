@@ -13,14 +13,11 @@ const spotlightFeatures = [
     progressLabel: "Workflow readiness",
     progress: 92,
     to: "/create",
+    coverImage: "/DIY%E9%A1%B5%E9%9D%A2.jpeg",
     cta: "Start DIY Route",
     backTitle: "Why it feels powerful",
     backText: "You can interact directly on the wall: contour holds, assign route points, and preview instantly.",
-    backAction: "Open Editor",
-    mysteryCards: [
-      { title: "Card A - Hidden Beta", text: "A wall with secret hold flow is waiting." },
-      { title: "Card B - Route Secret", text: "One line can feel totally different with new points." }
-    ]
+    backAction: "Open Editor"
   },
   {
     id: "persona",
@@ -33,14 +30,11 @@ const spotlightFeatures = [
     progressLabel: "Personalization quality",
     progress: 88,
     to: "/discover",
+    coverImage: "/%E9%97%AE%E5%8D%B7%E5%8D%A1%E9%9D%A2.jpeg",
     cta: "Take Persona Quiz",
     backTitle: "Why it feels personal",
     backText: "Answer a few behavioral questions and get a route profile, mascot, and challenge path matched to you.",
-    backAction: "Run Quiz",
-    mysteryCards: [
-      { title: "Card A - Personality Clue", text: "Your movement style has a hidden pattern." },
-      { title: "Card B - Match Signal", text: "The quiz reveals routes that fit your mindset." }
-    ]
+    backAction: "Run Quiz"
   }
 ];
 
@@ -230,18 +224,11 @@ export default function LandingPage() {
                 key={feature.id}
                 className={`cq-landing-spotlight-card cq-flip-card ${flipped ? "cq-flip-card-active" : ""}`}
               >
-                <div className="cq-mystery-stack" aria-hidden="true">
-                  <div className="cq-mystery-card cq-mystery-card-a">
-                    <p>{feature.mysteryCards[0].title}</p>
-                    <span>{feature.mysteryCards[0].text}</span>
-                  </div>
-                  <div className="cq-mystery-card cq-mystery-card-b">
-                    <p>{feature.mysteryCards[1].title}</p>
-                    <span>{feature.mysteryCards[1].text}</span>
-                  </div>
-                </div>
                 <div className="cq-flip-card-inner">
                   <div className="cq-flip-face cq-flip-face-front">
+                    <div className="cq-flip-cover">
+                      <img src={feature.coverImage} alt={`${feature.title} cover`} />
+                    </div>
                     <div className="cq-feature-header">
                       <span className="cq-feature-icon">{feature.icon}</span>
                       <h3>{feature.title}</h3>
