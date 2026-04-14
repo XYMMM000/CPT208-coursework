@@ -16,7 +16,11 @@ const spotlightFeatures = [
     cta: "Start DIY Route",
     backTitle: "Why it feels powerful",
     backText: "You can interact directly on the wall: contour holds, assign route points, and preview instantly.",
-    backAction: "Open Editor"
+    backAction: "Open Editor",
+    mysteryCards: [
+      { title: "Card A - Hidden Beta", text: "A wall with secret hold flow is waiting." },
+      { title: "Card B - Route Secret", text: "One line can feel totally different with new points." }
+    ]
   },
   {
     id: "persona",
@@ -32,7 +36,11 @@ const spotlightFeatures = [
     cta: "Take Persona Quiz",
     backTitle: "Why it feels personal",
     backText: "Answer a few behavioral questions and get a route profile, mascot, and challenge path matched to you.",
-    backAction: "Run Quiz"
+    backAction: "Run Quiz",
+    mysteryCards: [
+      { title: "Card A - Personality Clue", text: "Your movement style has a hidden pattern." },
+      { title: "Card B - Match Signal", text: "The quiz reveals routes that fit your mindset." }
+    ]
   }
 ];
 
@@ -222,6 +230,16 @@ export default function LandingPage() {
                 key={feature.id}
                 className={`cq-landing-spotlight-card cq-flip-card ${flipped ? "cq-flip-card-active" : ""}`}
               >
+                <div className="cq-mystery-stack" aria-hidden="true">
+                  <div className="cq-mystery-card cq-mystery-card-a">
+                    <p>{feature.mysteryCards[0].title}</p>
+                    <span>{feature.mysteryCards[0].text}</span>
+                  </div>
+                  <div className="cq-mystery-card cq-mystery-card-b">
+                    <p>{feature.mysteryCards[1].title}</p>
+                    <span>{feature.mysteryCards[1].text}</span>
+                  </div>
+                </div>
                 <div className="cq-flip-card-inner">
                   <div className="cq-flip-face cq-flip-face-front">
                     <div className="cq-feature-header">
