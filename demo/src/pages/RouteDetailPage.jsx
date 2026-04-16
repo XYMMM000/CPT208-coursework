@@ -626,6 +626,11 @@ export default function RouteDetailPage() {
     // In Community view, focus on the overall route path instead of individual point markers.
     return source.includes("discover");
   }, [routeState.source]);
+  const shouldShowPathOnly = useMemo(() => {
+    const source = String(routeState.source || "").toLowerCase();
+    // Discover/AI recommendations should emphasize route flow only.
+    return source.includes("ai") || source.includes("discover");
+  }, [routeState.source]);
   const [displayedContours, setDisplayedContours] = useState(baseContours);
 
   useEffect(() => {
@@ -795,9 +800,11 @@ export default function RouteDetailPage() {
       </section>
 
       <section className="cq-detail-card">
-        <h3>Hold Contour Preview</h3>
+        <h3>{shouldShowPathOnly ? "Route Path Preview" : "Hold Contour Preview"}</h3>
         <p className="cq-detail-creator">
-          Showing the matched wall photo for this route with aligned hold contours.
+          {shouldShowPathOnly
+            ? "Showing the matched wall photo with route flow only."
+            : "Showing the matched wall photo for this route with aligned hold contours."}
         </p>
 
         <div className="cq-preview-wall-wrap">
@@ -830,18 +837,20 @@ export default function RouteDetailPage() {
               />
             )}
 
-            {displayedContours.map((hold, index) => (
-              <polygon
-                key={`detail-hold-${hold.id || index}`}
-                points={pointsToSvgString(hold.points)}
-                fill="none"
-                stroke="#ffffff"
-                strokeWidth="0.4"
-                strokeLinejoin="round"
-              />
-            ))}
+            {!shouldShowPathOnly &&
+              displayedContours.map((hold, index) => (
+                <polygon
+                  key={`detail-hold-${hold.id || index}`}
+                  points={pointsToSvgString(hold.points)}
+                  fill="none"
+                  stroke="#ffffff"
+                  strokeWidth="0.4"
+                  strokeLinejoin="round"
+                />
+              ))}
 
             {shouldShowRoutePointMarkers &&
+              !shouldShowPathOnly &&
               routePlanPoints.map((point) => (
               <g key={`route-plan-point-${point.label}`}>
                 <circle
@@ -858,7 +867,7 @@ export default function RouteDetailPage() {
           </svg>
         </div>
 
-        {routeState.routePlan && shouldShowRoutePointMarkers && (
+        {routeState.routePlan && shouldShowRoutePointMarkers && !shouldShowPathOnly && (
           <div className="cq-route-plan-legend" aria-label="Route point legend">
             <span>
               <i className="cq-route-plan-dot cq-route-plan-point-start" />
