@@ -1724,6 +1724,40 @@ a {
   border: 1px solid #ffffff;
 }
 
+.cq-route-path-glow {
+  stroke: rgba(255, 255, 255, 0.62);
+  stroke-width: 1.45;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.72));
+}
+
+.cq-route-path-main {
+  stroke: #ffffff;
+  stroke-width: 0.78;
+  stroke-dasharray: 1.8 1.2;
+}
+
+.cq-route-path-dot-start {
+  fill: #2fc084;
+  stroke: #ffffff;
+  stroke-width: 0.28;
+}
+
+.cq-route-path-dot-finish {
+  fill: #e95b72;
+  stroke: #ffffff;
+  stroke-width: 0.32;
+}
+
+.cq-route-path-dot-label {
+  fill: #ffffff;
+  font-size: 1.9px;
+  font-weight: 800;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(15, 25, 40, 0.85);
+  stroke-width: 0.36;
+}
+
 /* Bottom tab navigation (mobile-first) */
 .cq-bottom-nav {
   position: fixed;

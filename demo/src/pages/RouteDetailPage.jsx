@@ -353,6 +353,13 @@ function buildPathFromContours(contours) {
   return centers.map((point) => `${point.x},${point.y}`).join(" ");
 }
 
+function buildPathPointsFromContours(contours) {
+  if (!Array.isArray(contours) || contours.length === 0) return [];
+  return contours
+    .map((contour) => getPolygonCenter(contour.points))
+    .sort((a, b) => b.y - a.y);
+}
+
 function clampPercent(value) {
   return Math.min(99, Math.max(1, value));
 }
@@ -620,7 +627,19 @@ export default function RouteDetailPage() {
     if (routeState.routePlan.finish) sequence.push(routeState.routePlan.finish);
     return sequence.map((point) => `${point.x},${point.y}`).join(" ");
   }, [routeState.routePlan]);
+  const routePlanSequencePoints = useMemo(() => {
+    if (!routeState.routePlan) return [];
+    const sequence = [];
+    if (routeState.routePlan.start) sequence.push(routeState.routePlan.start);
+    if (Array.isArray(routeState.routePlan.hands)) sequence.push(...routeState.routePlan.hands);
+    if (routeState.routePlan.finish) sequence.push(routeState.routePlan.finish);
+    return sequence;
+  }, [routeState.routePlan]);
   const contourPathPoints = useMemo(() => buildPathFromContours(baseContours), [baseContours]);
+  const contourPathSequencePoints = useMemo(
+    () => buildPathPointsFromContours(baseContours),
+    [baseContours]
+  );
   const shouldShowRoutePointMarkers = useMemo(() => {
     const source = String(routeState.source || "").toLowerCase();
     // In Community view, focus on the overall route path instead of individual point markers.
@@ -631,6 +650,18 @@ export default function RouteDetailPage() {
     // Discover/AI recommendations should emphasize route flow only.
     return source.includes("ai") || source.includes("discover");
   }, [routeState.source]);
+  const pathOnlyLinePoints = useMemo(() => {
+    return routePlanLinePoints || contourPathPoints;
+  }, [routePlanLinePoints, contourPathPoints]);
+  const pathOnlyEndpoints = useMemo(() => {
+    const sequence =
+      routePlanSequencePoints.length > 0 ? routePlanSequencePoints : contourPathSequencePoints;
+    if (sequence.length === 0) return { start: null, finish: null };
+    return {
+      start: sequence[0],
+      finish: sequence[sequence.length - 1]
+    };
+  }, [routePlanSequencePoints, contourPathSequencePoints]);
   const [displayedContours, setDisplayedContours] = useState(baseContours);
 
   useEffect(() => {
@@ -825,9 +856,28 @@ export default function RouteDetailPage() {
             preserveAspectRatio="none"
             aria-hidden="true"
           >
-            {(routePlanLinePoints || contourPathPoints) && (
+            {pathOnlyLinePoints && shouldShowPathOnly && (
+              <>
+                <polyline
+                  points={pathOnlyLinePoints}
+                  className="cq-route-path-glow"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <polyline
+                  points={pathOnlyLinePoints}
+                  className="cq-route-path-main"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </>
+            )}
+
+            {pathOnlyLinePoints && !shouldShowPathOnly && (
               <polyline
-                points={routePlanLinePoints || contourPathPoints}
+                points={pathOnlyLinePoints}
                 fill="none"
                 stroke="rgba(255, 255, 255, 0.85)"
                 strokeWidth="0.55"
@@ -835,6 +885,42 @@ export default function RouteDetailPage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
+            )}
+
+            {shouldShowPathOnly && pathOnlyEndpoints.start && (
+              <>
+                <circle
+                  cx={pathOnlyEndpoints.start.x}
+                  cy={pathOnlyEndpoints.start.y}
+                  r="1.15"
+                  className="cq-route-path-dot-start"
+                />
+                <text
+                  x={pathOnlyEndpoints.start.x}
+                  y={pathOnlyEndpoints.start.y - 1.7}
+                  className="cq-route-path-dot-label"
+                >
+                  S
+                </text>
+              </>
+            )}
+
+            {shouldShowPathOnly && pathOnlyEndpoints.finish && (
+              <>
+                <circle
+                  cx={pathOnlyEndpoints.finish.x}
+                  cy={pathOnlyEndpoints.finish.y}
+                  r="1.35"
+                  className="cq-route-path-dot-finish"
+                />
+                <text
+                  x={pathOnlyEndpoints.finish.x}
+                  y={pathOnlyEndpoints.finish.y - 1.9}
+                  className="cq-route-path-dot-label"
+                >
+                  TOP
+                </text>
+              </>
             )}
 
             {!shouldShowPathOnly &&
