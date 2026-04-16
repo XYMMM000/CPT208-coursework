@@ -933,6 +933,31 @@ a {
   font-size: 1.35rem;
 }
 
+.cq-profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cq-profile-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #d7e4f7;
+  box-shadow: 0 8px 14px rgba(37, 56, 82, 0.16);
+  background: #eef5ff;
+}
+
+.cq-profile-avatar-fallback {
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2f7de1, #23a673);
+}
+
 .cq-profile-header p {
   margin: 8px 0 0;
   color: var(--cq-text-soft);

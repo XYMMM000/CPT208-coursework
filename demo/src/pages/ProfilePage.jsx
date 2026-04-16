@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const ONBOARDING_STORAGE_KEY = "climbquest_onboarding_preferences";
 const CREATED_ROUTES_STORAGE_KEY = "climbquest_created_routes";
@@ -69,6 +70,8 @@ function buildGrowthPath(growth) {
 }
 
 export default function ProfilePage() {
+  const { currentUser } = useAuth();
+
   const profileData = useMemo(() => {
     const onboarding = safeParse(localStorage.getItem(ONBOARDING_STORAGE_KEY), {});
     const createdRoutes = safeParse(
@@ -149,12 +152,40 @@ export default function ProfilePage() {
     [profileData.growth.currentSessions, profileData.growth.monthlyGoalSessions]
   );
   const growthPath = useMemo(() => buildGrowthPath(profileData.growth), [profileData.growth]);
+  const profileInitials = useMemo(() => {
+    const sourceName = currentUser?.displayName || currentUser?.email || profileData.username || "CQ";
+    const cleaned = String(sourceName).trim();
+    if (!cleaned) return "CQ";
+
+    const parts = cleaned.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    }
+
+    return cleaned.slice(0, 2).toUpperCase();
+  }, [currentUser?.displayName, currentUser?.email, profileData.username]);
 
   return (
     <section className="cq-profile-page">
       <header className="cq-profile-header">
-        <p className="cq-page-eyebrow">Profile</p>
-        <h2>{profileData.username}</h2>
+        <div className="cq-profile-identity">
+          {currentUser?.photoURL ? (
+            <img
+              className="cq-profile-avatar"
+              src={currentUser.photoURL}
+              alt={`${profileData.username} avatar`}
+            />
+          ) : (
+            <div className="cq-profile-avatar cq-profile-avatar-fallback" aria-hidden="true">
+              {profileInitials}
+            </div>
+          )}
+
+          <div>
+            <p className="cq-page-eyebrow">Profile</p>
+            <h2>{profileData.username}</h2>
+          </div>
+        </div>
         <p>Keep climbing, keep growing. You are building strong momentum this week.</p>
       </header>
 
