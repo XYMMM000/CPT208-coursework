@@ -393,108 +393,123 @@ function getTopProfileKey(scoreBoard) {
 const routePlanPresets = {
   "Blue Slab Rhythm": {
     wallPhotoIndex: 0,
-    start: { x: 18, y: 79 },
-    finish: { x: 71, y: 22 },
-    hands: [{ x: 29, y: 67 }, { x: 45, y: 52 }, { x: 58, y: 38 }],
-    feet: [{ x: 21, y: 83 }, { x: 35, y: 74 }]
+    // Easy: simple bottom-left to upper-mid ladder.
+    start: { x: 14, y: 83 },
+    finish: { x: 48, y: 41 },
+    hands: [{ x: 20, y: 75 }, { x: 27, y: 66 }, { x: 34, y: 57 }, { x: 41, y: 49 }],
+    feet: [{ x: 16, y: 87 }, { x: 24, y: 79 }]
   },
   "Silent Corner Flow": {
     wallPhotoIndex: 1,
-    start: { x: 16, y: 81 },
-    finish: { x: 62, y: 27 },
-    hands: [{ x: 24, y: 67 }, { x: 39, y: 51 }, { x: 53, y: 39 }],
-    feet: [{ x: 19, y: 84 }, { x: 31, y: 72 }]
+    // Easy: mirrored route from right side to center-left.
+    start: { x: 81, y: 84 },
+    finish: { x: 46, y: 39 },
+    hands: [{ x: 74, y: 76 }, { x: 66, y: 67 }, { x: 58, y: 58 }, { x: 51, y: 48 }],
+    feet: [{ x: 79, y: 88 }, { x: 70, y: 79 }]
   },
   "Glass Wall Glide": {
     wallPhotoIndex: 2,
-    start: { x: 23, y: 77 },
-    finish: { x: 78, y: 31 },
-    hands: [{ x: 35, y: 64 }, { x: 50, y: 49 }, { x: 65, y: 38 }],
-    feet: [{ x: 26, y: 80 }, { x: 41, y: 68 }]
+    // Medium: visible zig-zag across orange/gray boundary.
+    start: { x: 23, y: 82 },
+    finish: { x: 69, y: 28 },
+    hands: [{ x: 35, y: 73 }, { x: 30, y: 62 }, { x: 46, y: 54 }, { x: 41, y: 43 }, { x: 58, y: 35 }],
+    feet: [{ x: 25, y: 86 }, { x: 37, y: 77 }]
   },
   "Crimson Power Burst": {
     wallPhotoIndex: 0,
-    start: { x: 34, y: 74 },
-    finish: { x: 82, y: 26 },
-    hands: [{ x: 41, y: 60 }, { x: 55, y: 46 }, { x: 70, y: 34 }],
-    feet: [{ x: 31, y: 78 }, { x: 45, y: 67 }]
+    // Hard: bigger jumps and directional changes.
+    start: { x: 37, y: 84 },
+    finish: { x: 88, y: 20 },
+    hands: [{ x: 47, y: 74 }, { x: 60, y: 67 }, { x: 54, y: 55 }, { x: 69, y: 47 }, { x: 63, y: 35 }, { x: 79, y: 27 }],
+    feet: [{ x: 35, y: 88 }, { x: 50, y: 79 }]
   },
   "Volume Dyno Punch": {
     wallPhotoIndex: 1,
-    start: { x: 28, y: 76 },
-    finish: { x: 76, y: 33 },
-    hands: [{ x: 37, y: 63 }, { x: 52, y: 50 }, { x: 64, y: 39 }],
-    feet: [{ x: 26, y: 80 }, { x: 40, y: 68 }]
+    // Medium: dynamic but readable progression.
+    start: { x: 24, y: 83 },
+    finish: { x: 64, y: 27 },
+    hands: [{ x: 36, y: 72 }, { x: 31, y: 61 }, { x: 45, y: 53 }, { x: 40, y: 43 }, { x: 56, y: 35 }],
+    feet: [{ x: 26, y: 87 }, { x: 39, y: 78 }]
   },
   "Overhang Strike Line": {
     wallPhotoIndex: 2,
-    start: { x: 33, y: 73 },
-    finish: { x: 84, y: 28 },
-    hands: [{ x: 44, y: 61 }, { x: 59, y: 47 }, { x: 73, y: 35 }],
-    feet: [{ x: 31, y: 77 }, { x: 47, y: 67 }]
+    // Hard: high intensity with clear right-side finish.
+    start: { x: 41, y: 84 },
+    finish: { x: 92, y: 20 },
+    hands: [{ x: 53, y: 74 }, { x: 66, y: 67 }, { x: 60, y: 55 }, { x: 75, y: 47 }, { x: 69, y: 35 }, { x: 85, y: 27 }],
+    feet: [{ x: 39, y: 88 }, { x: 55, y: 79 }]
   },
   "Long Traverse Engine": {
     wallPhotoIndex: 0,
-    start: { x: 11, y: 69 },
-    finish: { x: 86, y: 60 },
-    hands: [{ x: 24, y: 66 }, { x: 39, y: 63 }, { x: 56, y: 62 }, { x: 72, y: 61 }],
-    feet: [{ x: 15, y: 76 }, { x: 31, y: 72 }]
+    // Medium endurance: long horizontal traverse.
+    start: { x: 10, y: 70 },
+    finish: { x: 90, y: 58 },
+    hands: [{ x: 23, y: 67 }, { x: 36, y: 65 }, { x: 50, y: 63 }, { x: 64, y: 61 }, { x: 78, y: 59 }],
+    feet: [{ x: 14, y: 77 }, { x: 31, y: 73 }]
   },
   "Circuit River": {
     wallPhotoIndex: 1,
-    start: { x: 12, y: 67 },
-    finish: { x: 84, y: 58 },
-    hands: [{ x: 26, y: 64 }, { x: 42, y: 62 }, { x: 58, y: 61 }, { x: 72, y: 60 }],
-    feet: [{ x: 16, y: 75 }, { x: 34, y: 70 }]
+    // Medium endurance: another traverse but different rhythm and lane.
+    start: { x: 12, y: 68 },
+    finish: { x: 88, y: 56 },
+    hands: [{ x: 26, y: 65 }, { x: 40, y: 63 }, { x: 54, y: 62 }, { x: 68, y: 60 }, { x: 80, y: 58 }],
+    feet: [{ x: 16, y: 76 }, { x: 33, y: 72 }]
   },
   "Wall Marathon Lite": {
     wallPhotoIndex: 2,
-    start: { x: 13, y: 68 },
-    finish: { x: 81, y: 53 },
-    hands: [{ x: 27, y: 64 }, { x: 44, y: 60 }, { x: 61, y: 57 }],
-    feet: [{ x: 18, y: 76 }, { x: 35, y: 70 }]
+    // Easy endurance: shorter traverse for beginners.
+    start: { x: 14, y: 70 },
+    finish: { x: 74, y: 55 },
+    hands: [{ x: 27, y: 67 }, { x: 41, y: 63 }, { x: 55, y: 60 }, { x: 67, y: 57 }],
+    feet: [{ x: 18, y: 77 }, { x: 34, y: 72 }]
   },
   "Volume Logic Maze": {
     wallPhotoIndex: 2,
-    start: { x: 25, y: 79 },
-    finish: { x: 69, y: 25 },
-    hands: [{ x: 34, y: 66 }, { x: 47, y: 53 }, { x: 58, y: 40 }],
-    feet: [{ x: 26, y: 82 }, { x: 40, y: 71 }]
+    // Medium technical: deliberate S-shape movement.
+    start: { x: 26, y: 82 },
+    finish: { x: 66, y: 26 },
+    hands: [{ x: 37, y: 73 }, { x: 32, y: 62 }, { x: 47, y: 54 }, { x: 42, y: 44 }, { x: 56, y: 35 }],
+    feet: [{ x: 28, y: 86 }, { x: 39, y: 77 }]
   },
   "Heel Hook Study": {
     wallPhotoIndex: 1,
-    start: { x: 31, y: 80 },
-    finish: { x: 74, y: 29 },
-    hands: [{ x: 40, y: 66 }, { x: 52, y: 52 }, { x: 64, y: 38 }],
-    feet: [{ x: 30, y: 84 }, { x: 45, y: 72 }]
+    // Hard technical: right-to-left with multiple direction switches.
+    start: { x: 74, y: 84 },
+    finish: { x: 34, y: 24 },
+    hands: [{ x: 66, y: 74 }, { x: 70, y: 62 }, { x: 56, y: 54 }, { x: 60, y: 43 }, { x: 47, y: 35 }, { x: 40, y: 29 }],
+    feet: [{ x: 72, y: 88 }, { x: 63, y: 79 }]
   },
   "Micro Beta Lab": {
     wallPhotoIndex: 0,
-    start: { x: 22, y: 77 },
-    finish: { x: 67, y: 30 },
-    hands: [{ x: 32, y: 65 }, { x: 45, y: 53 }, { x: 57, y: 41 }],
-    feet: [{ x: 22, y: 81 }, { x: 36, y: 70 }]
+    // Medium technical: compact route in center-left zone.
+    start: { x: 20, y: 82 },
+    finish: { x: 57, y: 30 },
+    hands: [{ x: 30, y: 72 }, { x: 26, y: 61 }, { x: 40, y: 53 }, { x: 36, y: 43 }, { x: 49, y: 35 }],
+    feet: [{ x: 22, y: 86 }, { x: 33, y: 77 }]
   },
   "Partner Session Circuit": {
     wallPhotoIndex: 0,
-    start: { x: 17, y: 78 },
-    finish: { x: 75, y: 34 },
-    hands: [{ x: 28, y: 65 }, { x: 43, y: 52 }, { x: 58, y: 42 }],
-    feet: [{ x: 19, y: 82 }, { x: 34, y: 71 }]
+    // Easy social: clean ladder route.
+    start: { x: 17, y: 83 },
+    finish: { x: 51, y: 40 },
+    hands: [{ x: 24, y: 75 }, { x: 31, y: 66 }, { x: 38, y: 57 }, { x: 45, y: 48 }],
+    feet: [{ x: 19, y: 87 }, { x: 27, y: 79 }]
   },
   "Crowd Favorite Ladder": {
     wallPhotoIndex: 1,
-    start: { x: 20, y: 79 },
-    finish: { x: 68, y: 30 },
-    hands: [{ x: 30, y: 67 }, { x: 42, y: 55 }, { x: 54, y: 44 }],
-    feet: [{ x: 21, y: 83 }, { x: 36, y: 73 }]
+    // Medium social: clearer center lane progression.
+    start: { x: 22, y: 83 },
+    finish: { x: 62, y: 29 },
+    hands: [{ x: 33, y: 73 }, { x: 40, y: 64 }, { x: 47, y: 54 }, { x: 54, y: 43 }],
+    feet: [{ x: 24, y: 87 }, { x: 36, y: 78 }]
   },
   "Group Warmup Relay": {
     wallPhotoIndex: 2,
-    start: { x: 18, y: 78 },
-    finish: { x: 63, y: 33 },
-    hands: [{ x: 29, y: 67 }, { x: 40, y: 56 }, { x: 52, y: 45 }],
-    feet: [{ x: 20, y: 82 }, { x: 33, y: 72 }]
+    // Easy social: mirrored right-to-left warmup ladder.
+    start: { x: 79, y: 83 },
+    finish: { x: 47, y: 38 },
+    hands: [{ x: 72, y: 74 }, { x: 65, y: 65 }, { x: 58, y: 56 }, { x: 51, y: 47 }],
+    feet: [{ x: 77, y: 87 }, { x: 69, y: 79 }]
   }
 };
 
@@ -794,7 +809,7 @@ export default function DiscoverPage() {
                 </div>
                 <span className="cq-route-style-tag">{route.style}</span>
                 <p className="cq-route-description">{route.reason}</p>
-                <p className="cq-route-reason">Tap to view start/finish + hand/foot points</p>
+                <p className="cq-route-reason">Tap to view a clear start-to-finish route path</p>
               </Link>
             ))}
           </section>
