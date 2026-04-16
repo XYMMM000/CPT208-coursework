@@ -62,6 +62,131 @@ function getHoldCenter(hold) {
   return { x: Number(centerX.toFixed(2)), y: Number(centerY.toFixed(2)) };
 }
 
+function toRoutePathPoints(routePlan, holdContours) {
+  // Priority: if user already assigned route points, use them to estimate route flow.
+  if (routePlan) {
+    const start = routePlan.start ? { ...routePlan.start } : null;
+    const finish = routePlan.finish ? { ...routePlan.finish } : null;
+    const middlePoints = [...(routePlan.hands || []), ...(routePlan.feet || [])]
+      .filter(Boolean)
+      // Sort by y descending (bottom -> top) to approximate climbing direction.
+      .sort((a, b) => b.y - a.y);
+
+    const sequence = [start, ...middlePoints, finish].filter(Boolean);
+    if (sequence.length > 0) return sequence;
+  }
+
+  // Fallback: use hold centers (bottom -> top) when route points are not set yet.
+  if (!Array.isArray(holdContours) || holdContours.length === 0) return [];
+  return holdContours
+    .map((hold) => getHoldCenter(hold))
+    .sort((a, b) => b.y - a.y);
+}
+
+function getDifficultyThresholds(difficulty) {
+  if (difficulty === "Easy") {
+    return { maxJump: 20, totalMin: 16, totalMax: 85, scoreMin: 0, scoreMax: 22 };
+  }
+  if (difficulty === "Medium") {
+    return { maxJump: 28, totalMin: 22, totalMax: 120, scoreMin: 18, scoreMax: 32 };
+  }
+  if (difficulty === "Hard") {
+    return { maxJump: 36, totalMin: 26, totalMax: 170, scoreMin: 26, scoreMax: 999 };
+  }
+  return null;
+}
+
+function evaluateRouteSanity({ difficulty, routePlan, holdContours }) {
+  const warnings = [];
+  const checks = [];
+
+  const pathPoints = toRoutePathPoints(routePlan, holdContours);
+  const hasStart = Boolean(routePlan?.start);
+  const hasFinish = Boolean(routePlan?.finish);
+
+  // Rule set 1: structure reminders.
+  if (!hasStart) warnings.push("Missing start point. Add a clear start hold.");
+  if (!hasFinish) warnings.push("Missing finish point. Add a clear finish hold.");
+  if (holdContours.length < 3) warnings.push("Only a few holds selected. Add more holds for a complete route.");
+  if (pathPoints.length < 3) warnings.push("Route path is too short. Set more route points or hold contours.");
+
+  if (hasStart && hasFinish && routePlan.start.y <= routePlan.finish.y) {
+    warnings.push("Start seems above finish. Usually start should be lower than finish.");
+  }
+
+  let totalLength = 0;
+  let maxJump = 0;
+  let averageJump = 0;
+  let backwardMoves = 0;
+
+  if (pathPoints.length >= 2) {
+    const segmentLengths = [];
+
+    for (let index = 1; index < pathPoints.length; index += 1) {
+      const previous = pathPoints[index - 1];
+      const current = pathPoints[index];
+      const segment = distanceBetweenPoints(previous, current);
+      segmentLengths.push(segment);
+      totalLength += segment;
+      maxJump = Math.max(maxJump, segment);
+
+      // Climbing path should mostly go upward (y decreases).
+      if (current.y > previous.y + 3) {
+        backwardMoves += 1;
+      }
+    }
+
+    averageJump = segmentLengths.reduce((sum, value) => sum + value, 0) / segmentLengths.length;
+  }
+
+  const verticalSpan =
+    hasStart && hasFinish ? Math.abs(routePlan.start.y - routePlan.finish.y) : 0;
+  const difficultyThresholds = getDifficultyThresholds(difficulty);
+
+  // Rule set 1: movement continuity reminders.
+  if (difficultyThresholds && maxJump > difficultyThresholds.maxJump) {
+    warnings.push(
+      `Big jump detected (${maxJump.toFixed(1)}). Consider adding intermediate holds.`
+    );
+  }
+
+  if (difficultyThresholds && totalLength > 0) {
+    if (totalLength < difficultyThresholds.totalMin) {
+      warnings.push("Route feels very short. Consider extending the movement sequence.");
+    } else if (totalLength > difficultyThresholds.totalMax) {
+      warnings.push("Route feels very long. Consider simplifying or splitting into sections.");
+    }
+  }
+
+  if (backwardMoves >= 2) {
+    warnings.push("Path has multiple downward moves. Check if the route flow is intentional.");
+  }
+
+  // Rule set 3: difficulty consistency check.
+  const difficultyScore = maxJump * 0.45 + averageJump * 0.35 + verticalSpan * 0.2;
+  if (difficultyThresholds && difficulty) {
+    if (difficultyScore < difficultyThresholds.scoreMin) {
+      warnings.push(
+        `Selected ${difficulty}, but movement looks easier. You can reduce grade or add complexity.`
+      );
+    } else if (difficultyScore > difficultyThresholds.scoreMax) {
+      warnings.push(
+        `Selected ${difficulty}, but movement looks harder. Consider raising grade or easing jumps.`
+      );
+    }
+  }
+
+  checks.push({ label: "Path points", value: String(pathPoints.length) });
+  checks.push({ label: "Max jump", value: maxJump ? maxJump.toFixed(1) : "0" });
+  checks.push({ label: "Total length", value: totalLength ? totalLength.toFixed(1) : "0" });
+  checks.push({ label: "Difficulty score", value: difficultyScore ? difficultyScore.toFixed(1) : "0" });
+
+  return {
+    warnings,
+    checks
+  };
+}
+
 function isPointInsidePolygon(point, polygon) {
   if (!Array.isArray(polygon) || polygon.length < 3) return false;
   let isInside = false;
@@ -179,6 +304,15 @@ export default function CreatePage() {
     if (!start && !finish && hands.length === 0 && feet.length === 0) return null;
     return { start, finish, hands, feet };
   }, [routePointsByType]);
+  const routeSanity = useMemo(
+    () =>
+      evaluateRouteSanity({
+        difficulty: formData.difficulty,
+        routePlan,
+        holdContours
+      }),
+    [formData.difficulty, routePlan, holdContours]
+  );
 
   useEffect(() => {
     // Sync editor wall with route param from the wall selection page.
@@ -1007,6 +1141,31 @@ export default function CreatePage() {
               ))}
             </select>
           </label>
+        </section>
+
+        <section className="cq-route-check-panel" aria-label="Route sanity check reminders">
+          <h3>Route Sanity Check</h3>
+          <p className="cq-route-check-note">
+            Quick reminder only. You can still submit, but these checks help improve route quality.
+          </p>
+
+          <div className="cq-route-check-metrics">
+            {routeSanity.checks.map((item) => (
+              <span key={item.label} className="cq-route-check-pill">
+                {item.label}: <strong>{item.value}</strong>
+              </span>
+            ))}
+          </div>
+
+          {routeSanity.warnings.length === 0 ? (
+            <p className="cq-route-check-ok">Looks good. No major route issues detected.</p>
+          ) : (
+            <ul className="cq-route-check-list">
+              {routeSanity.warnings.map((warning, index) => (
+                <li key={`${warning}-${index}`}>{warning}</li>
+              ))}
+            </ul>
+          )}
         </section>
 
         {/* Full-screen zoom editor: larger view for easier hold selection on mobile. */}

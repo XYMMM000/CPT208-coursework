@@ -1352,6 +1352,62 @@ a {
   color: #233857;
 }
 
+.cq-route-check-panel {
+  border: 1px solid #d8e3f4;
+  border-radius: 14px;
+  background: #f8fbff;
+  padding: 12px;
+}
+
+.cq-route-check-panel h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #233857;
+}
+
+.cq-route-check-note {
+  margin: 7px 0 0;
+  color: #4d6486;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.cq-route-check-metrics {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cq-route-check-pill {
+  border: 1px solid #cbd9ec;
+  border-radius: 999px;
+  background: #f2f7ff;
+  padding: 4px 9px;
+  font-size: 0.76rem;
+  color: #3c5579;
+}
+
+.cq-route-check-ok {
+  margin: 10px 0 0;
+  border: 1px solid #cbead8;
+  border-radius: 10px;
+  background: #eefcf4;
+  color: #245d45;
+  padding: 8px 10px;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.cq-route-check-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: #7a3f22;
+  font-size: 0.85rem;
+}
+
 .cq-field {
   display: grid;
   gap: 7px;
