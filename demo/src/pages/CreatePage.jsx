@@ -18,11 +18,7 @@ const MAX_ZOOM_SCALE = 3;
 const ZOOM_STEP = 0.12;
 const ROUTE_POINT_TYPES = [
   { key: "start", label: "Start" },
-  { key: "finish", label: "Finish" },
-  { key: "leftHand", label: "Left Hand" },
-  { key: "rightHand", label: "Right Hand" },
-  { key: "leftFoot", label: "Left Foot" },
-  { key: "rightFoot", label: "Right Foot" }
+  { key: "finish", label: "Finish" }
 ];
 const WALL_ROUTE_ID_TO_INDEX = {
   "wall-1": 0,
@@ -60,6 +56,45 @@ function getHoldCenter(hold) {
   const centerX = hold.points.reduce((sum, point) => sum + point.x, 0) / hold.points.length;
   const centerY = hold.points.reduce((sum, point) => sum + point.y, 0) / hold.points.length;
   return { x: Number(centerX.toFixed(2)), y: Number(centerY.toFixed(2)) };
+}
+
+function getOrderedPathCenters(holdContours, startPoint, finishPoint) {
+  if (!Array.isArray(holdContours) || holdContours.length === 0) return [];
+  const centers = holdContours.map((hold) => getHoldCenter(hold));
+
+  const withoutEndpoints = centers.filter((center) => {
+    const nearStart = startPoint ? distanceBetweenPoints(center, startPoint) < 0.9 : false;
+    const nearFinish = finishPoint ? distanceBetweenPoints(center, finishPoint) < 0.9 : false;
+    return !nearStart && !nearFinish;
+  });
+
+  if (startPoint && finishPoint) {
+    const vectorX = finishPoint.x - startPoint.x;
+    const vectorY = finishPoint.y - startPoint.y;
+    const lengthSquared = vectorX * vectorX + vectorY * vectorY;
+
+    if (lengthSquared > 0.001) {
+      return withoutEndpoints.sort((a, b) => {
+        const ta = ((a.x - startPoint.x) * vectorX + (a.y - startPoint.y) * vectorY) / lengthSquared;
+        const tb = ((b.x - startPoint.x) * vectorX + (b.y - startPoint.y) * vectorY) / lengthSquared;
+        return ta - tb;
+      });
+    }
+  }
+
+  if (startPoint) {
+    return withoutEndpoints.sort(
+      (a, b) => distanceBetweenPoints(a, startPoint) - distanceBetweenPoints(b, startPoint)
+    );
+  }
+
+  if (finishPoint) {
+    return withoutEndpoints.sort(
+      (a, b) => distanceBetweenPoints(b, finishPoint) - distanceBetweenPoints(a, finishPoint)
+    );
+  }
+
+  return withoutEndpoints.sort((a, b) => b.y - a.y);
 }
 
 function toRoutePathPoints(routePlan, holdContours) {
@@ -294,16 +329,22 @@ export default function CreatePage() {
   const routePlan = useMemo(() => {
     const start = routePointsByType.start ? { x: routePointsByType.start.x, y: routePointsByType.start.y } : null;
     const finish = routePointsByType.finish ? { x: routePointsByType.finish.x, y: routePointsByType.finish.y } : null;
-    const hands = [routePointsByType.leftHand, routePointsByType.rightHand]
-      .filter(Boolean)
-      .map((point) => ({ x: point.x, y: point.y }));
-    const feet = [routePointsByType.leftFoot, routePointsByType.rightFoot]
-      .filter(Boolean)
-      .map((point) => ({ x: point.x, y: point.y }));
+    // Auto-generate middle path points from hold centers after users finish hold selection.
+    const autoPathCenters = getOrderedPathCenters(holdContours, start, finish);
+    const hands = autoPathCenters.map((point) => ({ x: point.x, y: point.y }));
+    const feet = [];
 
-    if (!start && !finish && hands.length === 0 && feet.length === 0) return null;
+    if (!start && !finish && hands.length === 0) return null;
     return { start, finish, hands, feet };
-  }, [routePointsByType]);
+  }, [routePointsByType, holdContours]);
+  const routePathLinePoints = useMemo(() => {
+    if (!routePlan) return "";
+    const sequence = [];
+    if (routePlan.start) sequence.push(routePlan.start);
+    if (Array.isArray(routePlan.hands) && routePlan.hands.length > 0) sequence.push(...routePlan.hands);
+    if (routePlan.finish) sequence.push(routePlan.finish);
+    return sequence.length >= 2 ? pointsToSvgString(sequence) : "";
+  }, [routePlan]);
   const routeSanity = useMemo(
     () =>
       evaluateRouteSanity({
@@ -578,7 +619,7 @@ export default function CreatePage() {
 
   function clearRoutePoints() {
     setRoutePointsByType({});
-    setAnnotationMessage("Route points cleared. You can assign start/finish/hands/feet again.");
+    setAnnotationMessage("Route points cleared. You can assign start and finish again.");
   }
 
   function openZoomEditor() {
@@ -793,23 +834,28 @@ export default function CreatePage() {
               </g>
             ))}
 
-            {/* Route plan points: start/finish/hands/feet snap to selected hold centers. */}
+            {/* Auto path line: start -> auto centers -> finish. */}
+            {routePathLinePoints && (
+              <polyline
+                points={routePathLinePoints}
+                fill="none"
+                stroke="rgba(255,255,255,0.92)"
+                strokeWidth="0.62"
+                strokeDasharray="2.4 1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            )}
+
+            {/* Route point markers: user only sets Start / Finish. */}
             {routePointEntries.map(([key, point]) => {
               const label = ROUTE_POINT_TYPES.find((type) => type.key === key)?.label || key;
-              let pointClassName = "cq-wall-svg-point-hand";
-              let textLabel = "H";
+              let pointClassName = "cq-wall-svg-point-start";
+              let textLabel = "S";
 
-              if (key === "start") {
-                pointClassName = "cq-wall-svg-point-start";
-                textLabel = "S";
-              } else if (key === "finish") {
+              if (key === "finish") {
                 pointClassName = "cq-wall-svg-point-finish";
                 textLabel = "TOP";
-              } else if (key.toLowerCase().includes("foot")) {
-                pointClassName = "cq-wall-svg-point-foot";
-                textLabel = key === "leftFoot" ? "LF" : "RF";
-              } else {
-                textLabel = key === "leftHand" ? "LH" : "RH";
               }
 
               return (
@@ -900,10 +946,10 @@ export default function CreatePage() {
       <form className="cq-create-form" onSubmit={handleSubmit} noValidate>
         <section className="cq-diy-focus-banner" aria-label="DIY wall first workflow">
           <p className="cq-page-eyebrow">DIY Wall First</p>
-          <h3>1. Choose Wall  2. Draw Holds  3. Set Start/Finish + Hands/Feet</h3>
+          <h3>1. Choose Wall  2. Draw Holds  3. Set Start + Finish</h3>
           <p>
-            The wall editor is the main area below. Route name and other metadata can be filled
-            after you finish drawing.
+            After hold contours are selected, path points are auto-generated at hold centers.
+            You only need to place start and finish.
           </p>
         </section>
 
@@ -932,7 +978,7 @@ export default function CreatePage() {
           <section className="cq-wall-editor" aria-label="Wall hold contour annotation editor">
             <div className="cq-wall-editor-head">
               <p>
-                DIY editor: trace real hold contours first, then assign route points to those holds.
+                DIY editor: trace hold contours first, then tap to place start and finish.
               </p>
               <div className="cq-tag-grid" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
                 <button
@@ -954,12 +1000,12 @@ export default function CreatePage() {
                     setAnnotationMessage("Route point mode active. Tap a hold to assign selected point type.");
                   }}
                 >
-                  Set Route Points
+                  Set Start / Finish
                 </button>
               </div>
             </div>
 
-            <div className="cq-tag-grid" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
+            <div className="cq-tag-grid" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
               {ROUTE_POINT_TYPES.map((type) => (
                 <button
                   key={type.key}
@@ -1019,7 +1065,7 @@ export default function CreatePage() {
               <p className="cq-hold-count">
                 Active point type:{" "}
                 <strong>{ROUTE_POINT_TYPES.find((type) => type.key === activeRoutePointType)?.label}</strong>.
-                Tap any selected hold to place it.
+                Tap any selected hold to place it. Middle path points are auto-generated.
               </p>
             )}
 
@@ -1036,7 +1082,7 @@ export default function CreatePage() {
 
             <p className="cq-hold-count">
               Route points set:{" "}
-              <strong>{Object.keys(routePointsByType).length}</strong>/6
+              <strong>{Object.keys(routePointsByType).length}</strong>/2
             </p>
 
             <div className="cq-point-list-wrap" aria-label="Created hold contour list">
@@ -1225,7 +1271,7 @@ export default function CreatePage() {
         <p className="cq-route-description">{previewDescription}</p>
         <p className="cq-route-reason">Suitable for: {previewLevel}</p>
         <p className="cq-route-reason">Selected hold contours: {holdContours.length}</p>
-        <p className="cq-route-reason">Route points configured: {Object.keys(routePointsByType).length}/6</p>
+        <p className="cq-route-reason">Route points configured: {Object.keys(routePointsByType).length}/2</p>
       </article>
     </section>
   );
