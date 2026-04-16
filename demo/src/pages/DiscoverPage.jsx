@@ -1,5 +1,6 @@
-﻿import { useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 // Quiz questions for the Discover page.
 // Each option contributes points to one or more climbing profiles.
@@ -223,6 +224,8 @@ const profileResults = {
     ]
   }
 };
+
+const DISCOVER_QUIZ_DRAFT_KEY = "climbquest_discover_quiz_draft";
 
 function getMascotVariant(result, seed) {
   const avatars = result.mascot.avatars || [];
@@ -524,13 +527,89 @@ function buildRouteDetailState(route, result) {
   };
 }
 
+function safeParseDraft(rawValue) {
+  try {
+    return rawValue ? JSON.parse(rawValue) : null;
+  } catch {
+    return null;
+  }
+}
+
+function sanitizeAnswerMap(rawAnswerMap) {
+  if (!rawAnswerMap || typeof rawAnswerMap !== "object") return {};
+
+  const next = {};
+  for (const question of quizQuestions) {
+    const optionIndex = rawAnswerMap[question.id];
+    if (typeof optionIndex !== "number") continue;
+    if (optionIndex < 0 || optionIndex >= question.options.length) continue;
+    next[question.id] = optionIndex;
+  }
+
+  return next;
+}
+
 export default function DiscoverPage() {
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const storageKey = `${DISCOVER_QUIZ_DRAFT_KEY}::${currentUser?.email || "guest"}`;
+
+  const initialDraft = useMemo(() => {
+    const draft = safeParseDraft(localStorage.getItem(storageKey));
+    if (!draft) {
+      return {
+        answerMap: {},
+        currentQuestionIndex: 0,
+        isFinished: false,
+        mascotSeed: Date.now()
+      };
+    }
+
+    const sanitizedAnswerMap = sanitizeAnswerMap(draft.answerMap);
+    const maxQuestionIndex = Math.max(quizQuestions.length - 1, 0);
+    const safeQuestionIndex = Math.min(
+      Math.max(Number(draft.currentQuestionIndex) || 0, 0),
+      maxQuestionIndex
+    );
+
+    return {
+      answerMap: sanitizedAnswerMap,
+      currentQuestionIndex: safeQuestionIndex,
+      isFinished: Boolean(draft.isFinished),
+      mascotSeed: Number(draft.mascotSeed) || Date.now()
+    };
+  }, [storageKey]);
+
   // answerMap stores selected option index by question id.
-  const [answerMap, setAnswerMap] = useState({});
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [isFinished, setIsFinished] = useState(false);
-  const [mascotSeed, setMascotSeed] = useState(Date.now());
+  const [answerMap, setAnswerMap] = useState(initialDraft.answerMap);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
+    initialDraft.currentQuestionIndex
+  );
+  const [isFinished, setIsFinished] = useState(initialDraft.isFinished);
+  const [mascotSeed, setMascotSeed] = useState(initialDraft.mascotSeed);
+
+  useEffect(() => {
+    const draft = safeParseDraft(localStorage.getItem(storageKey));
+    if (!draft) {
+      setAnswerMap({});
+      setCurrentQuestionIndex(0);
+      setIsFinished(false);
+      setMascotSeed(Date.now());
+      return;
+    }
+
+    const sanitizedAnswerMap = sanitizeAnswerMap(draft.answerMap);
+    const maxQuestionIndex = Math.max(quizQuestions.length - 1, 0);
+    const safeQuestionIndex = Math.min(
+      Math.max(Number(draft.currentQuestionIndex) || 0, 0),
+      maxQuestionIndex
+    );
+
+    setAnswerMap(sanitizedAnswerMap);
+    setCurrentQuestionIndex(safeQuestionIndex);
+    setIsFinished(Boolean(draft.isFinished));
+    setMascotSeed(Number(draft.mascotSeed) || Date.now());
+  }, [storageKey]);
 
   const currentQuestion = quizQuestions[currentQuestionIndex];
   const answeredCount = Object.keys(answerMap).length;
@@ -560,6 +639,19 @@ export default function DiscoverPage() {
     [result, mascotSeed]
   );
 
+  useEffect(() => {
+    // Persist quiz progress so refresh won't reset user's work.
+    const draft = {
+      answerMap,
+      currentQuestionIndex,
+      isFinished,
+      mascotSeed,
+      updatedAt: Date.now()
+    };
+
+    localStorage.setItem(storageKey, JSON.stringify(draft));
+  }, [answerMap, currentQuestionIndex, isFinished, mascotSeed, storageKey]);
+
   function handleSelectOption(optionIndex) {
     setAnswerMap((prev) => ({
       ...prev,
@@ -585,6 +677,7 @@ export default function DiscoverPage() {
     setCurrentQuestionIndex(0);
     setIsFinished(false);
     setMascotSeed(Date.now());
+    localStorage.removeItem(storageKey);
   }
 
   function openRecommendedRoute(route) {
@@ -727,4 +820,7 @@ export default function DiscoverPage() {
     </section>
   );
 }
+
+
+
 
