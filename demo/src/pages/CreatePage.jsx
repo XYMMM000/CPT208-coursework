@@ -68,9 +68,13 @@ function getHoldCenter(hold) {
   return { x: Number(centerX.toFixed(2)), y: Number(centerY.toFixed(2)) };
 }
 
-function getOrderedPathCenters(holdContours, startPoint, finishPoint) {
-  if (!Array.isArray(holdContours) || holdContours.length === 0) return [];
-  const centers = holdContours.map((hold) => getHoldCenter(hold));
+function getOrderedPathCenters(holdContours, smallHoldPoints, startPoint, finishPoint) {
+  const contourCenters = Array.isArray(holdContours)
+    ? holdContours.map((hold) => getHoldCenter(hold))
+    : [];
+  const pointCenters = Array.isArray(smallHoldPoints) ? smallHoldPoints : [];
+  const centers = [...contourCenters, ...pointCenters];
+  if (centers.length === 0) return [];
 
   const withoutEndpoints = centers.filter((center) => {
     const nearStart = startPoint ? distanceBetweenPoints(center, startPoint) < 0.9 : false;
@@ -107,7 +111,7 @@ function getOrderedPathCenters(holdContours, startPoint, finishPoint) {
   return withoutEndpoints.sort((a, b) => b.y - a.y);
 }
 
-function toRoutePathPoints(routePlan, holdContours) {
+function toRoutePathPoints(routePlan, holdContours, smallHoldPoints) {
   // Priority: if user already assigned route points, use them to estimate route flow.
   if (routePlan) {
     const start = routePlan.start ? { ...routePlan.start } : null;
@@ -121,11 +125,14 @@ function toRoutePathPoints(routePlan, holdContours) {
     if (sequence.length > 0) return sequence;
   }
 
-  // Fallback: use hold centers (bottom -> top) when route points are not set yet.
-  if (!Array.isArray(holdContours) || holdContours.length === 0) return [];
-  return holdContours
-    .map((hold) => getHoldCenter(hold))
-    .sort((a, b) => b.y - a.y);
+  // Fallback: use all selected centers (contours + small points).
+  const contourCenters = Array.isArray(holdContours)
+    ? holdContours.map((hold) => getHoldCenter(hold))
+    : [];
+  const pointCenters = Array.isArray(smallHoldPoints) ? smallHoldPoints : [];
+  const centers = [...contourCenters, ...pointCenters];
+  if (centers.length === 0) return [];
+  return centers.sort((a, b) => b.y - a.y);
 }
 
 function getDifficultyThresholds(difficulty) {
@@ -141,18 +148,20 @@ function getDifficultyThresholds(difficulty) {
   return null;
 }
 
-function evaluateRouteSanity({ difficulty, routePlan, holdContours }) {
+function evaluateRouteSanity({ difficulty, routePlan, holdContours, smallHoldPoints }) {
   const warnings = [];
   const checks = [];
 
-  const pathPoints = toRoutePathPoints(routePlan, holdContours);
+  const pathPoints = toRoutePathPoints(routePlan, holdContours, smallHoldPoints);
   const hasStart = Boolean(routePlan?.start);
   const hasFinish = Boolean(routePlan?.finish);
 
   // Rule set 1: structure reminders.
   if (!hasStart) warnings.push("Missing start point. Add a clear start hold.");
   if (!hasFinish) warnings.push("Missing finish point. Add a clear finish hold.");
-  if (holdContours.length < 3) warnings.push("Only a few holds selected. Add more holds for a complete route.");
+  if (holdContours.length + smallHoldPoints.length < 3) {
+    warnings.push("Only a few holds selected. Add more contours or small hold points.");
+  }
   if (pathPoints.length < 3) warnings.push("Route path is too short. Set more route points or hold contours.");
 
   if (hasStart && hasFinish && routePlan.start.y <= routePlan.finish.y) {
@@ -269,6 +278,7 @@ function toLightweightLocalRoute(route) {
     suitableFor: route.suitableFor,
     wallPhotoIndex: route.wallPhotoIndex,
     holdContours: route.holdContours,
+    smallHoldPoints: route.smallHoldPoints || [],
     routePlan: route.routePlan || null,
     createdAt: route.createdAt
   };
@@ -310,6 +320,7 @@ export default function CreatePage() {
 
   // Each item in holdContours is one selected hold mask region.
   const [holdContours, setHoldContours] = useState([]);
+  const [smallHoldPoints, setSmallHoldPoints] = useState([]);
   const [currentHoldPoints, setCurrentHoldPoints] = useState([]);
   const [editorMode, setEditorMode] = useState("trace");
   const [activeRoutePointType, setActiveRoutePointType] = useState("start");
@@ -352,13 +363,13 @@ export default function CreatePage() {
     const start = routePointsByType.start ? { x: routePointsByType.start.x, y: routePointsByType.start.y } : null;
     const finish = routePointsByType.finish ? { x: routePointsByType.finish.x, y: routePointsByType.finish.y } : null;
     // Auto-generate middle path points from hold centers after users finish hold selection.
-    const autoPathCenters = getOrderedPathCenters(holdContours, start, finish);
+    const autoPathCenters = getOrderedPathCenters(holdContours, smallHoldPoints, start, finish);
     const hands = autoPathCenters.map((point) => ({ x: point.x, y: point.y }));
     const feet = [];
 
     if (!start && !finish && hands.length === 0) return null;
     return { start, finish, hands, feet };
-  }, [routePointsByType, holdContours]);
+  }, [routePointsByType, holdContours, smallHoldPoints]);
   const routePathLinePoints = useMemo(() => {
     if (!routePlan) return "";
     const sequence = [];
@@ -372,9 +383,10 @@ export default function CreatePage() {
       evaluateRouteSanity({
         difficulty: formData.difficulty,
         routePlan,
-        holdContours
+        holdContours,
+        smallHoldPoints
       }),
-    [formData.difficulty, routePlan, holdContours]
+    [formData.difficulty, routePlan, holdContours, smallHoldPoints]
   );
 
   useEffect(() => {
@@ -429,6 +441,7 @@ export default function CreatePage() {
       // When a new wall image is uploaded, reset old hold masks.
       setCurrentHoldPoints([]);
       setHoldContours([]);
+      setSmallHoldPoints([]);
       setRoutePointsByType({});
       setPendingRoutePoint(null);
       setEditorMode("trace");
@@ -444,6 +457,7 @@ export default function CreatePage() {
     setFormData((prev) => ({ ...prev, imageDataUrl: "" }));
     setCurrentHoldPoints([]);
     setHoldContours([]);
+    setSmallHoldPoints([]);
     setRoutePointsByType({});
     setPendingRoutePoint(null);
     setEditorMode("trace");
@@ -471,8 +485,19 @@ export default function CreatePage() {
     setAnnotationMessage("");
   }
 
+  function addSmallHoldPoint(point) {
+    if (!point) return;
+    const smallPoint = {
+      id: `small-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      x: point.x,
+      y: point.y
+    };
+    setSmallHoldPoints((prev) => [...prev, smallPoint]);
+    setAnnotationMessage("Small hold point added.");
+  }
+
   function getClosestHoldForPoint(point, maxSnapDistance = ROUTE_POINT_SNAP_DISTANCE) {
-    if (!point || holdContours.length === 0) return null;
+    if (!point || (holdContours.length === 0 && smallHoldPoints.length === 0)) return null;
 
     // First priority: if user taps inside a contour, use that hold directly.
     const insideMatch = holdContours.find((hold) => isPointInsidePolygon(point, hold.points));
@@ -481,17 +506,27 @@ export default function CreatePage() {
     }
 
     // Fallback: snap to nearest hold center.
-    let closestHold = holdContours[0];
-    let closestCenter = getHoldCenter(closestHold);
-    let minDistance = distanceBetweenPoints(point, closestCenter);
+    const snapCandidates = [
+      ...holdContours.map((hold) => ({
+        id: hold.id,
+        center: getHoldCenter(hold),
+        kind: "contour"
+      })),
+      ...smallHoldPoints.map((pointItem) => ({
+        id: pointItem.id,
+        center: { x: pointItem.x, y: pointItem.y },
+        kind: "small-point"
+      }))
+    ];
 
-    for (const hold of holdContours.slice(1)) {
-      const center = getHoldCenter(hold);
-      const distance = distanceBetweenPoints(point, center);
+    let closestCandidate = snapCandidates[0];
+    let minDistance = distanceBetweenPoints(point, closestCandidate.center);
+
+    for (const candidate of snapCandidates.slice(1)) {
+      const distance = distanceBetweenPoints(point, candidate.center);
       if (distance < minDistance) {
         minDistance = distance;
-        closestHold = hold;
-        closestCenter = center;
+        closestCandidate = candidate;
       }
     }
 
@@ -499,7 +534,11 @@ export default function CreatePage() {
       return null;
     }
 
-    return { hold: closestHold, center: closestCenter, distance: minDistance };
+    return {
+      hold: { id: closestCandidate.id, kind: closestCandidate.kind },
+      center: closestCandidate.center,
+      distance: minDistance
+    };
   }
 
   function assignRoutePointByTap(point) {
@@ -615,7 +654,11 @@ export default function CreatePage() {
     if (!activeWallImageSrc) return;
 
     // Mobile shortcut: in zoom editor, double-tap quickly toggles zoom level.
-    if (zoomMode && editorMode === "route-points" && event.pointerType !== "mouse") {
+    if (
+      zoomMode &&
+      (editorMode === "route-points" || editorMode === "small-points") &&
+      event.pointerType !== "mouse"
+    ) {
       const now = Date.now();
       const elapsed = now - lastTapTimeRef.current;
       lastTapTimeRef.current = now;
@@ -641,6 +684,15 @@ export default function CreatePage() {
       return;
     }
 
+    if (editorMode === "small-points") {
+      if (zoomMode) {
+        beginZoomPan(event);
+        return;
+      }
+      addSmallHoldPoint(point);
+      return;
+    }
+
     setIsTracing(true);
     traceLastPointRef.current = null;
 
@@ -653,7 +705,7 @@ export default function CreatePage() {
   }
 
   function handleWallPointerMove(event) {
-    if (editorMode === "route-points") {
+    if (editorMode === "route-points" || editorMode === "small-points") {
       updateZoomPan(event);
       return;
     }
@@ -680,6 +732,16 @@ export default function CreatePage() {
       return;
     }
 
+    if (editorMode === "small-points") {
+      const panMoved = zoomPanRef.current.moved;
+      const point = getRelativePointFromPointerEvent(event);
+      endZoomPan(event);
+      if (!panMoved && point) {
+        addSmallHoldPoint(point);
+      }
+      return;
+    }
+
     setIsTracing(false);
     traceLastPointRef.current = null;
     if (event.currentTarget.releasePointerCapture) {
@@ -698,7 +760,7 @@ export default function CreatePage() {
   }
 
   function handleWallPointerCancel(event) {
-    if (editorMode === "route-points") {
+    if (editorMode === "route-points" || editorMode === "small-points") {
       endZoomPan(event);
       return;
     }
@@ -753,9 +815,21 @@ export default function CreatePage() {
     setAnnotationMessage("");
   }
 
+  function undoLastSmallHoldPoint() {
+    setSmallHoldPoints((prev) => prev.slice(0, -1));
+    setAnnotationMessage("Removed last small hold point.");
+  }
+
+  function clearSmallHoldPoints() {
+    setSmallHoldPoints([]);
+    setPendingRoutePoint(null);
+    setAnnotationMessage("Small hold points cleared.");
+  }
+
   function clearAllHolds() {
     setCurrentHoldPoints([]);
     setHoldContours([]);
+    setSmallHoldPoints([]);
     setRoutePointsByType({});
     setPendingRoutePoint(null);
     setEditorMode("trace");
@@ -848,8 +922,9 @@ export default function CreatePage() {
     if (!formData.difficulty.trim()) {
       nextErrors.difficulty = "Difficulty is required.";
     }
-    if (holdContours.length === 0) {
-      nextErrors.holdContours = "Please finish at least one hold contour.";
+    if (holdContours.length === 0 && smallHoldPoints.length === 0) {
+      nextErrors.holdContours =
+        "Please add at least one hold contour or one small hold point.";
     }
 
     setErrors(nextErrors);
@@ -874,6 +949,7 @@ export default function CreatePage() {
       imageDataUrl: formData.imageDataUrl,
       wallPhotoIndex: selectedWallPhotoIndex,
       holdContours,
+      smallHoldPoints,
       routePlan,
       createdAt: new Date().toISOString()
     };
@@ -891,6 +967,7 @@ export default function CreatePage() {
         currentUser?.email?.split("@")[0] ||
         "Anonymous Climber",
       holdContours: newRoute.holdContours,
+      smallHoldPoints: newRoute.smallHoldPoints,
       routePlan: newRoute.routePlan,
       wallPhotoIndex: newRoute.wallPhotoIndex,
       createdTime: serverTimestamp()
@@ -908,6 +985,7 @@ export default function CreatePage() {
     setErrors({});
     setCurrentHoldPoints([]);
     setHoldContours([]);
+    setSmallHoldPoints([]);
     setRoutePointsByType({});
     setPendingRoutePoint(null);
     setEditorMode("trace");
@@ -948,6 +1026,10 @@ export default function CreatePage() {
       id: hold.id,
       ...getHoldCenter(hold)
     }));
+    const allSnapCenters = [
+      ...holdCenterPoints.map((point) => ({ ...point, kind: "contour" })),
+      ...smallHoldPoints.map((point) => ({ ...point, kind: "small-point" }))
+    ];
 
     return (
       <div
@@ -988,7 +1070,12 @@ export default function CreatePage() {
           }}
           style={{
             width: zoomedWidthPercent,
-            touchAction: zoomMode && editorMode === "route-points" ? "none" : zoomMode ? "none" : "auto"
+            touchAction:
+              zoomMode && (editorMode === "route-points" || editorMode === "small-points")
+                ? "none"
+                : zoomMode
+                  ? "none"
+                  : "auto"
           }}
         >
           {/* Base layer: original wall photo remains visible. */}
@@ -1041,18 +1128,35 @@ export default function CreatePage() {
             ))}
 
             {/* Helper centers in route-point mode so mobile users can see tap targets clearly. */}
-            {editorMode === "route-points" &&
-              holdCenterPoints.map((point) => (
+            {(editorMode === "route-points" || editorMode === "small-points") &&
+              allSnapCenters.map((point) => (
                 <circle
                   key={`hold-center-${point.id}`}
                   cx={point.x}
                   cy={point.y}
-                  r="0.88"
-                  fill="rgba(28, 121, 209, 0.35)"
+                  r={point.kind === "small-point" ? "0.7" : "0.88"}
+                  fill={
+                    point.kind === "small-point"
+                      ? "rgba(203, 125, 35, 0.42)"
+                      : "rgba(28, 121, 209, 0.35)"
+                  }
                   stroke="rgba(255,255,255,0.9)"
                   strokeWidth="0.28"
                 />
               ))}
+
+            {/* Explicit small-hold markers so tiny targets remain visible on mobile. */}
+            {smallHoldPoints.map((point) => (
+              <circle
+                key={`small-hold-point-${point.id}`}
+                cx={point.x}
+                cy={point.y}
+                r="0.95"
+                fill="rgba(203, 125, 35, 0.62)"
+                stroke="#ffffff"
+                strokeWidth="0.3"
+              />
+            ))}
 
             {/* Auto path line: start -> auto centers -> finish. */}
             {routePathLinePoints && (
@@ -1181,9 +1285,10 @@ export default function CreatePage() {
       <form className="cq-create-form" onSubmit={handleSubmit} noValidate>
         <section className="cq-diy-focus-banner" aria-label="DIY wall first workflow">
           <p className="cq-page-eyebrow">DIY Wall First</p>
-          <h3>1. Choose Wall  2. Draw Holds  3. Set Start + Finish</h3>
+          <h3>1. Choose Wall  2. Draw/Mark Holds  3. Set Start + Finish</h3>
           <p>
-            After hold contours are selected, path points are auto-generated at hold centers.
+            For big holds, draw contours. For tiny holds, place a small point marker.
+            Path points are auto-generated from both contour centers and small-hold points.
             You only need to place start and finish.
           </p>
         </section>
@@ -1213,9 +1318,9 @@ export default function CreatePage() {
           <section className="cq-wall-editor" aria-label="Wall hold contour annotation editor">
             <div className="cq-wall-editor-head">
               <p>
-                DIY editor: trace hold contours first, then tap to place start and finish.
+                DIY editor: trace big holds, mark small holds as points, then place start/finish.
               </p>
-              <div className="cq-tag-grid" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+              <div className="cq-tag-grid" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
                 <button
                   type="button"
                   className={`cq-tag-btn ${editorMode === "trace" ? "cq-tag-btn-active" : ""}`}
@@ -1228,10 +1333,23 @@ export default function CreatePage() {
                 </button>
                 <button
                   type="button"
+                  className={`cq-tag-btn ${editorMode === "small-points" ? "cq-tag-btn-active" : ""}`}
+                  onClick={() => {
+                    setEditorMode("small-points");
+                    setPendingRoutePoint(null);
+                    setAnnotationMessage("Small hold mode active. Tap to mark tiny holds.");
+                  }}
+                >
+                  Mark Small Holds
+                </button>
+                <button
+                  type="button"
                   className={`cq-tag-btn ${editorMode === "route-points" ? "cq-tag-btn-active" : ""}`}
                   onClick={() => {
-                    if (holdContours.length === 0) {
-                      setAnnotationMessage("Create at least one hold contour before setting route points.");
+                    if (holdContours.length === 0 && smallHoldPoints.length === 0) {
+                      setAnnotationMessage(
+                        "Create at least one hold contour or small-hold point before setting route points."
+                      );
                       return;
                     }
                     setEditorMode("route-points");
@@ -1293,6 +1411,12 @@ export default function CreatePage() {
               <button type="button" className="cq-reset-btn" onClick={removeLastHold}>
                 Undo Last Hold
               </button>
+              <button type="button" className="cq-reset-btn" onClick={undoLastSmallHoldPoint}>
+                Undo Small Point
+              </button>
+              <button type="button" className="cq-reset-btn" onClick={clearSmallHoldPoints}>
+                Clear Small Points
+              </button>
               <button type="button" className="cq-reset-btn" onClick={clearAllHolds}>
                 Clear All Holds
               </button>
@@ -1304,6 +1428,11 @@ export default function CreatePage() {
             {annotationMessage && <p className="cq-hold-count">{annotationMessage}</p>}
             {isTracing && editorMode === "trace" && (
               <p className="cq-hold-count">Tracing hold contour...</p>
+            )}
+            {editorMode === "small-points" && (
+              <p className="cq-hold-count">
+                Small hold mode: tap tiny holds to add point markers.
+              </p>
             )}
             {editorMode === "route-points" && (
               <p className="cq-hold-count">
@@ -1334,6 +1463,9 @@ export default function CreatePage() {
               Current hold points: <strong>{currentHoldPoints.length}</strong> | Selected holds:{" "}
               <strong>{holdContours.length}</strong>
             </p>
+            <p className="cq-hold-count">
+              Small hold points: <strong>{smallHoldPoints.length}</strong>
+            </p>
 
             <p className="cq-hold-count">
               Route points set:{" "}
@@ -1348,6 +1480,20 @@ export default function CreatePage() {
                   {holdContours.map((hold, index) => (
                     <li key={`contour-item-${hold.id}`}>
                       Hold #{index + 1} contour at ({hold.centerX}%, {hold.centerY}%)
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="cq-point-list-wrap" aria-label="Small hold point list">
+              {smallHoldPoints.length === 0 ? (
+                <p className="cq-point-list-empty">No small hold points yet.</p>
+              ) : (
+                <ul className="cq-point-list">
+                  {smallHoldPoints.map((point, index) => (
+                    <li key={`small-point-item-${point.id}`}>
+                      Small hold #{index + 1} at ({point.x}%, {point.y}%)
                     </li>
                   ))}
                 </ul>
@@ -1539,7 +1685,9 @@ export default function CreatePage() {
         </div>
         <p className="cq-route-description">{previewDescription}</p>
         <p className="cq-route-reason">Suitable for: {previewLevel}</p>
-        <p className="cq-route-reason">Selected hold contours: {holdContours.length}</p>
+        <p className="cq-route-reason">
+          Selected holds: {holdContours.length} contours + {smallHoldPoints.length} small points
+        </p>
         <p className="cq-route-reason">Route points configured: {Object.keys(routePointsByType).length}/2</p>
       </article>
     </section>
