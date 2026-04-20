@@ -2358,6 +2358,7 @@ a {
 .cq-flip-card {
   position: relative;
   min-height: 420px;
+  cursor: pointer;
 }
 
 .cq-flip-card-inner {

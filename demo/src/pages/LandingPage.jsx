@@ -169,6 +169,16 @@ export default function LandingPage() {
               <article
                 key={feature.id}
                 className={`cq-landing-spotlight-card cq-flip-card ${flipped ? "cq-flip-card-active" : ""}`}
+                role="button"
+                tabIndex={0}
+                aria-label={`Flip ${feature.title} card`}
+                onClick={() => toggleCardFlip(feature.id)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    toggleCardFlip(feature.id);
+                  }
+                }}
               >
                 <div className="cq-flip-card-inner">
                   <div className="cq-flip-face cq-flip-face-front">
@@ -193,12 +203,13 @@ export default function LandingPage() {
                       ))}
                     </ul>
                     <div className="cq-flip-card-actions">
-                      <Link className="cq-primary-btn cq-landing-spotlight-cta" to={feature.to}>
+                      <Link
+                        className="cq-primary-btn cq-landing-spotlight-cta"
+                        to={feature.to}
+                        onClick={(event) => event.stopPropagation()}
+                      >
                         {feature.cta}
                       </Link>
-                      <button type="button" className="cq-secondary-btn" onClick={() => toggleCardFlip(feature.id)}>
-                        More
-                      </button>
                     </div>
                   </div>
 
@@ -211,16 +222,13 @@ export default function LandingPage() {
                       <h3>{feature.backTitle}</h3>
                       <p>{feature.backText}</p>
                       <div className="cq-flip-card-actions">
-                        <Link className="cq-primary-btn cq-landing-spotlight-cta" to={feature.to}>
+                        <Link
+                          className="cq-primary-btn cq-landing-spotlight-cta"
+                          to={feature.to}
+                          onClick={(event) => event.stopPropagation()}
+                        >
                           {feature.backAction}
                         </Link>
-                        <button
-                          type="button"
-                          className="cq-secondary-btn"
-                          onClick={() => toggleCardFlip(feature.id)}
-                        >
-                          Back
-                        </button>
                       </div>
                     </div>
                   </div>
