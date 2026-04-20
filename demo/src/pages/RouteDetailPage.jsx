@@ -677,10 +677,9 @@ export default function RouteDetailPage() {
     [baseContours, routeState.smallHoldPoints]
   );
   const shouldShowRoutePointMarkers = useMemo(() => {
-    const source = String(routeState.source || "").toLowerCase();
-    // In Community view, focus on the overall route path instead of individual point markers.
-    return source.includes("discover");
-  }, [routeState.source]);
+    // Show markers whenever routePlan exists (except path-only mode).
+    return Boolean(routeState.routePlan);
+  }, [routeState.routePlan]);
   const shouldShowPathOnly = useMemo(() => {
     const source = String(routeState.source || "").toLowerCase();
     // Discover/AI recommendations should emphasize route flow only.
@@ -689,6 +688,11 @@ export default function RouteDetailPage() {
   const pathOnlyLinePoints = useMemo(() => {
     return routePlanLinePoints || contourPathPoints;
   }, [routePlanLinePoints, contourPathPoints]);
+  const communityLinePoints = useMemo(() => {
+    // IMPORTANT: for community-created routes, only render saved routePlan line.
+    // Do not auto-connect all contours/small points, which can produce incorrect paths.
+    return routePlanLinePoints || "";
+  }, [routePlanLinePoints]);
   const pathOnlyEndpoints = useMemo(() => {
     const sequence =
       routePlanSequencePoints.length > 0 ? routePlanSequencePoints : contourPathSequencePoints;
@@ -866,7 +870,7 @@ export default function RouteDetailPage() {
         )}
         {!shouldShowRoutePointMarkers && (
           <p className="cq-detail-creator">
-            Showing a full route path generated from selected holds.
+            No saved route path points yet. Hold selections are shown without auto-connecting.
           </p>
         )}
       </section>
@@ -916,9 +920,9 @@ export default function RouteDetailPage() {
               </>
             )}
 
-            {pathOnlyLinePoints && !shouldShowPathOnly && (
+            {communityLinePoints && !shouldShowPathOnly && (
               <polyline
-                points={pathOnlyLinePoints}
+                points={communityLinePoints}
                 fill="none"
                 stroke="rgba(255, 255, 255, 0.85)"
                 strokeWidth="0.55"
