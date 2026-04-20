@@ -16,6 +16,10 @@ const TRACE_SAMPLE_MIN_DISTANCE = 0.12;
 const MIN_ZOOM_SCALE = 1;
 const MAX_ZOOM_SCALE = 3;
 const ZOOM_STEP = 0.12;
+const MOBILE_DEFAULT_ZOOM_SCALE = 1;
+const DESKTOP_DEFAULT_ZOOM_SCALE = 1.65;
+const ROUTE_POINT_SNAP_DISTANCE = 12;
+const DOUBLE_TAP_MS = 260;
 const ROUTE_POINT_TYPES = [
   { key: "start", label: "Start" },
   { key: "finish", label: "Finish" }
@@ -34,6 +38,11 @@ function getDifficultyMeta(difficulty) {
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
+}
+
+function getDefaultZoomScale() {
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 900;
+  return isMobile ? MOBILE_DEFAULT_ZOOM_SCALE : DESKTOP_DEFAULT_ZOOM_SCALE;
 }
 
 function pointsToSvgString(points) {
@@ -304,6 +313,7 @@ export default function CreatePage() {
   const [editorMode, setEditorMode] = useState("trace");
   const [activeRoutePointType, setActiveRoutePointType] = useState("start");
   const [routePointsByType, setRoutePointsByType] = useState({});
+  const [pendingRoutePoint, setPendingRoutePoint] = useState(null);
   const [selectedWallPhotoIndex, setSelectedWallPhotoIndex] = useState(0);
 
   const [errors, setErrors] = useState({});
@@ -313,8 +323,9 @@ export default function CreatePage() {
   const [cloudSyncStatus, setCloudSyncStatus] = useState("idle");
   const [isTracing, setIsTracing] = useState(false);
   const [isZoomEditorOpen, setIsZoomEditorOpen] = useState(false);
-  const [zoomScale, setZoomScale] = useState(1.65);
+  const [zoomScale, setZoomScale] = useState(getDefaultZoomScale());
   const traceLastPointRef = useRef(null);
+  const lastTapTimeRef = useRef(0);
 
   const previewTitle = formData.routeName.trim() || "Your New Route";
   const previewDifficulty = formData.difficulty || "Select difficulty";
@@ -408,6 +419,7 @@ export default function CreatePage() {
       setCurrentHoldPoints([]);
       setHoldContours([]);
       setRoutePointsByType({});
+      setPendingRoutePoint(null);
       setEditorMode("trace");
       setAnnotationMessage("");
       setSubmitFeedback({ type: "", message: "" });
@@ -422,6 +434,7 @@ export default function CreatePage() {
     setCurrentHoldPoints([]);
     setHoldContours([]);
     setRoutePointsByType({});
+    setPendingRoutePoint(null);
     setEditorMode("trace");
     setAnnotationMessage("Switched wall photo. Start tracing again for accurate matching.");
   }
@@ -447,13 +460,13 @@ export default function CreatePage() {
     setAnnotationMessage("");
   }
 
-  function getClosestHoldForPoint(point) {
+  function getClosestHoldForPoint(point, maxSnapDistance = ROUTE_POINT_SNAP_DISTANCE) {
     if (!point || holdContours.length === 0) return null;
 
     // First priority: if user taps inside a contour, use that hold directly.
     const insideMatch = holdContours.find((hold) => isPointInsidePolygon(point, hold.points));
     if (insideMatch) {
-      return { hold: insideMatch, center: getHoldCenter(insideMatch) };
+      return { hold: insideMatch, center: getHoldCenter(insideMatch), distance: 0 };
     }
 
     // Fallback: snap to nearest hold center.
@@ -471,13 +484,42 @@ export default function CreatePage() {
       }
     }
 
-    return { hold: closestHold, center: closestCenter };
+    if (minDistance > maxSnapDistance) {
+      return null;
+    }
+
+    return { hold: closestHold, center: closestCenter, distance: minDistance };
   }
 
   function assignRoutePointByTap(point) {
     const closest = getClosestHoldForPoint(point);
     if (!closest) {
-      setAnnotationMessage("Please create hold contours first, then assign route points.");
+      setPendingRoutePoint(null);
+      setAnnotationMessage(
+        `No nearby hold found. Move closer to a selected hold (snap radius ${ROUTE_POINT_SNAP_DISTANCE}%).`
+      );
+      return;
+    }
+
+    const activeType = ROUTE_POINT_TYPES.find((item) => item.key === activeRoutePointType);
+
+    // Two-step confirmation:
+    // first tap = preview candidate, second tap same hold = confirm assign.
+    const isConfirmingSameHold =
+      pendingRoutePoint &&
+      pendingRoutePoint.type === activeRoutePointType &&
+      pendingRoutePoint.holdId === closest.hold.id;
+
+    if (!isConfirmingSameHold) {
+      setPendingRoutePoint({
+        type: activeRoutePointType,
+        holdId: closest.hold.id,
+        x: closest.center.x,
+        y: closest.center.y
+      });
+      setAnnotationMessage(
+        `${activeType?.label || "Route point"} preview ready. Tap the same hold again to confirm.`
+      );
       return;
     }
 
@@ -489,13 +531,35 @@ export default function CreatePage() {
         y: closest.center.y
       }
     }));
+    setPendingRoutePoint(null);
 
-    const activeType = ROUTE_POINT_TYPES.find((item) => item.key === activeRoutePointType);
-    setAnnotationMessage(`${activeType?.label || "Route point"} assigned to nearest selected hold.`);
+    const nextType = activeRoutePointType === "start" ? "finish" : "start";
+    setActiveRoutePointType(nextType);
+    setAnnotationMessage(
+      `${activeType?.label || "Route point"} confirmed. You can now set ${
+        nextType === "start" ? "Start" : "Finish"
+      }.`
+    );
   }
 
-  function handleWallPointerDown(event) {
+  function handleWallPointerDown(event, options = {}) {
+    const { zoomMode = false } = options;
     if (!activeWallImageSrc) return;
+
+    // Mobile shortcut: in zoom editor, double-tap quickly toggles zoom level.
+    if (zoomMode && editorMode === "route-points" && event.pointerType !== "mouse") {
+      const now = Date.now();
+      const elapsed = now - lastTapTimeRef.current;
+      lastTapTimeRef.current = now;
+      if (elapsed > 0 && elapsed <= DOUBLE_TAP_MS) {
+        setZoomScale((prev) =>
+          prev > (MOBILE_DEFAULT_ZOOM_SCALE + DESKTOP_DEFAULT_ZOOM_SCALE) / 2
+            ? DESKTOP_DEFAULT_ZOOM_SCALE
+            : MOBILE_DEFAULT_ZOOM_SCALE
+        );
+      }
+    }
+
     const point = getRelativePointFromPointerEvent(event);
     if (!point) return;
 
@@ -594,6 +658,7 @@ export default function CreatePage() {
     setCurrentHoldPoints([]);
     setHoldContours([]);
     setRoutePointsByType({});
+    setPendingRoutePoint(null);
     setEditorMode("trace");
     setAnnotationMessage("");
   }
@@ -602,6 +667,9 @@ export default function CreatePage() {
     setHoldContours((prev) => {
       if (prev.length === 0) return prev;
       const removed = prev[prev.length - 1];
+      if (pendingRoutePoint?.holdId === removed?.id) {
+        setPendingRoutePoint(null);
+      }
       if (removed?.id) {
         setRoutePointsByType((pointsPrev) => {
           const next = { ...pointsPrev };
@@ -619,16 +687,49 @@ export default function CreatePage() {
 
   function clearRoutePoints() {
     setRoutePointsByType({});
+    setPendingRoutePoint(null);
     setAnnotationMessage("Route points cleared. You can assign start and finish again.");
   }
 
+  function confirmPendingRoutePoint() {
+    if (!pendingRoutePoint) return;
+    const type = pendingRoutePoint.type;
+    setRoutePointsByType((prev) => ({
+      ...prev,
+      [type]: {
+        holdId: pendingRoutePoint.holdId,
+        x: pendingRoutePoint.x,
+        y: pendingRoutePoint.y
+      }
+    }));
+    setPendingRoutePoint(null);
+    const nextType = type === "start" ? "finish" : "start";
+    setActiveRoutePointType(nextType);
+    setAnnotationMessage(
+      `${type === "start" ? "Start" : "Finish"} confirmed. Now place ${
+        nextType === "start" ? "Start" : "Finish"
+      }.`
+    );
+  }
+
+  function cancelPendingRoutePoint() {
+    setPendingRoutePoint(null);
+    setAnnotationMessage("Preview cancelled. Tap a hold again to choose another point.");
+  }
+
   function openZoomEditor() {
-    setZoomScale(1.65);
+    setZoomScale(getDefaultZoomScale());
     setIsZoomEditorOpen(true);
   }
 
   function closeZoomEditor() {
     setIsZoomEditorOpen(false);
+  }
+
+  function nudgeZoom(delta) {
+    setZoomScale((prev) =>
+      Number(clamp(prev + delta, MIN_ZOOM_SCALE, MAX_ZOOM_SCALE).toFixed(2))
+    );
   }
 
   function handleZoomWheel(event) {
@@ -709,6 +810,7 @@ export default function CreatePage() {
     setCurrentHoldPoints([]);
     setHoldContours([]);
     setRoutePointsByType({});
+    setPendingRoutePoint(null);
     setEditorMode("trace");
     setAnnotationMessage("");
     setFormData({
@@ -743,6 +845,10 @@ export default function CreatePage() {
   function renderWallCanvas({ zoomMode = false } = {}) {
     const zoomedWidthPercent = zoomMode ? `${Math.round(zoomScale * 100)}%` : "100%";
     const routePointEntries = Object.entries(routePointsByType).filter(([, point]) => Boolean(point));
+    const holdCenterPoints = holdContours.map((hold) => ({
+      id: hold.id,
+      ...getHoldCenter(hold)
+    }));
 
     return (
       <div
@@ -769,7 +875,7 @@ export default function CreatePage() {
       >
         <div
           className={`cq-wall-stage ${zoomMode ? "cq-wall-stage-zoom" : ""}`}
-          onPointerDown={zoomMode ? handleWallPointerDown : undefined}
+          onPointerDown={zoomMode ? (event) => handleWallPointerDown(event, { zoomMode: true }) : undefined}
           onPointerMove={zoomMode ? handleWallPointerMove : undefined}
           onPointerUp={zoomMode ? handleWallPointerUp : undefined}
           onPointerCancel={zoomMode ? handleWallPointerUp : undefined}
@@ -782,7 +888,8 @@ export default function CreatePage() {
           }}
           style={{
             width: zoomedWidthPercent,
-            touchAction: zoomMode ? "none" : "auto"
+            touchAction:
+              zoomMode && editorMode === "route-points" ? "pan-x pan-y pinch-zoom" : zoomMode ? "none" : "auto"
           }}
         >
           {/* Base layer: original wall photo remains visible. */}
@@ -834,6 +941,20 @@ export default function CreatePage() {
               </g>
             ))}
 
+            {/* Helper centers in route-point mode so mobile users can see tap targets clearly. */}
+            {editorMode === "route-points" &&
+              holdCenterPoints.map((point) => (
+                <circle
+                  key={`hold-center-${point.id}`}
+                  cx={point.x}
+                  cy={point.y}
+                  r="0.88"
+                  fill="rgba(28, 121, 209, 0.35)"
+                  stroke="rgba(255,255,255,0.9)"
+                  strokeWidth="0.28"
+                />
+              ))}
+
             {/* Auto path line: start -> auto centers -> finish. */}
             {routePathLinePoints && (
               <polyline
@@ -873,6 +994,21 @@ export default function CreatePage() {
                 </g>
               );
             })}
+
+            {/* Pending candidate for step-1 preview before final confirmation. */}
+            {pendingRoutePoint && (
+              <g>
+                <circle
+                  cx={pendingRoutePoint.x}
+                  cy={pendingRoutePoint.y}
+                  r="1.55"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.95)"
+                  strokeWidth="0.45"
+                  strokeDasharray="1 0.8"
+                />
+              </g>
+            )}
 
             {/* Current hold being traced: polyline + tiny anchors for precision. */}
             {editorMode === "trace" && currentHoldPoints.length > 0 && (
@@ -984,7 +1120,10 @@ export default function CreatePage() {
                 <button
                   type="button"
                   className={`cq-tag-btn ${editorMode === "trace" ? "cq-tag-btn-active" : ""}`}
-                  onClick={() => setEditorMode("trace")}
+                  onClick={() => {
+                    setEditorMode("trace");
+                    setPendingRoutePoint(null);
+                  }}
                 >
                   Trace Hold Contours
                 </button>
@@ -997,7 +1136,10 @@ export default function CreatePage() {
                       return;
                     }
                     setEditorMode("route-points");
-                    setAnnotationMessage("Route point mode active. Tap a hold to assign selected point type.");
+                    setPendingRoutePoint(null);
+                    setAnnotationMessage(
+                      "Route point mode active. Tap to preview, then tap again to confirm."
+                    );
                   }}
                 >
                   Set Start / Finish
@@ -1013,7 +1155,10 @@ export default function CreatePage() {
                   className={`cq-tag-btn ${
                     activeRoutePointType === type.key ? "cq-tag-btn-active" : ""
                   }`}
-                  onClick={() => setActiveRoutePointType(type.key)}
+                  onClick={() => {
+                    setActiveRoutePointType(type.key);
+                    setPendingRoutePoint(null);
+                  }}
                   disabled={editorMode !== "route-points"}
                 >
                   {type.label}
@@ -1065,8 +1210,19 @@ export default function CreatePage() {
               <p className="cq-hold-count">
                 Active point type:{" "}
                 <strong>{ROUTE_POINT_TYPES.find((type) => type.key === activeRoutePointType)?.label}</strong>.
-                Tap any selected hold to place it. Middle path points are auto-generated.
+                Tap a hold to preview and tap again to confirm. Middle path points are auto-generated.
               </p>
+            )}
+
+            {editorMode === "route-points" && pendingRoutePoint && (
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button type="button" className="cq-reset-btn" onClick={confirmPendingRoutePoint}>
+                  Confirm Preview
+                </button>
+                <button type="button" className="cq-reset-btn" onClick={cancelPendingRoutePoint}>
+                  Cancel Preview
+                </button>
+              </div>
             )}
 
             {renderWallCanvas()}
@@ -1225,9 +1381,23 @@ export default function CreatePage() {
                   <button
                     type="button"
                     className="cq-secondary-btn"
-                    onClick={() => setZoomScale(1.65)}
+                    onClick={() => nudgeZoom(-0.2)}
                   >
-                    Reset Zoom
+                    -
+                  </button>
+                  <button
+                    type="button"
+                    className="cq-secondary-btn"
+                    onClick={() => nudgeZoom(0.2)}
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    className="cq-secondary-btn"
+                    onClick={() => setZoomScale(getDefaultZoomScale())}
+                  >
+                    Fit
                   </button>
                   <button type="button" className="cq-secondary-btn" onClick={closeZoomEditor}>
                     Done
@@ -1235,7 +1405,7 @@ export default function CreatePage() {
                 </div>
               </div>
               <p className="cq-hold-count">
-                Use mouse wheel to zoom in/out, then draw for precise contour selection.
+                Pinch/wheel or use +/- buttons. Tap Fit to quickly reset to mobile-friendly scale.
               </p>
               {renderWallCanvas({ zoomMode: true })}
             </div>
