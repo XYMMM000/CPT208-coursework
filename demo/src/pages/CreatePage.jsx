@@ -16,7 +16,7 @@ const TRACE_SAMPLE_MIN_DISTANCE = 0.12;
 const MIN_ZOOM_SCALE = 1;
 const MAX_ZOOM_SCALE = 3;
 const ZOOM_STEP = 0.12;
-const MOBILE_DEFAULT_ZOOM_SCALE = 2.05;
+const MOBILE_DEFAULT_ZOOM_SCALE = 1.4;
 const DESKTOP_DEFAULT_ZOOM_SCALE = 1.65;
 const ROUTE_POINT_SNAP_DISTANCE = 12;
 const DOUBLE_TAP_MS = 260;
@@ -38,6 +38,11 @@ function getDifficultyMeta(difficulty) {
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
+}
+
+function getDefaultZoomScale() {
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 900;
+  return isMobile ? MOBILE_DEFAULT_ZOOM_SCALE : DESKTOP_DEFAULT_ZOOM_SCALE;
 }
 
 function pointsToSvgString(points) {
@@ -318,7 +323,7 @@ export default function CreatePage() {
   const [cloudSyncStatus, setCloudSyncStatus] = useState("idle");
   const [isTracing, setIsTracing] = useState(false);
   const [isZoomEditorOpen, setIsZoomEditorOpen] = useState(false);
-  const [zoomScale, setZoomScale] = useState(DESKTOP_DEFAULT_ZOOM_SCALE);
+  const [zoomScale, setZoomScale] = useState(getDefaultZoomScale());
   const traceLastPointRef = useRef(null);
   const lastTapTimeRef = useRef(0);
 
@@ -713,13 +718,18 @@ export default function CreatePage() {
   }
 
   function openZoomEditor() {
-    const isMobile = typeof window !== "undefined" && window.innerWidth <= 900;
-    setZoomScale(isMobile ? MOBILE_DEFAULT_ZOOM_SCALE : DESKTOP_DEFAULT_ZOOM_SCALE);
+    setZoomScale(getDefaultZoomScale());
     setIsZoomEditorOpen(true);
   }
 
   function closeZoomEditor() {
     setIsZoomEditorOpen(false);
+  }
+
+  function nudgeZoom(delta) {
+    setZoomScale((prev) =>
+      Number(clamp(prev + delta, MIN_ZOOM_SCALE, MAX_ZOOM_SCALE).toFixed(2))
+    );
   }
 
   function handleZoomWheel(event) {
@@ -1371,15 +1381,23 @@ export default function CreatePage() {
                   <button
                     type="button"
                     className="cq-secondary-btn"
-                    onClick={() =>
-                      setZoomScale(
-                        typeof window !== "undefined" && window.innerWidth <= 900
-                          ? MOBILE_DEFAULT_ZOOM_SCALE
-                          : DESKTOP_DEFAULT_ZOOM_SCALE
-                      )
-                    }
+                    onClick={() => nudgeZoom(-0.2)}
                   >
-                    Reset Zoom
+                    -
+                  </button>
+                  <button
+                    type="button"
+                    className="cq-secondary-btn"
+                    onClick={() => nudgeZoom(0.2)}
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    className="cq-secondary-btn"
+                    onClick={() => setZoomScale(getDefaultZoomScale())}
+                  >
+                    Fit
                   </button>
                   <button type="button" className="cq-secondary-btn" onClick={closeZoomEditor}>
                     Done
@@ -1387,7 +1405,7 @@ export default function CreatePage() {
                 </div>
               </div>
               <p className="cq-hold-count">
-                Pinch or wheel to zoom. Double-tap in point mode for quick zoom toggle.
+                Pinch/wheel or use +/- buttons. Tap Fit to quickly reset to mobile-friendly scale.
               </p>
               {renderWallCanvas({ zoomMode: true })}
             </div>
