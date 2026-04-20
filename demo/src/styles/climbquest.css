@@ -1520,8 +1520,8 @@ a {
 .cq-wall-image {
   width: 100%;
   display: block;
-  object-fit: cover;
-  min-height: 300px;
+  height: auto;
+  object-fit: contain;
 }
 
 .cq-wall-svg-overlay {
@@ -1542,6 +1542,7 @@ a {
 
 .cq-wall-stage {
   position: relative;
+  line-height: 0;
 }
 
 .cq-wall-stage-zoom {
@@ -1700,10 +1701,12 @@ a {
 
 .cq-create-preview-image {
   width: 100%;
+  height: auto;
   border-radius: 12px;
   border: 1px solid #d2dfef;
-  object-fit: cover;
-  max-height: 220px;
+  object-fit: contain;
+  display: block;
+  max-height: none;
 }
 
 .cq-preview-wall-wrap {
@@ -3015,7 +3018,7 @@ a {
   }
 
   .cq-wall-image {
-    min-height: 340px;
+    min-height: 0;
   }
 
   .cq-wall-zoom-trigger {
