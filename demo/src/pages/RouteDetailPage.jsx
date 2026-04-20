@@ -14,6 +14,7 @@ const initialRoute = {
     "A smooth slab-focused route with controlled shifts, precise feet, and steady rhythm.",
   suitableFor: "Beginner",
   holdContours: [],
+  smallHoldPoints: [],
   routePlan: null,
   imageDataUrl: "",
   wallPhotoIndex: 0,
@@ -360,6 +361,27 @@ function buildPathPointsFromContours(contours) {
     .sort((a, b) => b.y - a.y);
 }
 
+function buildPathFromHoldData(contours, smallHoldPoints) {
+  const contourCenters = Array.isArray(contours)
+    ? contours.map((contour) => getPolygonCenter(contour.points))
+    : [];
+  const tinyCenters = Array.isArray(smallHoldPoints)
+    ? smallHoldPoints.map((point) => ({ x: point.x, y: point.y }))
+    : [];
+  const merged = [...contourCenters, ...tinyCenters].sort((a, b) => b.y - a.y);
+  return merged.map((point) => `${point.x},${point.y}`).join(" ");
+}
+
+function buildPathPointsFromHoldData(contours, smallHoldPoints) {
+  const contourCenters = Array.isArray(contours)
+    ? contours.map((contour) => getPolygonCenter(contour.points))
+    : [];
+  const tinyCenters = Array.isArray(smallHoldPoints)
+    ? smallHoldPoints.map((point) => ({ x: point.x, y: point.y }))
+    : [];
+  return [...contourCenters, ...tinyCenters].sort((a, b) => b.y - a.y);
+}
+
 function clampPercent(value) {
   return Math.min(99, Math.max(1, value));
 }
@@ -537,10 +559,9 @@ function getContoursForPhoto(routeState, photoIndex) {
     photoIndex
   );
 
-  // Community route display calibration:
-  // snap incoming contours to the nearest real-hold template on this exact wall.
+  // IMPORTANT: preserve original DIY contours exactly as user saved them.
   if (hasUserContours) {
-    return snapContoursToWallHolds(routeState.holdContours, fullTemplatePool);
+    return routeState.holdContours;
   }
 
   // If route has no contour data yet, still show a calibrated route on real holds.
@@ -591,6 +612,9 @@ export default function RouteDetailPage() {
   // Route state is kept in one object so interaction updates are easier to follow.
   const [routeState, setRouteState] = useState({
     ...resolvedInitialRoute,
+    smallHoldPoints: Array.isArray(resolvedInitialRoute.smallHoldPoints)
+      ? resolvedInitialRoute.smallHoldPoints
+      : [],
     likes: savedInteractions?.likes ?? 18,
     isLiked: savedInteractions?.isLiked ?? false,
     isSaved: savedInteractions?.isSaved ?? false,
@@ -604,9 +628,18 @@ export default function RouteDetailPage() {
   ]);
 
   const difficultyMeta = getDifficultyMeta(routeState.difficulty);
+  const hasOriginalDIYData = useMemo(() => {
+    return (
+      (Array.isArray(routeState.holdContours) && routeState.holdContours.length > 0) ||
+      (Array.isArray(routeState.smallHoldPoints) && routeState.smallHoldPoints.length > 0)
+    );
+  }, [routeState.holdContours, routeState.smallHoldPoints]);
   const displayedContourCount = useMemo(() => {
     return getContoursForPhoto(routeState, selectedWallPhotoIndex).length;
   }, [routeState, selectedWallPhotoIndex]);
+  const displayedSmallPointCount = useMemo(() => {
+    return Array.isArray(routeState.smallHoldPoints) ? routeState.smallHoldPoints.length : 0;
+  }, [routeState.smallHoldPoints]);
   const ratingSummary = useMemo(() => {
     return `${routeState.averageRating.toFixed(1)} (${routeState.ratingCount} ratings)`;
   }, [routeState.averageRating, routeState.ratingCount]);
@@ -635,10 +668,13 @@ export default function RouteDetailPage() {
     if (routeState.routePlan.finish) sequence.push(routeState.routePlan.finish);
     return sequence;
   }, [routeState.routePlan]);
-  const contourPathPoints = useMemo(() => buildPathFromContours(baseContours), [baseContours]);
+  const contourPathPoints = useMemo(
+    () => buildPathFromHoldData(baseContours, routeState.smallHoldPoints),
+    [baseContours, routeState.smallHoldPoints]
+  );
   const contourPathSequencePoints = useMemo(
-    () => buildPathPointsFromContours(baseContours),
-    [baseContours]
+    () => buildPathPointsFromHoldData(baseContours, routeState.smallHoldPoints),
+    [baseContours, routeState.smallHoldPoints]
   );
   const shouldShowRoutePointMarkers = useMemo(() => {
     const source = String(routeState.source || "").toLowerCase();
@@ -665,6 +701,11 @@ export default function RouteDetailPage() {
   const [displayedContours, setDisplayedContours] = useState(baseContours);
 
   useEffect(() => {
+    if (hasOriginalDIYData) {
+      setDisplayedContours(baseContours);
+      return undefined;
+    }
+
     let cancelled = false;
 
     async function runImageAlignment() {
@@ -685,7 +726,7 @@ export default function RouteDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [previewWallSrc, baseContours]);
+  }, [previewWallSrc, baseContours, hasOriginalDIYData]);
 
   function persistInteraction(nextState) {
     const previous = readRouteInteractions();
@@ -815,7 +856,7 @@ export default function RouteDetailPage() {
         <p className="cq-detail-creator">Source: {routeState.source}</p>
         <p className="cq-detail-creator">Created: {routeState.createdTimeLabel}</p>
         <p className="cq-detail-creator">
-          Hold contours: {displayedContourCount}
+          Hold selections: {displayedContourCount} contours + {displayedSmallPointCount} small points
         </p>
         {routeState.routePlan && shouldShowRoutePointMarkers && (
           <p className="cq-detail-creator">
@@ -932,6 +973,20 @@ export default function RouteDetailPage() {
                   stroke="#ffffff"
                   strokeWidth="0.4"
                   strokeLinejoin="round"
+                />
+              ))}
+
+            {!shouldShowPathOnly &&
+              Array.isArray(routeState.smallHoldPoints) &&
+              routeState.smallHoldPoints.map((point) => (
+                <circle
+                  key={`detail-small-point-${point.id || `${point.x}-${point.y}`}`}
+                  cx={point.x}
+                  cy={point.y}
+                  r="0.8"
+                  fill="rgba(203, 125, 35, 0.65)"
+                  stroke="#ffffff"
+                  strokeWidth="0.28"
                 />
               ))}
 

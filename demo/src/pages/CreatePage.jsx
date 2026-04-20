@@ -276,6 +276,7 @@ function toLightweightLocalRoute(route) {
     styleTags: route.styleTags,
     description: route.description,
     suitableFor: route.suitableFor,
+    imageDataUrl: route.imageDataUrl || "",
     wallPhotoIndex: route.wallPhotoIndex,
     holdContours: route.holdContours,
     smallHoldPoints: route.smallHoldPoints || [],
@@ -962,6 +963,7 @@ export default function CreatePage() {
       styleTags: newRoute.styleTags,
       description: newRoute.description,
       suitableFor: newRoute.suitableFor,
+      imageDataUrl: newRoute.imageDataUrl || "",
       creatorName:
         currentUser?.displayName ||
         currentUser?.email?.split("@")[0] ||
