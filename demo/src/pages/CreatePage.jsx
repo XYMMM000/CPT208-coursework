@@ -20,6 +20,7 @@ const MOBILE_DEFAULT_ZOOM_SCALE = 1;
 const DESKTOP_DEFAULT_ZOOM_SCALE = 1.65;
 const ROUTE_POINT_SNAP_DISTANCE = 12;
 const DOUBLE_TAP_MS = 260;
+const ZOOM_TAP_MOVE_THRESHOLD = 7;
 const ROUTE_POINT_TYPES = [
   { key: "start", label: "Start" },
   { key: "finish", label: "Finish" }
@@ -326,6 +327,16 @@ export default function CreatePage() {
   const [zoomScale, setZoomScale] = useState(getDefaultZoomScale());
   const traceLastPointRef = useRef(null);
   const lastTapTimeRef = useRef(0);
+  const zoomWrapRef = useRef(null);
+  const zoomPanRef = useRef({
+    active: false,
+    pointerId: null,
+    startClientX: 0,
+    startClientY: 0,
+    startScrollLeft: 0,
+    startScrollTop: 0,
+    moved: false
+  });
 
   const previewTitle = formData.routeName.trim() || "Your New Route";
   const previewDifficulty = formData.difficulty || "Select difficulty";
@@ -542,6 +553,63 @@ export default function CreatePage() {
     );
   }
 
+  function beginZoomPan(event) {
+    const wrap = zoomWrapRef.current;
+    if (!wrap) return;
+
+    zoomPanRef.current = {
+      active: true,
+      pointerId: event.pointerId,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      startScrollLeft: wrap.scrollLeft,
+      startScrollTop: wrap.scrollTop,
+      moved: false
+    };
+
+    if (event.currentTarget.setPointerCapture) {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+  }
+
+  function updateZoomPan(event) {
+    const wrap = zoomWrapRef.current;
+    const pan = zoomPanRef.current;
+    if (!wrap || !pan.active || pan.pointerId !== event.pointerId) return;
+
+    const deltaX = event.clientX - pan.startClientX;
+    const deltaY = event.clientY - pan.startClientY;
+
+    if (
+      !pan.moved &&
+      (Math.abs(deltaX) > ZOOM_TAP_MOVE_THRESHOLD || Math.abs(deltaY) > ZOOM_TAP_MOVE_THRESHOLD)
+    ) {
+      pan.moved = true;
+    }
+
+    if (pan.moved) {
+      wrap.scrollLeft = pan.startScrollLeft - deltaX;
+      wrap.scrollTop = pan.startScrollTop - deltaY;
+    }
+  }
+
+  function endZoomPan(event) {
+    const pan = zoomPanRef.current;
+    if (pan.active && event.currentTarget.releasePointerCapture) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    zoomPanRef.current = {
+      active: false,
+      pointerId: null,
+      startClientX: 0,
+      startClientY: 0,
+      startScrollLeft: 0,
+      startScrollTop: 0,
+      moved: false
+    };
+  }
+
   function handleWallPointerDown(event, options = {}) {
     const { zoomMode = false } = options;
     if (!activeWallImageSrc) return;
@@ -564,6 +632,11 @@ export default function CreatePage() {
     if (!point) return;
 
     if (editorMode === "route-points") {
+      if (zoomMode) {
+        beginZoomPan(event);
+        return;
+      }
+
       assignRoutePointByTap(point);
       return;
     }
@@ -580,6 +653,11 @@ export default function CreatePage() {
   }
 
   function handleWallPointerMove(event) {
+    if (editorMode === "route-points") {
+      updateZoomPan(event);
+      return;
+    }
+
     if (!isTracing || !activeWallImageSrc || editorMode !== "trace") return;
 
     const point = getRelativePointFromPointerEvent(event);
@@ -592,7 +670,15 @@ export default function CreatePage() {
   }
 
   function handleWallPointerUp(event) {
-    if (editorMode === "route-points") return;
+    if (editorMode === "route-points") {
+      const panMoved = zoomPanRef.current.moved;
+      const point = getRelativePointFromPointerEvent(event);
+      endZoomPan(event);
+      if (!panMoved && point) {
+        assignRoutePointByTap(point);
+      }
+      return;
+    }
 
     setIsTracing(false);
     traceLastPointRef.current = null;
@@ -608,6 +694,19 @@ export default function CreatePage() {
       setAnnotationMessage(
         "Trace back near your start point to auto-finish, or press Finish Current Hold."
       );
+    }
+  }
+
+  function handleWallPointerCancel(event) {
+    if (editorMode === "route-points") {
+      endZoomPan(event);
+      return;
+    }
+
+    setIsTracing(false);
+    traceLastPointRef.current = null;
+    if (event.currentTarget.releasePointerCapture) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
     }
   }
 
@@ -852,6 +951,7 @@ export default function CreatePage() {
 
     return (
       <div
+        ref={zoomMode ? zoomWrapRef : null}
         className={`cq-wall-image-wrap ${zoomMode ? "cq-wall-image-wrap-zoom" : ""}`}
         onClick={
           !zoomMode
@@ -878,7 +978,7 @@ export default function CreatePage() {
           onPointerDown={zoomMode ? (event) => handleWallPointerDown(event, { zoomMode: true }) : undefined}
           onPointerMove={zoomMode ? handleWallPointerMove : undefined}
           onPointerUp={zoomMode ? handleWallPointerUp : undefined}
-          onPointerCancel={zoomMode ? handleWallPointerUp : undefined}
+          onPointerCancel={zoomMode ? handleWallPointerCancel : undefined}
           role="button"
           tabIndex={zoomMode ? 0 : -1}
           onKeyDown={(event) => {
@@ -888,8 +988,7 @@ export default function CreatePage() {
           }}
           style={{
             width: zoomedWidthPercent,
-            touchAction:
-              zoomMode && editorMode === "route-points" ? "pan-x pan-y pinch-zoom" : zoomMode ? "none" : "auto"
+            touchAction: zoomMode && editorMode === "route-points" ? "none" : zoomMode ? "none" : "auto"
           }}
         >
           {/* Base layer: original wall photo remains visible. */}
@@ -1210,7 +1309,7 @@ export default function CreatePage() {
               <p className="cq-hold-count">
                 Active point type:{" "}
                 <strong>{ROUTE_POINT_TYPES.find((type) => type.key === activeRoutePointType)?.label}</strong>.
-                Tap a hold to preview and tap again to confirm. Middle path points are auto-generated.
+                Drag to move wall, tap hold to preview, tap again to confirm. Middle path points are auto-generated.
               </p>
             )}
 
@@ -1405,7 +1504,7 @@ export default function CreatePage() {
                 </div>
               </div>
               <p className="cq-hold-count">
-                Pinch/wheel or use +/- buttons. Tap Fit to quickly reset to mobile-friendly scale.
+                Use +/- (or wheel on desktop) to zoom. Drag to move wall. Tap Fit to reset.
               </p>
               {renderWallCanvas({ zoomMode: true })}
             </div>
