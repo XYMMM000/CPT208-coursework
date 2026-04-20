@@ -115,148 +115,158 @@ export default function LandingPage() {
     >
       <div className="cq-landing-page cq-landing-page-scroll">
         <section className="cq-welcome-cover cq-scroll-stage">
-          <p className="cq-eyebrow">Human-Centered Climbing App</p>
-          <h1>ClimbQuest</h1>
-          <p>Scroll down to explore features</p>
+          <div className="cq-welcome-cover-core">
+            <p className="cq-eyebrow">Human-Centered Climbing App</p>
+            <h1>
+              Climb<span>Quest</span>
+            </h1>
+            <p>Tap into route design and persona strategy.</p>
+          </div>
+          <div className="cq-scroll-hint" aria-hidden="true">
+            <span>Scroll to enter</span>
+            <span className="cq-scroll-hint-arrow" />
+          </div>
         </section>
 
-        <section
-          className={`cq-hero-card cq-landing-hero-card cq-scroll-stage cq-scroll-reveal ${
-            visibleSections.hero ? "is-visible" : ""
-          }`}
-          data-reveal-id="hero"
-        >
-          <div className="cq-hero-glow cq-hero-glow-blue" aria-hidden="true" />
-          <div className="cq-hero-glow cq-hero-glow-green" aria-hidden="true" />
+        <div className="cq-landing-main-stack">
+          <section
+            className={`cq-hero-card cq-landing-hero-card cq-scroll-stage cq-scroll-reveal ${
+              visibleSections.hero ? "is-visible" : ""
+            }`}
+            data-reveal-id="hero"
+          >
+            <div className="cq-hero-glow cq-hero-glow-blue" aria-hidden="true" />
+            <div className="cq-hero-glow cq-hero-glow-green" aria-hidden="true" />
 
-          <p className="cq-eyebrow">Welcome to ClimbQuest</p>
-          <h2>Interactive Climbing Experience</h2>
+            <p className="cq-eyebrow">Welcome to ClimbQuest</p>
+            <h2>Interactive Climbing Experience</h2>
 
-          <p className="cq-subtitle">
-            A climbing app with strong interaction focus: draw routes on real wall photos and
-            unlock personalized climbing persona guidance.
-          </p>
+            <p className="cq-subtitle">
+              A climbing app with strong interaction focus: draw routes on real wall photos and
+              unlock personalized climbing persona guidance.
+            </p>
 
-          <div className="cq-hero-cta-row">
-            <Link className="cq-primary-btn" to="/create">
-              Start DIY Route
-            </Link>
-            <Link className="cq-secondary-btn cq-hero-secondary-btn" to="/discover">
-              Start Persona Quiz
-            </Link>
-          </div>
-
-          <div className="cq-social-proof" aria-label="Social proof">
-            <div className="cq-avatar-group" aria-hidden="true">
-              <span>A</span>
-              <span>L</span>
-              <span>M</span>
+            <div className="cq-hero-cta-row">
+              <Link className="cq-primary-btn" to="/create">
+                Start DIY Route
+              </Link>
+              <Link className="cq-secondary-btn cq-hero-secondary-btn" to="/discover">
+                Start Persona Quiz
+              </Link>
             </div>
-            <p>Trusted by beginner bouldering groups on campus</p>
-          </div>
-        </section>
 
-        <section
-          className={`cq-landing-spotlight cq-scroll-stage cq-scroll-reveal ${
-            visibleSections.spotlight ? "is-visible" : ""
-          }`}
-          aria-label="Main welcome features"
-          data-reveal-id="spotlight"
-        >
-          {spotlightFeatures.map((feature) => {
-            const flipped = flippedCardId === feature.id;
-            return (
-              <article
-                key={feature.id}
-                className={`cq-landing-spotlight-card cq-flip-card ${flipped ? "cq-flip-card-active" : ""}`}
-                role="button"
-                tabIndex={0}
-                aria-label={`Flip ${feature.title} card`}
-                onClick={() => toggleCardFlip(feature.id)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    toggleCardFlip(feature.id);
-                  }
-                }}
-              >
-                <div className="cq-flip-card-inner">
-                  <div className="cq-flip-face cq-flip-face-front">
-                    <div className="cq-feature-header">
-                      <span className="cq-feature-icon">{feature.icon}</span>
-                      <h3>{feature.title}</h3>
-                    </div>
-                    <div className="cq-landing-spotlight-meta">
-                      <span className="cq-landing-status-pill">{feature.status}</span>
-                      <span className="cq-landing-progress-value">{feature.progress}%</span>
-                    </div>
-                    <p>{feature.description}</p>
-                    <div className="cq-landing-progress-block" aria-label={feature.progressLabel}>
-                      <p>{feature.progressLabel}</p>
-                      <div className="cq-landing-progress-track">
-                        <div className="cq-landing-progress-fill" style={{ width: `${feature.progress}%` }} />
+            <div className="cq-social-proof" aria-label="Social proof">
+              <div className="cq-avatar-group" aria-hidden="true">
+                <span>A</span>
+                <span>L</span>
+                <span>M</span>
+              </div>
+              <p>Trusted by beginner bouldering groups on campus</p>
+            </div>
+          </section>
+
+          <section
+            className={`cq-landing-spotlight cq-scroll-stage cq-scroll-reveal ${
+              visibleSections.spotlight ? "is-visible" : ""
+            }`}
+            aria-label="Main welcome features"
+            data-reveal-id="spotlight"
+          >
+            {spotlightFeatures.map((feature) => {
+              const flipped = flippedCardId === feature.id;
+              return (
+                <article
+                  key={feature.id}
+                  className={`cq-landing-spotlight-card cq-flip-card ${flipped ? "cq-flip-card-active" : ""}`}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Flip ${feature.title} card`}
+                  onClick={() => toggleCardFlip(feature.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      toggleCardFlip(feature.id);
+                    }
+                  }}
+                >
+                  <div className="cq-flip-card-inner">
+                    <div className="cq-flip-face cq-flip-face-front">
+                      <div className="cq-feature-header">
+                        <span className="cq-feature-icon">{feature.icon}</span>
+                        <h3>{feature.title}</h3>
                       </div>
-                    </div>
-                    <ul className="cq-welcome-step-list">
-                      {feature.bullets.map((item) => (
-                        <li key={`${feature.id}-${item}`}>{item}</li>
-                      ))}
-                    </ul>
-                    <div className="cq-flip-card-actions">
-                      <Link
-                        className="cq-primary-btn cq-landing-spotlight-cta"
-                        to={feature.to}
-                        onClick={(event) => event.stopPropagation()}
-                      >
-                        {feature.cta}
-                      </Link>
-                    </div>
-                  </div>
-
-                  <div className="cq-flip-face cq-flip-face-back">
-                    <div className="cq-flip-back-media">
-                      <img src={feature.coverImage} alt={`${feature.title} back cover`} />
-                      <div className="cq-flip-back-overlay" />
-                    </div>
-                    <div className="cq-flip-back-content">
-                      <h3>{feature.backTitle}</h3>
-                      <p>{feature.backText}</p>
+                      <div className="cq-landing-spotlight-meta">
+                        <span className="cq-landing-status-pill">{feature.status}</span>
+                        <span className="cq-landing-progress-value">{feature.progress}%</span>
+                      </div>
+                      <p>{feature.description}</p>
+                      <div className="cq-landing-progress-block" aria-label={feature.progressLabel}>
+                        <p>{feature.progressLabel}</p>
+                        <div className="cq-landing-progress-track">
+                          <div className="cq-landing-progress-fill" style={{ width: `${feature.progress}%` }} />
+                        </div>
+                      </div>
+                      <ul className="cq-welcome-step-list">
+                        {feature.bullets.map((item) => (
+                          <li key={`${feature.id}-${item}`}>{item}</li>
+                        ))}
+                      </ul>
                       <div className="cq-flip-card-actions">
                         <Link
                           className="cq-primary-btn cq-landing-spotlight-cta"
                           to={feature.to}
                           onClick={(event) => event.stopPropagation()}
                         >
-                          {feature.backAction}
+                          {feature.cta}
                         </Link>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </section>
 
-        <section
-          className={`cq-feature-grid cq-feature-grid-compact cq-scroll-stage cq-scroll-reveal ${
-            visibleSections.secondary ? "is-visible" : ""
-          }`}
-          aria-label="Other features"
-          data-reveal-id="secondary"
-        >
-          {secondaryFeatures.map((feature) => (
-            <Link key={feature.title} className="cq-feature-link-card" to={feature.to}>
-              <article className="cq-feature-card">
-                <div className="cq-feature-header">
-                  <span className="cq-feature-icon">{feature.icon}</span>
-                  <h3>{feature.title}</h3>
-                </div>
-                <p>{feature.description}</p>
-              </article>
-            </Link>
-          ))}
-        </section>
+                    <div className="cq-flip-face cq-flip-face-back">
+                      <div className="cq-flip-back-media">
+                        <img src={feature.coverImage} alt={`${feature.title} back cover`} />
+                        <div className="cq-flip-back-overlay" />
+                      </div>
+                      <div className="cq-flip-back-content">
+                        <h3>{feature.backTitle}</h3>
+                        <p>{feature.backText}</p>
+                        <div className="cq-flip-card-actions">
+                          <Link
+                            className="cq-primary-btn cq-landing-spotlight-cta"
+                            to={feature.to}
+                            onClick={(event) => event.stopPropagation()}
+                          >
+                            {feature.backAction}
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </section>
+
+          <section
+            className={`cq-feature-grid cq-feature-grid-compact cq-scroll-stage cq-scroll-reveal ${
+              visibleSections.secondary ? "is-visible" : ""
+            }`}
+            aria-label="Other features"
+            data-reveal-id="secondary"
+          >
+            {secondaryFeatures.map((feature) => (
+              <Link key={feature.title} className="cq-feature-link-card" to={feature.to}>
+                <article className="cq-feature-card">
+                  <div className="cq-feature-header">
+                    <span className="cq-feature-icon">{feature.icon}</span>
+                    <h3>{feature.title}</h3>
+                  </div>
+                  <p>{feature.description}</p>
+                </article>
+              </Link>
+            ))}
+          </section>
+        </div>
       </div>
     </div>
   );

@@ -1911,7 +1911,7 @@ a {
 
 .cq-landing-page-scroll {
   display: grid;
-  gap: 20px;
+  gap: 24px;
 }
 
 .cq-scroll-stage {
@@ -1935,22 +1935,69 @@ a {
   min-height: calc(100vh - 36px);
   display: grid;
   place-content: center;
-  gap: 12px;
+  gap: 16px;
   text-align: center;
+}
+
+.cq-welcome-cover-core {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  padding: 20px 16px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 252, 247, 0.36), rgba(255, 247, 235, 0.18));
+  box-shadow: 0 20px 34px rgba(10, 17, 31, 0.24);
+  backdrop-filter: blur(2px);
 }
 
 .cq-welcome-cover h1 {
   margin: 0;
   font-size: clamp(2.4rem, 9vw, 4.4rem);
   line-height: 1.05;
-  color: #1f2023;
-  text-shadow: 0 8px 20px rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.01em;
+  color: #f7fbff;
+  text-shadow:
+    0 6px 14px rgba(21, 33, 52, 0.58),
+    0 0 28px rgba(93, 171, 255, 0.45);
+}
+
+.cq-welcome-cover h1 span {
+  color: #ffd8b1;
+  text-shadow:
+    0 6px 14px rgba(70, 35, 14, 0.35),
+    0 0 18px rgba(239, 170, 99, 0.56);
 }
 
 .cq-welcome-cover p {
   margin: 0;
-  color: #4b5b72;
+  color: rgba(233, 243, 255, 0.94);
   font-weight: 600;
+}
+
+.cq-scroll-hint {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  color: rgba(232, 242, 255, 0.92);
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 3px 8px rgba(10, 16, 27, 0.5);
+}
+
+.cq-scroll-hint-arrow {
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid rgba(240, 247, 255, 0.95);
+  border-bottom: 2px solid rgba(240, 247, 255, 0.95);
+  transform: rotate(45deg);
+  animation: cq-scroll-arrow-bounce 1400ms ease-in-out infinite;
+}
+
+.cq-landing-main-stack {
+  margin-top: clamp(30px, 7vh, 92px);
+  display: grid;
+  gap: 18px;
 }
 
 .cq-hero-card {
@@ -2272,7 +2319,7 @@ a {
 }
 
 .cq-landing-spotlight {
-  margin-top: 14px;
+  margin-top: 10px;
   display: grid;
   gap: 12px;
 }
@@ -2757,6 +2804,18 @@ a {
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes cq-scroll-arrow-bounce {
+  0%,
+  100% {
+    transform: translateY(0) rotate(45deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(5px) rotate(45deg);
+    opacity: 1;
   }
 }
 
