@@ -161,7 +161,7 @@ export default function LandingPage() {
       }}
     >
       <div className="cq-landing-progress-rail" aria-hidden="true">
-        <span className="cq-landing-scroll-progress-fill" />
+        <span className="cq-landing-progress-fill" />
       </div>
 
       <div className="cq-landing-page cq-landing-page-scroll">
