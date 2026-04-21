@@ -1,0 +1,35 @@
+<svg width="1200" height="650" viewBox="0 0 1200 650" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="650" fill="#F8FAFC"/>
+  <text x="52" y="64" fill="#0F172A" font-size="30" font-family="Arial, sans-serif" font-weight="700">High-Fidelity UI Screens</text>
+
+  <rect x="90" y="120" width="300" height="490" rx="30" fill="#0F172A"/>
+  <rect x="106" y="138" width="268" height="454" rx="22" fill="white"/>
+  <rect x="126" y="168" width="228" height="42" rx="10" fill="#FFF7ED"/>
+  <text x="136" y="195" fill="#9A3412" font-size="15" font-family="Arial, sans-serif" font-weight="700">Customized Route</text>
+  <rect x="126" y="228" width="228" height="110" rx="12" fill="#DBEAFE"/>
+  <rect x="126" y="350" width="108" height="56" rx="10" fill="#BBF7D0"/>
+  <rect x="246" y="350" width="108" height="56" rx="10" fill="#FDE68A"/>
+  <rect x="126" y="420" width="228" height="140" rx="12" fill="#F8FAFC" stroke="#E2E8F0"/>
+
+  <rect x="450" y="120" width="300" height="490" rx="30" fill="#0F172A"/>
+  <rect x="466" y="138" width="268" height="454" rx="22" fill="white"/>
+  <rect x="486" y="168" width="228" height="42" rx="10" fill="#ECFEFF"/>
+  <text x="522" y="195" fill="#0E7490" font-size="15" font-family="Arial, sans-serif" font-weight="700">DIY Route</text>
+  <rect x="486" y="228" width="228" height="220" rx="12" fill="#F0F9FF" stroke="#BAE6FD"/>
+  <circle cx="526" cy="278" r="14" fill="#38BDF8"/>
+  <circle cx="566" cy="330" r="14" fill="#38BDF8"/>
+  <circle cx="606" cy="286" r="14" fill="#38BDF8"/>
+  <circle cx="646" cy="358" r="14" fill="#38BDF8"/>
+  <circle cx="686" cy="318" r="14" fill="#38BDF8"/>
+  <rect x="486" y="466" width="228" height="94" rx="12" fill="#DCFCE7"/>
+
+  <rect x="810" y="120" width="300" height="490" rx="30" fill="#0F172A"/>
+  <rect x="826" y="138" width="268" height="454" rx="22" fill="white"/>
+  <rect x="846" y="168" width="228" height="42" rx="10" fill="#FEE2E2"/>
+  <text x="858" y="195" fill="#B91C1C" font-size="15" font-family="Arial, sans-serif" font-weight="700">Community Sharing</text>
+  <rect x="846" y="228" width="228" height="102" rx="12" fill="#FFF1F2"/>
+  <rect x="846" y="346" width="228" height="102" rx="12" fill="#ECFDF5"/>
+  <rect x="846" y="464" width="228" height="96" rx="12" fill="#F8FAFC" stroke="#E2E8F0"/>
+
+  <text x="354" y="632" fill="#64748B" font-size="16" font-family="Arial, sans-serif">Final visual direction with consistent spacing, hierarchy, and interaction emphasis.</text>
+</svg>
