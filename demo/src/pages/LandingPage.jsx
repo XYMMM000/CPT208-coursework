@@ -172,11 +172,12 @@ export default function LandingPage() {
             <span className="cq-welcome-node cq-welcome-node-c" />
           </div>
           <div className="cq-welcome-cover-core">
-            <p className="cq-eyebrow">Human-Centered Climbing App</p>
-            <h1>
-              Climb<span>Quest</span>
+            <p className="cq-eyebrow cq-welcome-eyebrow">Human-Centered Climbing App</p>
+            <h1 className="cq-welcome-title">
+              <span className="cq-welcome-title-front">Climb</span>
+              <span className="cq-welcome-title-accent">Quest</span>
             </h1>
-            <p>Tap into route design and persona strategy.</p>
+            <p className="cq-welcome-tagline">Tap into route design and persona strategy.</p>
             <button className="cq-primary-btn cq-enter-btn" type="button" onClick={handleEnterExperience}>
               Enter Experience
             </button>
