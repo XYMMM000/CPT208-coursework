@@ -1879,6 +1879,25 @@ a {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  position: relative;
+}
+
+.cq-landing-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(
+      circle at var(--pointer-x, 50%) var(--pointer-y, 36%),
+      rgba(155, 218, 255, 0.2) 0%,
+      rgba(101, 149, 255, 0.12) 16%,
+      rgba(20, 30, 48, 0.64) 48%,
+      rgba(6, 10, 19, 0.82) 100%
+    ),
+    linear-gradient(180deg, rgba(5, 10, 20, 0.35), rgba(7, 11, 20, 0.62));
+  mix-blend-mode: screen;
 }
 
 .cq-landing-scroll {
@@ -1907,6 +1926,8 @@ a {
   max-width: 460px;
   margin: 0 auto;
   padding: 18px 16px 26px;
+  position: relative;
+  z-index: 1;
 }
 
 .cq-landing-page-scroll {
@@ -1916,6 +1937,32 @@ a {
 
 .cq-scroll-stage {
   scroll-snap-align: start;
+}
+
+.cq-landing-progress-rail {
+  position: fixed;
+  right: 14px;
+  top: 18vh;
+  width: 4px;
+  height: 56vh;
+  border-radius: 999px;
+  background: rgba(235, 245, 255, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  z-index: 2;
+}
+
+.cq-landing-progress-rail .cq-landing-scroll-progress-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--scroll-progress, 0%);
+  border-radius: inherit;
+  background: linear-gradient(180deg, #5fd4ff 0%, #b56dff 60%, #ff8a5d 100%);
+  box-shadow:
+    0 0 10px rgba(115, 198, 255, 0.5),
+    0 0 22px rgba(181, 109, 255, 0.35);
+  transition: height 120ms linear;
 }
 
 .cq-scroll-reveal {
@@ -1937,6 +1984,42 @@ a {
   place-content: center;
   gap: 16px;
   text-align: center;
+  position: relative;
+}
+
+.cq-welcome-atmosphere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cq-welcome-node {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(240, 248, 255, 0.95);
+  box-shadow:
+    0 0 0 6px rgba(141, 195, 255, 0.2),
+    0 0 24px rgba(131, 178, 255, 0.55);
+  animation: cq-node-float 3.2s ease-in-out infinite;
+}
+
+.cq-welcome-node-a {
+  left: 12%;
+  top: 24%;
+}
+
+.cq-welcome-node-b {
+  right: 16%;
+  top: 17%;
+  animation-delay: 620ms;
+}
+
+.cq-welcome-node-c {
+  right: 22%;
+  bottom: 22%;
+  animation-delay: 1160ms;
 }
 
 .cq-welcome-cover-core {
@@ -1945,9 +2028,14 @@ a {
   justify-items: center;
   padding: 20px 16px;
   border-radius: 20px;
-  background: linear-gradient(180deg, rgba(255, 252, 247, 0.36), rgba(255, 247, 235, 0.18));
-  box-shadow: 0 20px 34px rgba(10, 17, 31, 0.24);
-  backdrop-filter: blur(2px);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(212, 237, 255, 0.12)),
+    rgba(10, 18, 31, 0.36);
+  border: 1px solid rgba(205, 229, 255, 0.4);
+  box-shadow:
+    0 20px 34px rgba(10, 17, 31, 0.28),
+    0 0 44px rgba(80, 137, 255, 0.22);
+  backdrop-filter: blur(6px);
 }
 
 .cq-welcome-cover h1 {
@@ -1972,6 +2060,14 @@ a {
   margin: 0;
   color: rgba(233, 243, 255, 0.94);
   font-weight: 600;
+}
+
+.cq-enter-btn {
+  margin-top: 8px;
+  background: linear-gradient(135deg, #2f8aff, #915dff 58%, #d98d4d 100%);
+  box-shadow:
+    0 12px 22px rgba(73, 112, 204, 0.45),
+    0 0 24px rgba(152, 95, 255, 0.35);
 }
 
 .cq-scroll-hint {
@@ -2819,6 +2915,18 @@ a {
   }
 }
 
+@keyframes cq-node-float {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cq-landing-interactive .cq-hero-card,
   .cq-landing-interactive .cq-landing-spotlight-card,
@@ -2833,6 +2941,17 @@ a {
   .cq-scroll-reveal {
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .cq-welcome-node,
+  .cq-scroll-hint-arrow {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 960px) {
+  .cq-landing-progress-rail {
+    display: none;
   }
 }
 
