@@ -830,6 +830,12 @@ main {
   background: #f8fafc;
 }
 
+.iphone-screen-shot {
+  object-fit: contain;
+  object-position: top center;
+  background: #eef2f7;
+}
+
 .wireframe-screen {
   padding: 18px 14px;
   display: flex;
