@@ -836,6 +836,8 @@ main {
   flex-direction: column;
   gap: 12px;
   background: linear-gradient(180deg, #f8fafc, #eef2f7);
+  color: #334155;
+  font-size: 0.75rem;
 }
 
 .wf-top,
@@ -848,6 +850,19 @@ main {
   background: #dbe3ee;
 }
 
+.wf-title {
+  margin-top: 20px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.wf-text-line {
+  height: 8px;
+  border-radius: 999px;
+  background: #dbe3ee;
+}
+
 .wf-top {
   height: 16px;
   margin-top: 20px;
@@ -855,6 +870,11 @@ main {
 
 .wf-block {
   height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px;
 }
 
 .wf-large {
@@ -869,14 +889,28 @@ main {
 
 .wf-chip {
   height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
 }
 
 .wf-list {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px;
 }
 
 .wf-card {
   height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px;
 }
 
 .wf-grid {
