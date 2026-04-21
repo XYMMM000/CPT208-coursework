@@ -831,9 +831,18 @@ main {
 }
 
 .iphone-screen-shot {
-  object-fit: contain;
-  object-position: top center;
-  background: #eef2f7;
+  object-fit: contain !important;
+  object-position: top center !important;
+  background: #ffffff;
+}
+
+.iphone-frame-hifi .iphone-screen {
+  /* Better match uploaded functional screenshots (less tall than full iPhone ratio). */
+  aspect-ratio: 3 / 4;
+}
+
+.iphone-frame-hifi .iphone-notch {
+  top: 10px;
 }
 
 .wireframe-screen {
