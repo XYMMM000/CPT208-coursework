@@ -48,97 +48,9 @@ body {
     var(--cq-bg);
 }
 
-/* Global immersive interaction shell (inspired by cinematic interactive sites) */
-.cq-global-interaction-shell {
-  position: relative;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-.cq-global-interaction-shell::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(
-      circle at var(--cq-global-pointer-x, 50%) var(--cq-global-pointer-y, 32%),
-      rgba(119, 188, 255, 0.12) 0%,
-      rgba(142, 103, 245, 0.08) 18%,
-      rgba(24, 33, 47, 0) 44%
-    ),
-    linear-gradient(180deg, rgba(12, 18, 29, 0.04), rgba(7, 12, 20, 0.09));
-  transition: background-position 160ms ease;
-}
-
-.cq-global-interaction-shell::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.06), transparent 28%);
-  mix-blend-mode: soft-light;
-}
-
-.cq-global-interaction-shell-landing::before,
-.cq-global-interaction-shell-landing::after {
-  display: none;
-}
-
-.cq-global-interaction-shell-editor::before,
-.cq-global-interaction-shell-editor::after {
-  display: none;
-}
-
-.cq-global-progress-rail {
-  position: fixed;
-  right: 10px;
-  top: 16vh;
-  width: 3px;
-  height: 64vh;
-  border-radius: 999px;
-  background: rgba(203, 218, 242, 0.36);
-  z-index: 3;
-  pointer-events: none;
-}
-
-.cq-global-progress-fill {
-  position: absolute;
-  inset: 0 auto auto 0;
-  width: 100%;
-  height: var(--cq-global-scroll-progress, 0%);
-  border-radius: inherit;
-  background: linear-gradient(180deg, #3e97ff, #8d67f5 55%, #2fa87f 100%);
-  box-shadow:
-    0 0 9px rgba(62, 151, 255, 0.42),
-    0 0 18px rgba(141, 103, 245, 0.32);
-  transition: height 120ms linear;
-}
-
-.cq-global-interaction-shell-landing .cq-global-progress-rail {
-  display: none;
-}
-
-.cq-global-interaction-shell-editor .cq-global-progress-rail {
-  display: none;
-}
-
-@media (max-width: 960px) {
-  .cq-global-progress-rail {
-    display: none;
-  }
-}
-
 a {
   color: inherit;
   text-decoration: none;
-}
-
-#root > * {
-  position: relative;
-  z-index: 1;
 }
 
 /* Shared app shell for pages that contain bottom navigation */
@@ -1603,9 +1515,6 @@ a {
   overflow: hidden;
   border: 1px solid #cfdcef;
   cursor: crosshair;
-  contain: layout paint style;
-  transform: translateZ(0);
-  backface-visibility: hidden;
 }
 
 .cq-wall-image {
@@ -1613,9 +1522,6 @@ a {
   display: block;
   height: auto;
   object-fit: contain;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  will-change: transform;
 }
 
 .cq-wall-svg-overlay {
@@ -1632,15 +1538,11 @@ a {
   overflow: auto;
   max-height: 72vh;
   background: #edf3ff;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
 }
 
 .cq-wall-stage {
   position: relative;
   line-height: 0;
-  transform: translateZ(0);
-  backface-visibility: hidden;
 }
 
 .cq-wall-stage-zoom {
@@ -1662,21 +1564,21 @@ a {
   position: fixed;
   inset: 0;
   z-index: 120;
-  background: rgba(10, 17, 30, 0.62);
+  background: rgba(16, 24, 38, 0.46);
   display: grid;
   place-items: center;
-  padding: 6px;
+  padding: 12px;
 }
 
 .cq-wall-zoom-panel {
-  width: min(100%, 1120px);
-  max-height: calc(100vh - 12px);
+  width: min(100%, 820px);
+  max-height: calc(100vh - 24px);
   overflow: auto;
   background: var(--cq-surface);
   border: 1px solid var(--cq-border);
-  border-radius: 18px;
+  border-radius: 16px;
   box-shadow: 0 16px 36px rgba(20, 30, 45, 0.3);
-  padding: 12px 12px 14px;
+  padding: 12px;
 }
 
 .cq-wall-zoom-head {
@@ -1695,7 +1597,6 @@ a {
 
 .cq-wall-zoom-panel .cq-wall-image-wrap {
   margin-top: 8px;
-  max-height: calc(100vh - 190px);
 }
 
 .cq-wall-svg-point {
@@ -1975,29 +1876,9 @@ a {
 .cq-landing-bg {
   min-height: 100vh;
   background-image: url("/background%20picture.png");
-  background-size: 108%;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  position: relative;
-  animation: cq-bg-zoom-in 1600ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
-}
-
-.cq-landing-bg::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background:
-    radial-gradient(
-      circle at var(--pointer-x, 50%) var(--pointer-y, 36%),
-      rgba(155, 218, 255, 0.2) 0%,
-      rgba(101, 149, 255, 0.12) 16%,
-      rgba(20, 30, 48, 0.64) 48%,
-      rgba(6, 10, 19, 0.82) 100%
-    ),
-    linear-gradient(180deg, rgba(5, 10, 20, 0.35), rgba(7, 11, 20, 0.62));
-  mix-blend-mode: screen;
 }
 
 .cq-landing-scroll {
@@ -2026,8 +1907,6 @@ a {
   max-width: 460px;
   margin: 0 auto;
   padding: 18px 16px 26px;
-  position: relative;
-  z-index: 1;
 }
 
 .cq-landing-page-scroll {
@@ -2037,32 +1916,6 @@ a {
 
 .cq-scroll-stage {
   scroll-snap-align: start;
-}
-
-.cq-landing-progress-rail {
-  position: fixed;
-  right: 14px;
-  top: 18vh;
-  width: 4px;
-  height: 56vh;
-  border-radius: 999px;
-  background: rgba(235, 245, 255, 0.22);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
-  z-index: 2;
-}
-
-.cq-landing-progress-rail .cq-landing-scroll-progress-fill {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: var(--scroll-progress, 0%);
-  border-radius: inherit;
-  background: linear-gradient(180deg, #5fd4ff 0%, #b56dff 60%, #ff8a5d 100%);
-  box-shadow:
-    0 0 10px rgba(115, 198, 255, 0.5),
-    0 0 22px rgba(181, 109, 255, 0.35);
-  transition: height 120ms linear;
 }
 
 .cq-scroll-reveal {
@@ -2084,80 +1937,17 @@ a {
   place-content: center;
   gap: 16px;
   text-align: center;
-  position: relative;
-}
-
-.cq-welcome-atmosphere {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.cq-welcome-node {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(240, 248, 255, 0.95);
-  box-shadow:
-    0 0 0 6px rgba(141, 195, 255, 0.2),
-    0 0 24px rgba(131, 178, 255, 0.55);
-  animation: cq-node-float 3.2s ease-in-out infinite;
-}
-
-.cq-welcome-node-a {
-  left: 12%;
-  top: 24%;
-}
-
-.cq-welcome-node-b {
-  right: 16%;
-  top: 17%;
-  animation-delay: 620ms;
-}
-
-.cq-welcome-node-c {
-  right: 22%;
-  bottom: 22%;
-  animation-delay: 1160ms;
 }
 
 .cq-welcome-cover-core {
-  position: relative;
   display: grid;
   gap: 12px;
   justify-items: center;
   padding: 20px 16px;
   border-radius: 20px;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(212, 237, 255, 0.12)),
-    rgba(10, 18, 31, 0.36);
-  border: 1px solid rgba(205, 229, 255, 0.4);
-  box-shadow:
-    0 20px 34px rgba(10, 17, 31, 0.28),
-    0 0 44px rgba(80, 137, 255, 0.22);
-  backdrop-filter: blur(6px);
-  transform-origin: 50% 55%;
-  animation: cq-hero-core-pop 900ms cubic-bezier(0.2, 0.85, 0.25, 1) both;
-  overflow: hidden;
-}
-
-.cq-welcome-cover-core::after {
-  content: "";
-  position: absolute;
-  top: -120%;
-  left: -30%;
-  width: 46%;
-  height: 320%;
-  transform: rotate(24deg);
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 0.22),
-    rgba(255, 255, 255, 0)
-  );
-  animation: cq-hero-scan 2800ms ease 700ms 1 forwards;
-  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 252, 247, 0.36), rgba(255, 247, 235, 0.18));
+  box-shadow: 0 20px 34px rgba(10, 17, 31, 0.24);
+  backdrop-filter: blur(2px);
 }
 
 .cq-welcome-cover h1 {
@@ -2171,66 +1961,17 @@ a {
     0 0 28px rgba(93, 171, 255, 0.45);
 }
 
-.cq-welcome-title {
-  display: flex;
-  gap: 2px;
-  align-items: baseline;
-}
-
-.cq-welcome-title-front,
-.cq-welcome-title-accent {
-  opacity: 0;
-  transform: translateY(14px);
-  animation: cq-title-rise 680ms cubic-bezier(0.2, 0.9, 0.28, 1) forwards;
-}
-
-.cq-welcome-title-front {
-  animation-delay: 140ms;
-}
-
-.cq-welcome-title-accent {
-  animation-delay: 300ms;
-}
-
-.cq-welcome-cover h1 .cq-welcome-title-accent {
+.cq-welcome-cover h1 span {
   color: #ffd8b1;
   text-shadow:
     0 6px 14px rgba(70, 35, 14, 0.35),
     0 0 18px rgba(239, 170, 99, 0.56);
 }
 
-.cq-welcome-eyebrow,
-.cq-welcome-tagline,
-.cq-enter-btn {
-  opacity: 0;
-  transform: translateY(12px);
-  animation: cq-title-rise 620ms cubic-bezier(0.2, 0.9, 0.28, 1) forwards;
-}
-
-.cq-welcome-eyebrow {
-  animation-delay: 40ms;
-}
-
-.cq-welcome-tagline {
-  animation-delay: 430ms;
-}
-
-.cq-enter-btn {
-  animation-delay: 560ms;
-}
-
 .cq-welcome-cover p {
   margin: 0;
   color: rgba(233, 243, 255, 0.94);
   font-weight: 600;
-}
-
-.cq-enter-btn {
-  margin-top: 8px;
-  background: linear-gradient(135deg, #2f8aff, #915dff 58%, #d98d4d 100%);
-  box-shadow:
-    0 12px 22px rgba(73, 112, 204, 0.45),
-    0 0 24px rgba(152, 95, 255, 0.35);
 }
 
 .cq-scroll-hint {
@@ -2811,75 +2552,6 @@ a {
   box-shadow: 0 14px 22px rgba(22, 32, 51, 0.09);
 }
 
-/* Unified interaction feedback across core cards and panels */
-.cq-page-card,
-.cq-home-header,
-.cq-home-quest-card,
-.cq-home-coach-card,
-.cq-home-feed-card,
-.cq-route-card,
-.cq-community-card,
-.cq-profile-card,
-.cq-detail-header,
-.cq-detail-card,
-.cq-create-header,
-.cq-create-form,
-.cq-create-preview,
-.cq-wall-selection-card {
-  transition:
-    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-color 220ms ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .cq-page-card:hover,
-  .cq-home-header:hover,
-  .cq-home-quest-card:hover,
-  .cq-home-coach-card:hover,
-  .cq-home-feed-card:hover,
-  .cq-route-card:hover,
-  .cq-community-card:hover,
-  .cq-profile-card:hover,
-  .cq-detail-header:hover,
-  .cq-detail-card:hover,
-  .cq-create-header:hover,
-  .cq-create-form:hover,
-  .cq-create-preview:hover,
-  .cq-wall-selection-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 28px rgba(25, 35, 55, 0.14);
-    border-color: #bdd5f4;
-  }
-}
-
-.cq-primary-btn,
-.cq-secondary-btn,
-.cq-discover-option-btn,
-.cq-tab-item {
-  transition:
-    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    background 180ms ease;
-}
-
-.cq-primary-btn:active,
-.cq-secondary-btn:active,
-.cq-discover-option-btn:active {
-  transform: scale(0.985);
-}
-
-.cq-bottom-nav {
-  box-shadow:
-    0 12px 24px rgba(18, 35, 63, 0.12),
-    0 0 0 1px rgba(205, 224, 248, 0.8);
-  backdrop-filter: blur(10px);
-}
-
-.cq-tab-item-active {
-  box-shadow: 0 8px 16px rgba(35, 127, 242, 0.28);
-}
-
 .cq-feature-card h3 {
   margin: 0;
   font-size: 1.03rem;
@@ -3147,65 +2819,6 @@ a {
   }
 }
 
-@keyframes cq-node-float {
-  0%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translateY(-8px);
-    opacity: 1;
-  }
-}
-
-@keyframes cq-bg-zoom-in {
-  from {
-    background-size: 120%;
-    filter: saturate(1.12);
-  }
-  to {
-    background-size: 108%;
-    filter: saturate(1);
-  }
-}
-
-@keyframes cq-hero-core-pop {
-  from {
-    transform: scale(0.92);
-    opacity: 0.5;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes cq-hero-scan {
-  from {
-    left: -38%;
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-  }
-  to {
-    left: 118%;
-    opacity: 0;
-  }
-}
-
-@keyframes cq-title-rise {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .cq-landing-interactive .cq-hero-card,
   .cq-landing-interactive .cq-landing-spotlight-card,
@@ -3220,28 +2833,6 @@ a {
   .cq-scroll-reveal {
     opacity: 1 !important;
     transform: none !important;
-  }
-
-  .cq-welcome-node,
-  .cq-scroll-hint-arrow {
-    animation: none !important;
-  }
-
-  .cq-landing-bg,
-  .cq-welcome-cover-core,
-  .cq-welcome-cover-core::after,
-  .cq-welcome-eyebrow,
-  .cq-welcome-title-front,
-  .cq-welcome-title-accent,
-  .cq-welcome-tagline,
-  .cq-enter-btn {
-    animation: none !important;
-  }
-}
-
-@media (max-width: 960px) {
-  .cq-landing-progress-rail {
-    display: none;
   }
 }
 
@@ -3493,22 +3084,6 @@ a {
   .cq-wall-zoom-trigger {
     font-size: 0.86rem;
     padding: 9px 14px;
-  }
-
-  .cq-wall-zoom-modal {
-    padding: 0;
-  }
-
-  .cq-wall-zoom-panel {
-    width: 100vw;
-    max-height: 100vh;
-    height: 100vh;
-    border-radius: 0;
-    padding: 10px 10px 12px;
-  }
-
-  .cq-wall-zoom-panel .cq-wall-image-wrap {
-    max-height: calc(100vh - 170px);
   }
 }
 .cq-wall-selection-list {

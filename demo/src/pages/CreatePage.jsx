@@ -18,8 +18,6 @@ const MAX_ZOOM_SCALE = 3;
 const ZOOM_STEP = 0.12;
 const MOBILE_DEFAULT_ZOOM_SCALE = 1;
 const DESKTOP_DEFAULT_ZOOM_SCALE = 1.65;
-const MOBILE_ZOOM_EDITOR_OPEN_SCALE = 2.2;
-const DESKTOP_ZOOM_EDITOR_OPEN_SCALE = 1.9;
 const ROUTE_POINT_SNAP_DISTANCE = 12;
 const DOUBLE_TAP_MS = 260;
 const ZOOM_TAP_MOVE_THRESHOLD = 7;
@@ -46,11 +44,6 @@ function clamp(value, min, max) {
 function getDefaultZoomScale() {
   const isMobile = typeof window !== "undefined" && window.innerWidth <= 900;
   return isMobile ? MOBILE_DEFAULT_ZOOM_SCALE : DESKTOP_DEFAULT_ZOOM_SCALE;
-}
-
-function getZoomEditorOpenScale() {
-  const isMobile = typeof window !== "undefined" && window.innerWidth <= 900;
-  return isMobile ? MOBILE_ZOOM_EDITOR_OPEN_SCALE : DESKTOP_ZOOM_EDITOR_OPEN_SCALE;
 }
 
 function pointsToSvgString(points) {
@@ -347,8 +340,6 @@ export default function CreatePage() {
   const traceLastPointRef = useRef(null);
   const lastTapTimeRef = useRef(0);
   const zoomWrapRef = useRef(null);
-  const zoomRafRef = useRef(null);
-  const queuedZoomScaleRef = useRef(getDefaultZoomScale());
   const zoomPanRef = useRef({
     active: false,
     pointerId: null,
@@ -416,43 +407,6 @@ export default function CreatePage() {
       document.body.style.overflow = originalOverflow;
     };
   }, [isZoomEditorOpen]);
-
-  useEffect(() => {
-    if (!isZoomEditorOpen) return;
-
-    // Force zoom editor to always open with enlarged wall view.
-    // This runs after modal mount and overrides any stale queued zoom update.
-    const openScale = getZoomEditorOpenScale();
-    if (zoomRafRef.current) {
-      cancelAnimationFrame(zoomRafRef.current);
-      zoomRafRef.current = null;
-    }
-    queuedZoomScaleRef.current = openScale;
-    setZoomScale(openScale);
-  }, [isZoomEditorOpen]);
-
-  useEffect(() => {
-    return () => {
-      if (zoomRafRef.current) {
-        cancelAnimationFrame(zoomRafRef.current);
-      }
-    };
-  }, []);
-
-  function updateZoomScaleSmooth(nextScale) {
-    const clamped = Number(clamp(nextScale, MIN_ZOOM_SCALE, MAX_ZOOM_SCALE).toFixed(2));
-    queuedZoomScaleRef.current = clamped;
-
-    if (zoomRafRef.current) return;
-
-    zoomRafRef.current = requestAnimationFrame(() => {
-      setZoomScale((prev) => {
-        const next = queuedZoomScaleRef.current;
-        return Math.abs(next - prev) < 0.001 ? prev : next;
-      });
-      zoomRafRef.current = null;
-    });
-  }
 
   function updateField(field, value) {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -710,11 +664,11 @@ export default function CreatePage() {
       const elapsed = now - lastTapTimeRef.current;
       lastTapTimeRef.current = now;
       if (elapsed > 0 && elapsed <= DOUBLE_TAP_MS) {
-        const nextScale =
-          zoomScale > (MOBILE_DEFAULT_ZOOM_SCALE + DESKTOP_DEFAULT_ZOOM_SCALE) / 2
+        setZoomScale((prev) =>
+          prev > (MOBILE_DEFAULT_ZOOM_SCALE + DESKTOP_DEFAULT_ZOOM_SCALE) / 2
             ? DESKTOP_DEFAULT_ZOOM_SCALE
-            : MOBILE_DEFAULT_ZOOM_SCALE;
-        updateZoomScaleSmooth(nextScale);
+            : MOBILE_DEFAULT_ZOOM_SCALE
+        );
       }
     }
 
@@ -938,33 +892,26 @@ export default function CreatePage() {
   }
 
   function openZoomEditor() {
-    // Open in an actually enlarged state so users can select holds immediately.
-    const openScale = getZoomEditorOpenScale();
-    if (zoomRafRef.current) {
-      cancelAnimationFrame(zoomRafRef.current);
-      zoomRafRef.current = null;
-    }
-    queuedZoomScaleRef.current = openScale;
-    setZoomScale(openScale);
+    setZoomScale(getDefaultZoomScale());
     setIsZoomEditorOpen(true);
   }
 
   function closeZoomEditor() {
-    if (zoomRafRef.current) {
-      cancelAnimationFrame(zoomRafRef.current);
-      zoomRafRef.current = null;
-    }
     setIsZoomEditorOpen(false);
   }
 
   function nudgeZoom(delta) {
-    updateZoomScaleSmooth(zoomScale + delta);
+    setZoomScale((prev) =>
+      Number(clamp(prev + delta, MIN_ZOOM_SCALE, MAX_ZOOM_SCALE).toFixed(2))
+    );
   }
 
   function handleZoomWheel(event) {
     event.preventDefault();
     const direction = event.deltaY < 0 ? 1 : -1;
-    updateZoomScaleSmooth(zoomScale + direction * ZOOM_STEP);
+    setZoomScale((prev) =>
+      Number(clamp(prev + direction * ZOOM_STEP, MIN_ZOOM_SCALE, MAX_ZOOM_SCALE).toFixed(2))
+    );
   }
 
   function validateForm() {
@@ -1508,7 +1455,7 @@ export default function CreatePage() {
               </div>
             )}
 
-            {!isZoomEditorOpen && renderWallCanvas()}
+            {renderWallCanvas()}
 
             {errors.holdContours && (
               <small className="cq-field-error">{errors.holdContours}</small>
@@ -1695,7 +1642,7 @@ export default function CreatePage() {
                   <button
                     type="button"
                     className="cq-secondary-btn"
-                    onClick={() => updateZoomScaleSmooth(getDefaultZoomScale())}
+                    onClick={() => setZoomScale(getDefaultZoomScale())}
                   >
                     Fit
                   </button>
