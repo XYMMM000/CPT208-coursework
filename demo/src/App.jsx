@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import MobileAppLayout from "./components/layout/MobileAppLayout";
@@ -16,7 +16,7 @@ import SignupPage from "./pages/SignupPage";
 
 export default function App() {
   const location = useLocation();
-  const [ambientPointer, setAmbientPointer] = useState({ x: 50, y: 32 });
+  const shellRef = useRef(null);
   const [globalScrollProgress, setGlobalScrollProgress] = useState(0);
 
   const isLandingRoute = location.pathname === "/";
@@ -50,27 +50,31 @@ export default function App() {
   }, [location.pathname, disableGlobalAmbientFx]);
 
   function handleAmbientPointerMove(event) {
-    setAmbientPointer({
-      x: Number(((event.clientX / window.innerWidth) * 100).toFixed(2)),
-      y: Number(((event.clientY / window.innerHeight) * 100).toFixed(2))
-    });
+    const shell = shellRef.current;
+    if (!shell) return;
+    shell.style.setProperty("--cq-global-pointer-x", `${((event.clientX / window.innerWidth) * 100).toFixed(2)}%`);
+    shell.style.setProperty("--cq-global-pointer-y", `${((event.clientY / window.innerHeight) * 100).toFixed(2)}%`);
   }
 
   function handleAmbientPointerLeave() {
-    setAmbientPointer({ x: 50, y: 32 });
+    const shell = shellRef.current;
+    if (!shell) return;
+    shell.style.setProperty("--cq-global-pointer-x", "50%");
+    shell.style.setProperty("--cq-global-pointer-y", "32%");
   }
 
   function handleAmbientTouchMove(event) {
     const touch = event.touches?.[0];
     if (!touch) return;
-    setAmbientPointer({
-      x: Number(((touch.clientX / window.innerWidth) * 100).toFixed(2)),
-      y: Number(((touch.clientY / window.innerHeight) * 100).toFixed(2))
-    });
+    const shell = shellRef.current;
+    if (!shell) return;
+    shell.style.setProperty("--cq-global-pointer-x", `${((touch.clientX / window.innerWidth) * 100).toFixed(2)}%`);
+    shell.style.setProperty("--cq-global-pointer-y", `${((touch.clientY / window.innerHeight) * 100).toFixed(2)}%`);
   }
 
   return (
     <div
+      ref={shellRef}
       className={`cq-global-interaction-shell ${isLandingRoute ? "cq-global-interaction-shell-landing" : ""} ${
         isCreateEditorRoute ? "cq-global-interaction-shell-editor" : ""
       }`}
@@ -78,8 +82,6 @@ export default function App() {
       onMouseLeave={disableGlobalAmbientFx ? undefined : handleAmbientPointerLeave}
       onTouchMove={disableGlobalAmbientFx ? undefined : handleAmbientTouchMove}
       style={{
-        "--cq-global-pointer-x": `${ambientPointer.x}%`,
-        "--cq-global-pointer-y": `${ambientPointer.y}%`,
         "--cq-global-scroll-progress": `${globalScrollProgress}%`
       }}
     >
