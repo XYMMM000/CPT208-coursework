@@ -18,6 +18,8 @@ const MAX_ZOOM_SCALE = 3;
 const ZOOM_STEP = 0.12;
 const MOBILE_DEFAULT_ZOOM_SCALE = 1;
 const DESKTOP_DEFAULT_ZOOM_SCALE = 1.65;
+const MOBILE_ZOOM_EDITOR_OPEN_SCALE = 1.8;
+const DESKTOP_ZOOM_EDITOR_OPEN_SCALE = 1.5;
 const ROUTE_POINT_SNAP_DISTANCE = 12;
 const DOUBLE_TAP_MS = 260;
 const ZOOM_TAP_MOVE_THRESHOLD = 7;
@@ -44,6 +46,11 @@ function clamp(value, min, max) {
 function getDefaultZoomScale() {
   const isMobile = typeof window !== "undefined" && window.innerWidth <= 900;
   return isMobile ? MOBILE_DEFAULT_ZOOM_SCALE : DESKTOP_DEFAULT_ZOOM_SCALE;
+}
+
+function getZoomEditorOpenScale() {
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 900;
+  return isMobile ? MOBILE_ZOOM_EDITOR_OPEN_SCALE : DESKTOP_ZOOM_EDITOR_OPEN_SCALE;
 }
 
 function pointsToSvgString(points) {
@@ -917,9 +924,10 @@ export default function CreatePage() {
   }
 
   function openZoomEditor() {
-    const defaultScale = getDefaultZoomScale();
-    queuedZoomScaleRef.current = defaultScale;
-    setZoomScale(defaultScale);
+    // Open in an actually enlarged state so users can select holds immediately.
+    const openScale = getZoomEditorOpenScale();
+    queuedZoomScaleRef.current = openScale;
+    setZoomScale(openScale);
     setIsZoomEditorOpen(true);
   }
 

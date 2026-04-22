@@ -1662,21 +1662,21 @@ a {
   position: fixed;
   inset: 0;
   z-index: 120;
-  background: rgba(16, 24, 38, 0.46);
+  background: rgba(10, 17, 30, 0.62);
   display: grid;
   place-items: center;
-  padding: 12px;
+  padding: 6px;
 }
 
 .cq-wall-zoom-panel {
-  width: min(100%, 820px);
-  max-height: calc(100vh - 24px);
+  width: min(100%, 1120px);
+  max-height: calc(100vh - 12px);
   overflow: auto;
   background: var(--cq-surface);
   border: 1px solid var(--cq-border);
-  border-radius: 16px;
+  border-radius: 18px;
   box-shadow: 0 16px 36px rgba(20, 30, 45, 0.3);
-  padding: 12px;
+  padding: 12px 12px 14px;
 }
 
 .cq-wall-zoom-head {
@@ -1695,6 +1695,7 @@ a {
 
 .cq-wall-zoom-panel .cq-wall-image-wrap {
   margin-top: 8px;
+  max-height: calc(100vh - 190px);
 }
 
 .cq-wall-svg-point {
@@ -3492,6 +3493,22 @@ a {
   .cq-wall-zoom-trigger {
     font-size: 0.86rem;
     padding: 9px 14px;
+  }
+
+  .cq-wall-zoom-modal {
+    padding: 0;
+  }
+
+  .cq-wall-zoom-panel {
+    width: 100vw;
+    max-height: 100vh;
+    height: 100vh;
+    border-radius: 0;
+    padding: 10px 10px 12px;
+  }
+
+  .cq-wall-zoom-panel .cq-wall-image-wrap {
+    max-height: calc(100vh - 170px);
   }
 }
 .cq-wall-selection-list {
