@@ -1603,6 +1603,9 @@ a {
   overflow: hidden;
   border: 1px solid #cfdcef;
   cursor: crosshair;
+  contain: layout paint style;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .cq-wall-image {
@@ -1610,6 +1613,9 @@ a {
   display: block;
   height: auto;
   object-fit: contain;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .cq-wall-svg-overlay {
@@ -1626,11 +1632,15 @@ a {
   overflow: auto;
   max-height: 72vh;
   background: #edf3ff;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .cq-wall-stage {
   position: relative;
   line-height: 0;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .cq-wall-stage-zoom {

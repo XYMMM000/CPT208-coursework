@@ -340,6 +340,8 @@ export default function CreatePage() {
   const traceLastPointRef = useRef(null);
   const lastTapTimeRef = useRef(0);
   const zoomWrapRef = useRef(null);
+  const zoomRafRef = useRef(null);
+  const queuedZoomScaleRef = useRef(getDefaultZoomScale());
   const zoomPanRef = useRef({
     active: false,
     pointerId: null,
@@ -407,6 +409,29 @@ export default function CreatePage() {
       document.body.style.overflow = originalOverflow;
     };
   }, [isZoomEditorOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (zoomRafRef.current) {
+        cancelAnimationFrame(zoomRafRef.current);
+      }
+    };
+  }, []);
+
+  function updateZoomScaleSmooth(nextScale) {
+    const clamped = Number(clamp(nextScale, MIN_ZOOM_SCALE, MAX_ZOOM_SCALE).toFixed(2));
+    queuedZoomScaleRef.current = clamped;
+
+    if (zoomRafRef.current) return;
+
+    zoomRafRef.current = requestAnimationFrame(() => {
+      setZoomScale((prev) => {
+        const next = queuedZoomScaleRef.current;
+        return Math.abs(next - prev) < 0.001 ? prev : next;
+      });
+      zoomRafRef.current = null;
+    });
+  }
 
   function updateField(field, value) {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -664,11 +689,11 @@ export default function CreatePage() {
       const elapsed = now - lastTapTimeRef.current;
       lastTapTimeRef.current = now;
       if (elapsed > 0 && elapsed <= DOUBLE_TAP_MS) {
-        setZoomScale((prev) =>
-          prev > (MOBILE_DEFAULT_ZOOM_SCALE + DESKTOP_DEFAULT_ZOOM_SCALE) / 2
+        const nextScale =
+          zoomScale > (MOBILE_DEFAULT_ZOOM_SCALE + DESKTOP_DEFAULT_ZOOM_SCALE) / 2
             ? DESKTOP_DEFAULT_ZOOM_SCALE
-            : MOBILE_DEFAULT_ZOOM_SCALE
-        );
+            : MOBILE_DEFAULT_ZOOM_SCALE;
+        updateZoomScaleSmooth(nextScale);
       }
     }
 
@@ -892,7 +917,9 @@ export default function CreatePage() {
   }
 
   function openZoomEditor() {
-    setZoomScale(getDefaultZoomScale());
+    const defaultScale = getDefaultZoomScale();
+    queuedZoomScaleRef.current = defaultScale;
+    setZoomScale(defaultScale);
     setIsZoomEditorOpen(true);
   }
 
@@ -901,17 +928,13 @@ export default function CreatePage() {
   }
 
   function nudgeZoom(delta) {
-    setZoomScale((prev) =>
-      Number(clamp(prev + delta, MIN_ZOOM_SCALE, MAX_ZOOM_SCALE).toFixed(2))
-    );
+    updateZoomScaleSmooth(zoomScale + delta);
   }
 
   function handleZoomWheel(event) {
     event.preventDefault();
     const direction = event.deltaY < 0 ? 1 : -1;
-    setZoomScale((prev) =>
-      Number(clamp(prev + direction * ZOOM_STEP, MIN_ZOOM_SCALE, MAX_ZOOM_SCALE).toFixed(2))
-    );
+    updateZoomScaleSmooth(zoomScale + direction * ZOOM_STEP);
   }
 
   function validateForm() {
@@ -1455,7 +1478,7 @@ export default function CreatePage() {
               </div>
             )}
 
-            {renderWallCanvas()}
+            {!isZoomEditorOpen && renderWallCanvas()}
 
             {errors.holdContours && (
               <small className="cq-field-error">{errors.holdContours}</small>
@@ -1642,7 +1665,7 @@ export default function CreatePage() {
                   <button
                     type="button"
                     className="cq-secondary-btn"
-                    onClick={() => setZoomScale(getDefaultZoomScale())}
+                    onClick={() => updateZoomScaleSmooth(getDefaultZoomScale())}
                   >
                     Fit
                   </button>
