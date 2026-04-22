@@ -111,9 +111,9 @@ const profileResults = {
     secondaryLink: "/community",
     secondaryLabel: "Read Community Beta",
     routes: [
-      { name: "Blue Slab Rhythm", difficulty: "Easy | V0-V1", style: "Balance", reason: "Great for smooth body position and precise feet." },
-      { name: "Silent Corner Flow", difficulty: "Easy | V0-V1", style: "Technique", reason: "Helps you refine quiet movement and weight transfer." },
-      { name: "Glass Wall Glide", difficulty: "Medium | V2-V4", style: "Balance", reason: "Adds confidence on small footholds with controlled pacing." }
+      { name: "Blue Slab Rhythm", difficulty: "Easy | V0-V1", style: "Balance", reason: "Smooth ladder flow with short reaches for stable movement." },
+      { name: "Glass Wall Glide", difficulty: "Medium | V2-V4", style: "Balance", reason: "Zig-zag sequence with varied body positions and tempo." },
+      { name: "Flow Precision Circuit", difficulty: "Hard | V5+", style: "Technique", reason: "Longer precision chain with sharper body control demands." }
     ]
   },
   power: {
@@ -138,9 +138,9 @@ const profileResults = {
     secondaryLink: "/community",
     secondaryLabel: "See Hard Route Ratings",
     routes: [
-      { name: "Crimson Power Burst", difficulty: "Hard | V5+", style: "Power", reason: "Explosive pulls and short, high-intensity sequences." },
-      { name: "Volume Dyno Punch", difficulty: "Medium | V2-V4", style: "Power", reason: "Builds confidence in dynamic movement and lock-offs." },
-      { name: "Overhang Strike Line", difficulty: "Hard | V5+", style: "Strength", reason: "Perfect for body tension and powerful finishing moves." }
+      { name: "Power Warmup Punch", difficulty: "Easy | V0-V1", style: "Power", reason: "Accessible power line with clear rhythm and safe movement." },
+      { name: "Volume Dyno Punch", difficulty: "Medium | V2-V4", style: "Power", reason: "Dynamic sequence with controlled lock-off transitions." },
+      { name: "Crimson Power Burst", difficulty: "Hard | V5+", style: "Strength", reason: "Explosive chain with larger moves and high tension finish." }
     ]
   },
   endurance: {
@@ -165,9 +165,9 @@ const profileResults = {
     secondaryLink: "/create",
     secondaryLabel: "Design a Long Route",
     routes: [
-      { name: "Long Traverse Engine", difficulty: "Medium | V2-V4", style: "Endurance", reason: "Sustained movement with limited resting positions." },
-      { name: "Circuit River", difficulty: "Medium | V2-V4", style: "Endurance", reason: "Great for pacing and maintaining form under fatigue." },
-      { name: "Wall Marathon Lite", difficulty: "Easy | V0-V1", style: "Flow", reason: "Builds session volume while preserving technique quality." }
+      { name: "Wall Marathon Lite", difficulty: "Easy | V0-V1", style: "Flow", reason: "Steady low-risk sequence to build movement volume." },
+      { name: "Long Traverse Engine", difficulty: "Medium | V2-V4", style: "Endurance", reason: "Sustained route with few full rest opportunities." },
+      { name: "Endurance Pressure Loop", difficulty: "Hard | V5+", style: "Endurance", reason: "Long high-load chain requiring efficient pacing and recovery." }
     ]
   },
   tech: {
@@ -192,9 +192,9 @@ const profileResults = {
     secondaryLink: "/community",
     secondaryLabel: "Explore Technical Beta",
     routes: [
-      { name: "Volume Logic Maze", difficulty: "Medium | V2-V4", style: "Technique", reason: "Designed for body positioning and subtle foot decisions." },
-      { name: "Heel Hook Study", difficulty: "Hard | V5+", style: "Technique", reason: "Focuses on sequencing with advanced foot and hip control." },
-      { name: "Micro Beta Lab", difficulty: "Medium | V2-V4", style: "Technique", reason: "Encourages route reading and efficient move planning." }
+      { name: "Micro Beta Lab", difficulty: "Easy | V0-V1", style: "Technique", reason: "Readable puzzle line for beginner route-reading practice." },
+      { name: "Volume Logic Maze", difficulty: "Medium | V2-V4", style: "Technique", reason: "Multi-angle sequence with deliberate positional choices." },
+      { name: "Heel Hook Study", difficulty: "Hard | V5+", style: "Technique", reason: "Advanced sequencing with tighter precision windows." }
     ]
   },
   social: {
@@ -219,9 +219,9 @@ const profileResults = {
     secondaryLink: "/create",
     secondaryLabel: "Publish a New Route",
     routes: [
-      { name: "Partner Session Circuit", difficulty: "Easy | V0-V1", style: "Fun", reason: "Great for climbing in pairs and exchanging beta quickly." },
-      { name: "Crowd Favorite Ladder", difficulty: "Medium | V2-V4", style: "Social", reason: "Popular line with lots of community feedback and variations." },
-      { name: "Group Warmup Relay", difficulty: "Easy | V0-V1", style: "Flow", reason: "Perfect for team sessions and confidence building." }
+      { name: "Group Warmup Relay", difficulty: "Easy | V0-V1", style: "Flow", reason: "Team-friendly intro line with safe and clear movement." },
+      { name: "Crowd Favorite Ladder", difficulty: "Medium | V2-V4", style: "Social", reason: "Collaborative beta route with mixed move styles." },
+      { name: "Partner Session Circuit", difficulty: "Hard | V5+", style: "Fun", reason: "Team project line with bigger commitment moves." }
     ]
   }
 };
@@ -643,16 +643,14 @@ function buildDifficultyRoutePlan(difficulty, wallPhotoIndex, seed) {
 function resolveRoutePlan(route) {
   const difficulty = parseDifficultyLabel(route.difficulty);
   const seed = hashStringToInt(`${route.name}-${route.style}-${route.difficulty}`);
+  const difficultyWallMap = { Easy: 0, Medium: 1, Hard: 2 };
   const preset = routePlanPresets[route.name] || null;
   const wallPhotoIndex =
-    typeof preset?.wallPhotoIndex === "number" ? preset.wallPhotoIndex : seed % 3;
-
-  if (preset && validateRoutePlan(preset, difficulty)) {
-    return {
-      ...preset,
-      wallPhotoIndex
-    };
-  }
+    typeof difficultyWallMap[difficulty] === "number"
+      ? difficultyWallMap[difficulty]
+      : typeof preset?.wallPhotoIndex === "number"
+        ? preset.wallPhotoIndex
+        : seed % 3;
 
   return buildDifficultyRoutePlan(difficulty, wallPhotoIndex, seed);
 }
@@ -705,13 +703,13 @@ function sanitizeAnswerMap(rawAnswerMap) {
 
 function deriveOptionIcon(label) {
   const lower = label.toLowerCase();
-  if (lower.includes("slab") || lower.includes("calm") || lower.includes("smooth")) return "🧘";
-  if (lower.includes("power") || lower.includes("hard") || lower.includes("strength")) return "💪";
+  if (lower.includes("slab") || lower.includes("calm") || lower.includes("smooth")) return "F";
+  if (lower.includes("power") || lower.includes("hard") || lower.includes("strength")) return "P";
   if (lower.includes("endurance") || lower.includes("long") || lower.includes("steady"))
-    return "🔥";
+    return "E";
   if (lower.includes("friends") || lower.includes("community") || lower.includes("share"))
-    return "🤝";
-  return "🧠";
+    return "S";
+  return "T";
 }
 
 export default function DiscoverPage() {
