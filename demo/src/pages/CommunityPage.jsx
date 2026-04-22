@@ -1,6 +1,7 @@
 import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { EXPERIENCE_MODES, useExperienceMode } from "../context/ExperienceModeContext";
 import { firestoreDb } from "../lib/firebase";
 
 const COMMUNITY_CACHE_KEY = "climbquest_community_cache";
@@ -142,6 +143,10 @@ function mergeAndDedupeRoutes(...routeLists) {
 }
 
 export default function CommunityPage() {
+  const { mode } = useExperienceMode();
+  const isLite = mode === EXPERIENCE_MODES.LITE;
+  const isGuided = mode === EXPERIENCE_MODES.GUIDED;
+  const isImpact = mode === EXPERIENCE_MODES.IMPACT;
   // Instant first paint: build feed immediately from local sources.
   const [communityRoutes, setCommunityRoutes] = useState(() => {
     const cachedRoutes = safeReadRoutesFromStorage(COMMUNITY_CACHE_KEY);
@@ -156,6 +161,7 @@ export default function CommunityPage() {
   const [difficultyFilter, setDifficultyFilter] = useState("All");
   const [styleFilter, setStyleFilter] = useState("All");
   const [sourceFilter, setSourceFilter] = useState("All");
+  const [expandedCardMap, setExpandedCardMap] = useState({});
 
   useEffect(() => {
     let isActive = true;
@@ -228,6 +234,24 @@ export default function CommunityPage() {
     });
   }, [communityRoutes, searchText, difficultyFilter, styleFilter, sourceFilter]);
 
+  const trendMetrics = useMemo(() => {
+    const total = communityRoutes.length || 1;
+    const hardCount = communityRoutes.filter((route) => route.difficulty === "Hard").length;
+    const aiCount = communityRoutes.filter((route) => route.source === "AI").length;
+    const techniqueCount = communityRoutes.filter((route) =>
+      Array.isArray(route.styleTags) ? route.styleTags.includes("Technique") : false
+    ).length;
+    return {
+      hardPercent: Math.round((hardCount / total) * 100),
+      aiPercent: Math.round((aiCount / total) * 100),
+      techniquePercent: Math.round((techniqueCount / total) * 100)
+    };
+  }, [communityRoutes]);
+
+  function toggleExpanded(routeId) {
+    setExpandedCardMap((prev) => ({ ...prev, [routeId]: !prev[routeId] }));
+  }
+
   return (
     <section className="cq-community-page">
       <header className="cq-community-header">
@@ -235,6 +259,32 @@ export default function CommunityPage() {
         <h2>Community beta feed</h2>
         <p>Discover shared routes, quick beta tips, and fresh ideas from climbers.</p>
       </header>
+
+      {isImpact && (
+        <section className="cq-community-trend-panel" aria-label="Community trends">
+          <article className="cq-community-trend-item">
+            <p>Hard route trend</p>
+            <div className="cq-community-trend-track">
+              <span style={{ width: `${trendMetrics.hardPercent}%` }} />
+            </div>
+            <strong>{trendMetrics.hardPercent}%</strong>
+          </article>
+          <article className="cq-community-trend-item">
+            <p>AI setter share</p>
+            <div className="cq-community-trend-track">
+              <span style={{ width: `${trendMetrics.aiPercent}%` }} />
+            </div>
+            <strong>{trendMetrics.aiPercent}%</strong>
+          </article>
+          <article className="cq-community-trend-item">
+            <p>Technique routes</p>
+            <div className="cq-community-trend-track">
+              <span style={{ width: `${trendMetrics.techniquePercent}%` }} />
+            </div>
+            <strong>{trendMetrics.techniquePercent}%</strong>
+          </article>
+        </section>
+      )}
 
       <label className="cq-community-search">
         <span className="cq-community-search-label">Search routes</span>
@@ -305,7 +355,10 @@ export default function CommunityPage() {
             const difficultyMeta = getDifficultyMeta(route.difficulty);
 
             return (
-              <article key={route.id} className="cq-community-card">
+              <article
+                key={route.id}
+                className={`cq-community-card ${isImpact ? "cq-community-card-impact" : ""}`}
+              >
                 <div className="cq-route-top-row">
                   <h3>{route.routeName}</h3>
                   <span className={`cq-route-difficulty ${difficultyMeta.toneClass}`}>
@@ -348,7 +401,30 @@ export default function CommunityPage() {
                   ))}
                 </div>
 
-                <p className="cq-route-description">{route.description}</p>
+                {isLite && (
+                  <p className="cq-route-description">
+                    {route.description.slice(0, 56)}
+                    {route.description.length > 56 ? "..." : ""}
+                  </p>
+                )}
+
+                {!isLite && (
+                  <p className="cq-route-description">
+                    {isGuided && !expandedCardMap[route.id]
+                      ? `${route.description.slice(0, 48)}...`
+                      : route.description}
+                  </p>
+                )}
+
+                {isGuided && (
+                  <button
+                    type="button"
+                    className="cq-community-expand-btn"
+                    onClick={() => toggleExpanded(route.id)}
+                  >
+                    {expandedCardMap[route.id] ? "Hide details" : "Show details"}
+                  </button>
+                )}
 
                 <Link
                   className="cq-secondary-btn cq-community-detail-link"

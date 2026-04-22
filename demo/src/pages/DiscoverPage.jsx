@@ -1,6 +1,7 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { EXPERIENCE_MODES, useExperienceMode } from "../context/ExperienceModeContext";
 
 // Quiz questions for the Discover page.
 // Each option contributes points to one or more climbing profiles.
@@ -564,8 +565,23 @@ function sanitizeAnswerMap(rawAnswerMap) {
   return next;
 }
 
+function deriveOptionIcon(label) {
+  const lower = label.toLowerCase();
+  if (lower.includes("slab") || lower.includes("calm") || lower.includes("smooth")) return "🧘";
+  if (lower.includes("power") || lower.includes("hard") || lower.includes("strength")) return "💪";
+  if (lower.includes("endurance") || lower.includes("long") || lower.includes("steady"))
+    return "🔥";
+  if (lower.includes("friends") || lower.includes("community") || lower.includes("share"))
+    return "🤝";
+  return "🧠";
+}
+
 export default function DiscoverPage() {
   const { currentUser } = useAuth();
+  const { mode } = useExperienceMode();
+  const isLite = mode === EXPERIENCE_MODES.LITE;
+  const isGuided = mode === EXPERIENCE_MODES.GUIDED;
+  const isImpact = mode === EXPERIENCE_MODES.IMPACT;
   const navigate = useNavigate();
   const storageKey = `${DISCOVER_QUIZ_DRAFT_KEY}::${currentUser?.email || "guest"}`;
 
@@ -629,6 +645,7 @@ export default function DiscoverPage() {
   const currentQuestion = quizQuestions[currentQuestionIndex];
   const answeredCount = Object.keys(answerMap).length;
   const progressPercent = Math.round((answeredCount / quizQuestions.length) * 100);
+  const guidedStepPercent = Math.round(((currentQuestionIndex + 1) / quizQuestions.length) * 100);
 
   const scoreBoard = useMemo(() => {
     const base = { flow: 0, power: 0, endurance: 0, tech: 0, social: 0 };
@@ -708,11 +725,30 @@ export default function DiscoverPage() {
       <header className="cq-discover-quiz-header">
         <p className="cq-page-eyebrow">Discover</p>
         <h2>Climb Style Quiz</h2>
-        <p>Answer a few quick questions to find your climbing profile and best next action.</p>
+        <p>
+          {isLite
+            ? "Tap fast options to get your profile."
+            : "Answer a few quick questions to find your climbing profile and best next action."}
+        </p>
       </header>
 
+      {isGuided && !isFinished && (
+        <section className="cq-discover-guided-card" aria-label="Quiz guidance">
+          <div className="cq-discover-quiz-meta">
+            <span>
+              Step {currentQuestionIndex + 1} / {quizQuestions.length}
+            </span>
+            <span>{guidedStepPercent}%</span>
+          </div>
+          <p>Read less, tap one option each step, then get your route action card.</p>
+          <div className="cq-quest-progress-track" aria-hidden="true">
+            <div className="cq-quest-progress-fill" style={{ width: `${guidedStepPercent}%` }} />
+          </div>
+        </section>
+      )}
+
       {!isFinished && (
-        <article className="cq-discover-quiz-card">
+        <article className={`cq-discover-quiz-card ${isImpact ? "cq-discover-quiz-card-impact" : ""}`}>
           <div className="cq-discover-quiz-meta">
             <span>
               Question {currentQuestionIndex + 1} / {quizQuestions.length}
@@ -729,6 +765,7 @@ export default function DiscoverPage() {
           <div className="cq-discover-option-list">
             {currentQuestion.options.map((option, optionIndex) => {
               const isSelected = answerMap[currentQuestion.id] === optionIndex;
+              const icon = deriveOptionIcon(option.label);
 
               return (
                 <button
@@ -739,7 +776,10 @@ export default function DiscoverPage() {
                   }`}
                   onClick={() => handleSelectOption(optionIndex)}
                 >
-                  {option.label}
+                  <span className="cq-discover-option-icon" aria-hidden="true">
+                    {icon}
+                  </span>
+                  <span>{isLite ? option.label.split(" ").slice(0, 4).join(" ") : option.label}</span>
                 </button>
               );
             })}
@@ -767,7 +807,9 @@ export default function DiscoverPage() {
       )}
 
       {isFinished && (
-        <article className="cq-discover-result-card">
+        <article
+          className={`cq-discover-result-card ${isImpact ? "cq-discover-result-card-impact" : ""}`}
+        >
           <p className="cq-page-eyebrow">Your Result</p>
           <h3>
             {result.name} {result.emoji}
@@ -790,7 +832,7 @@ export default function DiscoverPage() {
           <section className="cq-discover-route-pick">
             <p className="cq-discover-route-label">Suggested route vibe</p>
             <p className="cq-discover-route-name">{result.routePick}</p>
-            <p className="cq-discover-route-reason">{result.reason}</p>
+            {!isLite && <p className="cq-discover-route-reason">{result.reason}</p>}
           </section>
 
           <section className="cq-discover-reco-list" aria-label="Recommended routes by profile">
@@ -835,7 +877,3 @@ export default function DiscoverPage() {
     </section>
   );
 }
-
-
-
-

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { EXPERIENCE_MODES, useExperienceMode } from "../context/ExperienceModeContext";
 import wallPhotoA from "../assets/photo/8a4c9063-e850-4c6f-9245-36835a1d0c3d.png";
 import wallPhotoB from "../assets/photo/c6ca442c-7547-46d8-8083-250e3c29a877.png";
 import wallPhotoC from "../assets/photo/c9d8dd37-6805-4547-973a-69ebcf0663ae.png";
@@ -590,6 +591,10 @@ function writeRouteInteractions(data) {
 }
 
 export default function RouteDetailPage() {
+  const { mode } = useExperienceMode();
+  const isLite = mode === EXPERIENCE_MODES.LITE;
+  const isGuided = mode === EXPERIENCE_MODES.GUIDED;
+  const isImpact = mode === EXPERIENCE_MODES.IMPACT;
   const location = useLocation();
   const routeFromState = location.state?.route;
 
@@ -626,6 +631,15 @@ export default function RouteDetailPage() {
     { id: 1, author: "Mia", text: "Great flow and very beginner-friendly beta." },
     { id: 2, author: "Leo", text: "Loved the finish move. Super satisfying route." }
   ]);
+  const [showAdvancedDetails, setShowAdvancedDetails] = useState(() => !(isLite || isGuided));
+
+  useEffect(() => {
+    if (isLite || isGuided) {
+      setShowAdvancedDetails(false);
+    } else {
+      setShowAdvancedDetails(true);
+    }
+  }, [isLite, isGuided]);
 
   const difficultyMeta = getDifficultyMeta(routeState.difficulty);
   const hasOriginalDIYData = useMemo(() => {
@@ -812,7 +826,7 @@ export default function RouteDetailPage() {
   }
 
   return (
-    <section className="cq-detail-page">
+    <section className={`cq-detail-page ${isImpact ? "cq-detail-page-impact" : ""}`}>
       <Link className="cq-secondary-btn cq-detail-back-btn" to="/community">
         Back to Community
       </Link>
@@ -847,33 +861,55 @@ export default function RouteDetailPage() {
         <p className="cq-route-description">{routeState.description}</p>
       </header>
 
-      <section className="cq-detail-card">
-        <h3>Creator</h3>
-        <p className="cq-detail-creator">
-          {routeState.creator.name} - {routeState.creator.club}
-        </p>
+      <section className="cq-detail-card cq-detail-summary-card">
+        <h3>Quick Summary</h3>
+        <div className="cq-detail-summary-pills">
+          <span className="cq-home-kpi-pill">{routeState.suitableFor}</span>
+          <span className="cq-home-kpi-pill">{routeState.source}</span>
+          <span className="cq-home-kpi-pill">{routeState.createdTimeLabel}</span>
+        </div>
+        {(isLite || isGuided) && (
+          <button
+            type="button"
+            className="cq-secondary-btn cq-detail-toggle-btn"
+            onClick={() => setShowAdvancedDetails((prev) => !prev)}
+          >
+            {showAdvancedDetails ? "Hide advanced details" : "Show advanced details"}
+          </button>
+        )}
       </section>
 
-      <section className="cq-detail-card">
-        <h3>DIY Route Data</h3>
-        <p className="cq-detail-creator">Suitable for: {routeState.suitableFor}</p>
-        <p className="cq-detail-creator">Source: {routeState.source}</p>
-        <p className="cq-detail-creator">Created: {routeState.createdTimeLabel}</p>
-        <p className="cq-detail-creator">
-          Hold selections: {displayedContourCount} contours + {displayedSmallPointCount} small points
-        </p>
-        {routeState.routePlan && shouldShowRoutePointMarkers && (
-          <p className="cq-detail-creator">
-            Route points: start + {routeState.routePlan.hands?.length || 0} hand points +{" "}
-            {routeState.routePlan.feet?.length || 0} foot points + finish
-          </p>
-        )}
-        {!shouldShowRoutePointMarkers && (
-          <p className="cq-detail-creator">
-            No saved route path points yet. Hold selections are shown without auto-connecting.
-          </p>
-        )}
-      </section>
+      {showAdvancedDetails && (
+        <>
+          <section className="cq-detail-card">
+            <h3>Creator</h3>
+            <p className="cq-detail-creator">
+              {routeState.creator.name} - {routeState.creator.club}
+            </p>
+          </section>
+
+          <section className="cq-detail-card">
+            <h3>DIY Route Data</h3>
+            <p className="cq-detail-creator">Suitable for: {routeState.suitableFor}</p>
+            <p className="cq-detail-creator">Source: {routeState.source}</p>
+            <p className="cq-detail-creator">Created: {routeState.createdTimeLabel}</p>
+            <p className="cq-detail-creator">
+              Hold selections: {displayedContourCount} contours + {displayedSmallPointCount} small points
+            </p>
+            {routeState.routePlan && shouldShowRoutePointMarkers && (
+              <p className="cq-detail-creator">
+                Route points: start + {routeState.routePlan.hands?.length || 0} hand points +{" "}
+                {routeState.routePlan.feet?.length || 0} foot points + finish
+              </p>
+            )}
+            {!shouldShowRoutePointMarkers && (
+              <p className="cq-detail-creator">
+                No saved route path points yet. Hold selections are shown without auto-connecting.
+              </p>
+            )}
+          </section>
+        </>
+      )}
 
       <section className="cq-detail-card">
         <h3>{shouldShowPathOnly ? "Route Path Preview" : "Hold Contour Preview"}</h3>
@@ -1059,34 +1095,36 @@ export default function RouteDetailPage() {
         )}
       </section>
 
-      <section className="cq-detail-card">
-        <h3>Beta comments</h3>
+      {showAdvancedDetails && (
+        <section className="cq-detail-card">
+          <h3>Beta comments</h3>
 
-        <div className="cq-detail-comment-box">
-          <textarea
-            rows={3}
-            placeholder="Share your route feedback..."
-            value={commentInput}
-            onChange={(event) => setCommentInput(event.target.value)}
-          />
-          <button
-            type="button"
-            className="cq-primary-btn cq-detail-comment-btn"
-            onClick={handleAddComment}
-          >
-            Post Beta
-          </button>
-        </div>
+          <div className="cq-detail-comment-box">
+            <textarea
+              rows={3}
+              placeholder="Share your route feedback..."
+              value={commentInput}
+              onChange={(event) => setCommentInput(event.target.value)}
+            />
+            <button
+              type="button"
+              className="cq-primary-btn cq-detail-comment-btn"
+              onClick={handleAddComment}
+            >
+              Post Beta
+            </button>
+          </div>
 
-        <div className="cq-detail-comments-list">
-          {comments.map((comment) => (
-            <article key={comment.id} className="cq-detail-comment-item">
-              <p className="cq-detail-comment-author">{comment.author}</p>
-              <p>{comment.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+          <div className="cq-detail-comments-list">
+            {comments.map((comment) => (
+              <article key={comment.id} className="cq-detail-comment-item">
+                <p className="cq-detail-comment-author">{comment.author}</p>
+                <p>{comment.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="cq-detail-actions" aria-label="Route actions">
         <button

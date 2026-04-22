@@ -3193,3 +3193,318 @@ a {
     min-height: 190px;
   }
 }
+
+/* Experience switcher */
+.cq-experience-switcher {
+  margin: 0 0 12px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.cq-mode-chip {
+  border: 1px solid #d8c7ae;
+  background: #fff8ec;
+  color: #6d5338;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.cq-mode-chip-active {
+  border-color: #c06a2e;
+  background: #f3d2ae;
+  color: #5e3819;
+}
+
+/* Home mode upgrades */
+.cq-home-focus-chips {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cq-home-focus-chip {
+  border-radius: 999px;
+  border: 1px solid #e3d3ba;
+  background: #fff7eb;
+  padding: 5px 10px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #6a5138;
+}
+
+.cq-home-guided-card {
+  background: #f4f8ff;
+  border: 1px solid #d3e2f5;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 10px 18px rgba(33, 58, 93, 0.1);
+}
+
+.cq-home-guided-card h3 {
+  margin: 7px 0 0;
+  font-size: 1rem;
+}
+
+.cq-home-guided-card p {
+  margin: 7px 0 0;
+  color: #4f6788;
+  font-size: 0.84rem;
+}
+
+.cq-home-guided-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #45658d;
+}
+
+.cq-home-quest-meta-row {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cq-home-kpi-pill {
+  border-radius: 999px;
+  border: 1px solid #d8c6ad;
+  background: #fff7ea;
+  color: #66513a;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 4px 8px;
+}
+
+.cq-home-kpi-pill-hot {
+  border-color: #ffc98f;
+  background: #fff1e0;
+  color: #8a4b1f;
+}
+
+.cq-home-progress-row {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.cq-home-impact-ring {
+  --ring-progress: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #214d83;
+  background:
+    radial-gradient(circle at center, #fff 62%, transparent 64%),
+    conic-gradient(#2f8a5c calc(var(--ring-progress) * 1%), #e6d8c5 0%);
+}
+
+.cq-home-coach-actions-lite {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.cq-home-quick-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.cq-home-quick-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #ebf4ff;
+  color: #2d578a;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.cq-home-quick-status {
+  margin-top: 9px;
+  display: inline-block;
+  border-radius: 999px;
+  border: 1px solid #ddccb2;
+  background: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+}
+
+.cq-home-quick-card-impact {
+  background: linear-gradient(165deg, #fff8ee, #f0f8ff);
+  border-color: #d3c4ad;
+}
+
+.cq-home-feed-cards {
+  margin-top: 8px;
+  display: grid;
+  gap: 8px;
+}
+
+.cq-home-feed-item-card {
+  border: 1px solid #e6d8c3;
+  border-radius: 12px;
+  padding: 10px;
+  background: #fff9ef;
+}
+
+.cq-home-feed-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.cq-home-feed-item-head h4 {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.cq-home-feed-item-head span {
+  font-size: 0.74rem;
+  color: #5a6e8d;
+  font-weight: 700;
+}
+
+.cq-home-feed-item-card p {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: #5f5242;
+}
+
+/* Community mode upgrades */
+.cq-community-trend-panel {
+  display: grid;
+  gap: 9px;
+}
+
+.cq-community-trend-item {
+  border: 1px solid #d5e3f6;
+  border-radius: 12px;
+  background: #f7fbff;
+  padding: 10px;
+}
+
+.cq-community-trend-item p {
+  margin: 0;
+  font-size: 0.76rem;
+  color: #516b90;
+}
+
+.cq-community-trend-item strong {
+  display: inline-block;
+  margin-top: 7px;
+  font-size: 0.85rem;
+  color: #224c83;
+}
+
+.cq-community-trend-track {
+  margin-top: 7px;
+  width: 100%;
+  height: 7px;
+  background: #dfe9f8;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.cq-community-trend-track span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #287de4, #2e9f74);
+}
+
+.cq-community-expand-btn {
+  margin-top: 8px;
+  border: 1px solid #d6c6ae;
+  border-radius: 999px;
+  background: #fff8ec;
+  color: #6c5337;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 10px;
+}
+
+.cq-community-card-impact {
+  background: linear-gradient(170deg, #fffdf7, #f4f9ff);
+  animation: cq-fade-up 360ms ease both;
+}
+
+/* Discover mode upgrades */
+.cq-discover-guided-card {
+  background: #f4f8ff;
+  border: 1px solid #cfe0f5;
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.cq-discover-guided-card p {
+  margin: 8px 0 0;
+  font-size: 0.83rem;
+  color: #4e6587;
+}
+
+.cq-discover-quiz-card-impact {
+  border-color: #d6e5f7;
+  background: linear-gradient(175deg, #fffdf8, #f2f8ff);
+}
+
+.cq-discover-result-card-impact {
+  border-color: #d9e8fa;
+  background: linear-gradient(170deg, #fffcf5, #f1f8ff);
+}
+
+.cq-discover-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cq-discover-option-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #ebf4ff;
+  font-size: 0.84rem;
+}
+
+/* Route detail mode upgrades */
+.cq-detail-summary-card {
+  border-color: #d5e3f3;
+  background: #f5f9ff;
+}
+
+.cq-detail-summary-pills {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cq-detail-toggle-btn {
+  margin-top: 12px;
+}
+
+.cq-detail-page-impact .cq-detail-header,
+.cq-detail-page-impact .cq-detail-card {
+  border-color: #d7e3f2;
+  background: linear-gradient(175deg, #fffdf7, #f3f8ff);
+}
