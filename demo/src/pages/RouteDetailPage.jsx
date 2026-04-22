@@ -691,7 +691,7 @@ export default function RouteDetailPage() {
     [baseContours, routeState.smallHoldPoints]
   );
   const shouldShowRoutePointMarkers = useMemo(() => {
-    // Show markers whenever routePlan exists (except path-only mode).
+    // Show markers whenever routePlan exists.
     return Boolean(routeState.routePlan);
   }, [routeState.routePlan]);
   const shouldShowPathOnly = useMemo(() => {
@@ -968,7 +968,7 @@ export default function RouteDetailPage() {
               />
             )}
 
-            {shouldShowPathOnly && pathOnlyEndpoints.start && (
+            {shouldShowPathOnly && !shouldShowRoutePointMarkers && pathOnlyEndpoints.start && (
               <>
                 <circle
                   cx={pathOnlyEndpoints.start.x}
@@ -986,7 +986,7 @@ export default function RouteDetailPage() {
               </>
             )}
 
-            {shouldShowPathOnly && pathOnlyEndpoints.finish && (
+            {shouldShowPathOnly && !shouldShowRoutePointMarkers && pathOnlyEndpoints.finish && (
               <>
                 <circle
                   cx={pathOnlyEndpoints.finish.x}
@@ -1031,7 +1031,6 @@ export default function RouteDetailPage() {
               ))}
 
             {shouldShowRoutePointMarkers &&
-              !shouldShowPathOnly &&
               routePlanPoints.map((point) => (
               <g key={`route-plan-point-${point.label}`}>
                 <circle
@@ -1048,7 +1047,7 @@ export default function RouteDetailPage() {
           </svg>
         </div>
 
-        {routeState.routePlan && shouldShowRoutePointMarkers && !shouldShowPathOnly && (
+        {routeState.routePlan && shouldShowRoutePointMarkers && (
           <div className="cq-route-plan-legend" aria-label="Route point legend">
             <span>
               <i className="cq-route-plan-dot cq-route-plan-point-start" />

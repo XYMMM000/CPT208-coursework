@@ -520,12 +520,150 @@ function parseDifficultyLabel(difficultyLabel) {
   return "Easy";
 }
 
+function hashStringToInt(value) {
+  return String(value || "")
+    .split("")
+    .reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) % 100000, 7);
+}
+
+function clampPercent(value) {
+  return Math.max(2, Math.min(98, Number(value.toFixed(1))));
+}
+
+function shiftPoint(point, deltaX, deltaY) {
+  return {
+    x: clampPercent(point.x + deltaX),
+    y: clampPercent(point.y + deltaY)
+  };
+}
+
+function validateRoutePlan(plan, difficulty) {
+  if (!plan || !plan.start || !plan.finish) return false;
+
+  const minHands = difficulty === "Hard" ? 6 : difficulty === "Medium" ? 5 : 4;
+  const maxJump = difficulty === "Hard" ? 26 : difficulty === "Medium" ? 20 : 16;
+  const hands = Array.isArray(plan.hands) ? plan.hands : [];
+  const feet = Array.isArray(plan.feet) ? plan.feet : [];
+  if (hands.length < minHands || feet.length < 2) return false;
+  if (plan.start.y <= plan.finish.y + 8) return false;
+
+  const sequence = [plan.start, ...hands, plan.finish];
+  let upwardSegments = 0;
+  let maxSegmentJump = 0;
+  for (let index = 1; index < sequence.length; index += 1) {
+    const prev = sequence[index - 1];
+    const next = sequence[index];
+    if (next.y < prev.y) upwardSegments += 1;
+    const jump = Math.hypot(next.x - prev.x, next.y - prev.y);
+    maxSegmentJump = Math.max(maxSegmentJump, jump);
+  }
+
+  return upwardSegments >= sequence.length - 1 && maxSegmentJump <= maxJump;
+}
+
+function buildDifficultyRoutePlan(difficulty, wallPhotoIndex, seed) {
+  const templates = {
+    Easy: [
+      {
+        start: { x: 18, y: 86 },
+        finish: { x: 52, y: 33 },
+        hands: [{ x: 24, y: 78 }, { x: 31, y: 69 }, { x: 38, y: 59 }, { x: 45, y: 47 }],
+        feet: [{ x: 19, y: 89 }, { x: 28, y: 81 }]
+      },
+      {
+        start: { x: 78, y: 86 },
+        finish: { x: 46, y: 32 },
+        hands: [{ x: 71, y: 77 }, { x: 64, y: 67 }, { x: 57, y: 57 }, { x: 50, y: 45 }],
+        feet: [{ x: 79, y: 89 }, { x: 70, y: 80 }]
+      },
+      {
+        start: { x: 24, y: 84 },
+        finish: { x: 58, y: 30 },
+        hands: [{ x: 30, y: 75 }, { x: 38, y: 65 }, { x: 45, y: 54 }, { x: 53, y: 42 }],
+        feet: [{ x: 26, y: 87 }, { x: 34, y: 78 }]
+      }
+    ],
+    Medium: [
+      {
+        start: { x: 22, y: 87 },
+        finish: { x: 70, y: 24 },
+        hands: [{ x: 30, y: 78 }, { x: 27, y: 67 }, { x: 41, y: 59 }, { x: 38, y: 47 }, { x: 54, y: 36 }],
+        feet: [{ x: 23, y: 90 }, { x: 35, y: 81 }, { x: 44, y: 70 }]
+      },
+      {
+        start: { x: 74, y: 86 },
+        finish: { x: 34, y: 22 },
+        hands: [{ x: 66, y: 76 }, { x: 69, y: 65 }, { x: 56, y: 56 }, { x: 60, y: 44 }, { x: 46, y: 33 }],
+        feet: [{ x: 75, y: 89 }, { x: 64, y: 80 }, { x: 55, y: 69 }]
+      },
+      {
+        start: { x: 28, y: 86 },
+        finish: { x: 64, y: 23 },
+        hands: [{ x: 37, y: 77 }, { x: 33, y: 66 }, { x: 47, y: 57 }, { x: 43, y: 45 }, { x: 56, y: 34 }],
+        feet: [{ x: 30, y: 89 }, { x: 40, y: 80 }, { x: 49, y: 68 }]
+      }
+    ],
+    Hard: [
+      {
+        start: { x: 32, y: 88 },
+        finish: { x: 86, y: 15 },
+        hands: [{ x: 44, y: 79 }, { x: 57, y: 71 }, { x: 51, y: 59 }, { x: 66, y: 49 }, { x: 60, y: 37 }, { x: 76, y: 26 }],
+        feet: [{ x: 33, y: 91 }, { x: 47, y: 82 }, { x: 58, y: 70 }]
+      },
+      {
+        start: { x: 70, y: 88 },
+        finish: { x: 26, y: 14 },
+        hands: [{ x: 62, y: 79 }, { x: 68, y: 68 }, { x: 54, y: 58 }, { x: 59, y: 46 }, { x: 45, y: 34 }, { x: 35, y: 23 }],
+        feet: [{ x: 71, y: 91 }, { x: 60, y: 82 }, { x: 50, y: 70 }]
+      },
+      {
+        start: { x: 38, y: 87 },
+        finish: { x: 90, y: 16 },
+        hands: [{ x: 50, y: 77 }, { x: 63, y: 68 }, { x: 57, y: 56 }, { x: 72, y: 45 }, { x: 66, y: 33 }, { x: 82, y: 24 }],
+        feet: [{ x: 39, y: 90 }, { x: 53, y: 81 }, { x: 64, y: 69 }]
+      }
+    ]
+  };
+
+  const pool = templates[difficulty] || templates.Easy;
+  const fallbackIndex = Math.abs(seed) % pool.length;
+  const preferred = pool[wallPhotoIndex] || pool[fallbackIndex];
+  const shiftX = ((seed % 9) - 4) * 0.8;
+  const shiftY = ((seed % 5) - 2) * 0.5;
+
+  return {
+    wallPhotoIndex,
+    start: shiftPoint(preferred.start, shiftX, shiftY),
+    finish: shiftPoint(preferred.finish, shiftX, shiftY),
+    hands: preferred.hands.map((point) => shiftPoint(point, shiftX, shiftY)),
+    feet: preferred.feet.map((point) => shiftPoint(point, shiftX, shiftY))
+  };
+}
+
+function resolveRoutePlan(route) {
+  const difficulty = parseDifficultyLabel(route.difficulty);
+  const seed = hashStringToInt(`${route.name}-${route.style}-${route.difficulty}`);
+  const preset = routePlanPresets[route.name] || null;
+  const wallPhotoIndex =
+    typeof preset?.wallPhotoIndex === "number" ? preset.wallPhotoIndex : seed % 3;
+
+  if (preset && validateRoutePlan(preset, difficulty)) {
+    return {
+      ...preset,
+      wallPhotoIndex
+    };
+  }
+
+  return buildDifficultyRoutePlan(difficulty, wallPhotoIndex, seed);
+}
+
 function buildRouteDetailState(route, result) {
-  const plan = routePlanPresets[route.name] || null;
+  const plan = resolveRoutePlan(route);
+  const difficulty = parseDifficultyLabel(route.difficulty);
 
   return {
     title: route.name,
-    difficulty: parseDifficultyLabel(route.difficulty),
+    difficulty,
     tags: [route.style],
     description: route.reason,
     suitableFor: "Quiz Recommendation",
