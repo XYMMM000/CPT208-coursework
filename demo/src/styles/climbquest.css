@@ -1341,6 +1341,55 @@ a {
   line-height: 1.5;
 }
 
+.cq-create-step-progress {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.cq-create-step-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid #c7d8ed;
+  background: #edf4ff;
+  color: #4b668d;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.cq-create-step-dot-active {
+  border-color: #c06a2e;
+  background: #f4d4b2;
+  color: #613815;
+}
+
+.cq-create-guide-chips {
+  margin-top: 10px;
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.cq-create-guide-chip {
+  border-radius: 999px;
+  border: 1px solid #d8c7af;
+  background: #fff8eb;
+  color: #654f37;
+  padding: 4px 9px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.cq-create-banner-quickline {
+  margin-top: 9px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #2c578b;
+}
+
 .cq-create-meta-card {
   display: grid;
   gap: 12px;
@@ -1350,6 +1399,19 @@ a {
   margin: 0;
   font-size: 1rem;
   color: #233857;
+}
+
+.cq-create-meta-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.cq-create-meta-toggle {
+  margin-top: 0;
+  font-size: 0.76rem;
+  padding: 6px 10px;
 }
 
 .cq-route-check-panel {
@@ -1692,6 +1754,32 @@ a {
 
 .cq-create-preview {
   padding: 14px;
+}
+
+.cq-preview-guide-card {
+  border: 1px solid #d3e1f3;
+  border-radius: 12px;
+  background: #f5f9ff;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.cq-preview-guide-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #2f537f;
+}
+
+.cq-preview-missing-list {
+  margin: 8px 0 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 4px;
+  color: #7a4224;
+  font-size: 0.8rem;
 }
 
 .cq-create-preview h3 {
