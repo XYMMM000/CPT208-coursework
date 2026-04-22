@@ -18,8 +18,8 @@ const MAX_ZOOM_SCALE = 3;
 const ZOOM_STEP = 0.12;
 const MOBILE_DEFAULT_ZOOM_SCALE = 1;
 const DESKTOP_DEFAULT_ZOOM_SCALE = 1.65;
-const MOBILE_ZOOM_EDITOR_OPEN_SCALE = 1.8;
-const DESKTOP_ZOOM_EDITOR_OPEN_SCALE = 1.5;
+const MOBILE_ZOOM_EDITOR_OPEN_SCALE = 2.2;
+const DESKTOP_ZOOM_EDITOR_OPEN_SCALE = 1.9;
 const ROUTE_POINT_SNAP_DISTANCE = 12;
 const DOUBLE_TAP_MS = 260;
 const ZOOM_TAP_MOVE_THRESHOLD = 7;
@@ -415,6 +415,20 @@ export default function CreatePage() {
     return () => {
       document.body.style.overflow = originalOverflow;
     };
+  }, [isZoomEditorOpen]);
+
+  useEffect(() => {
+    if (!isZoomEditorOpen) return;
+
+    // Force zoom editor to always open with enlarged wall view.
+    // This runs after modal mount and overrides any stale queued zoom update.
+    const openScale = getZoomEditorOpenScale();
+    if (zoomRafRef.current) {
+      cancelAnimationFrame(zoomRafRef.current);
+      zoomRafRef.current = null;
+    }
+    queuedZoomScaleRef.current = openScale;
+    setZoomScale(openScale);
   }, [isZoomEditorOpen]);
 
   useEffect(() => {
@@ -926,12 +940,20 @@ export default function CreatePage() {
   function openZoomEditor() {
     // Open in an actually enlarged state so users can select holds immediately.
     const openScale = getZoomEditorOpenScale();
+    if (zoomRafRef.current) {
+      cancelAnimationFrame(zoomRafRef.current);
+      zoomRafRef.current = null;
+    }
     queuedZoomScaleRef.current = openScale;
     setZoomScale(openScale);
     setIsZoomEditorOpen(true);
   }
 
   function closeZoomEditor() {
+    if (zoomRafRef.current) {
+      cancelAnimationFrame(zoomRafRef.current);
+      zoomRafRef.current = null;
+    }
     setIsZoomEditorOpen(false);
   }
 
