@@ -20,8 +20,15 @@ export default function App() {
   const [globalScrollProgress, setGlobalScrollProgress] = useState(0);
 
   const isLandingRoute = location.pathname === "/";
+  const isCreateEditorRoute = location.pathname.startsWith("/create/editor/");
+  const disableGlobalAmbientFx = isLandingRoute || isCreateEditorRoute;
 
   useEffect(() => {
+    if (disableGlobalAmbientFx) {
+      setGlobalScrollProgress(0);
+      return undefined;
+    }
+
     function syncGlobalScrollProgress() {
       const root = document.documentElement;
       const maxScrollable = root.scrollHeight - window.innerHeight;
@@ -40,7 +47,7 @@ export default function App() {
       window.removeEventListener("scroll", syncGlobalScrollProgress);
       window.removeEventListener("resize", syncGlobalScrollProgress);
     };
-  }, [location.pathname]);
+  }, [location.pathname, disableGlobalAmbientFx]);
 
   function handleAmbientPointerMove(event) {
     setAmbientPointer({
@@ -64,10 +71,12 @@ export default function App() {
 
   return (
     <div
-      className={`cq-global-interaction-shell ${isLandingRoute ? "cq-global-interaction-shell-landing" : ""}`}
-      onMouseMove={handleAmbientPointerMove}
-      onMouseLeave={handleAmbientPointerLeave}
-      onTouchMove={handleAmbientTouchMove}
+      className={`cq-global-interaction-shell ${isLandingRoute ? "cq-global-interaction-shell-landing" : ""} ${
+        isCreateEditorRoute ? "cq-global-interaction-shell-editor" : ""
+      }`}
+      onMouseMove={disableGlobalAmbientFx ? undefined : handleAmbientPointerMove}
+      onMouseLeave={disableGlobalAmbientFx ? undefined : handleAmbientPointerLeave}
+      onTouchMove={disableGlobalAmbientFx ? undefined : handleAmbientTouchMove}
       style={{
         "--cq-global-pointer-x": `${ambientPointer.x}%`,
         "--cq-global-pointer-y": `${ambientPointer.y}%`,

@@ -87,6 +87,11 @@ body {
   display: none;
 }
 
+.cq-global-interaction-shell-editor::before,
+.cq-global-interaction-shell-editor::after {
+  display: none;
+}
+
 .cq-global-progress-rail {
   position: fixed;
   right: 10px;
@@ -113,6 +118,10 @@ body {
 }
 
 .cq-global-interaction-shell-landing .cq-global-progress-rail {
+  display: none;
+}
+
+.cq-global-interaction-shell-editor .cq-global-progress-rail {
   display: none;
 }
 
