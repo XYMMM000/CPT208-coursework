@@ -2655,6 +2655,56 @@ a {
   background: linear-gradient(145deg, #fff9ee, #fff4e2);
 }
 
+.cq-landing-qr-panel {
+  margin-top: 14px;
+  background: rgba(255, 250, 242, 0.92);
+  border: 1px solid var(--cq-border);
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(58, 44, 31, 0.11);
+  padding: 14px;
+}
+
+.cq-landing-qr-panel h3 {
+  margin: 6px 0 0;
+  font-size: 1.08rem;
+}
+
+.cq-landing-qr-grid {
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+.cq-landing-qr-card {
+  border: 1px solid #dfccb0;
+  border-radius: 14px;
+  background: #fffdf8;
+  padding: 12px;
+  text-align: center;
+}
+
+.cq-landing-qr-card h4 {
+  margin: 0;
+  font-size: 0.96rem;
+}
+
+.cq-landing-qr-image {
+  width: 180px;
+  height: 180px;
+  display: block;
+  margin: 10px auto;
+  border: 1px solid #d7c6ad;
+  border-radius: 12px;
+  background: #fff;
+  padding: 8px;
+}
+
+.cq-landing-qr-btn {
+  width: 100%;
+  justify-content: center;
+  text-decoration: none;
+}
+
 .cq-welcome-tracks {
   margin-top: 14px;
   border: 1px solid #ddccb0;
@@ -3073,6 +3123,10 @@ a {
   }
 
   .cq-landing-spotlight {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cq-landing-qr-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

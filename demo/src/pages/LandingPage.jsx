@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+const QR_TARGETS = {
+  portfolio: "https://xymmm000.github.io/CPT208-coursework/portfolio/pages/prototype.html",
+  webApp: "https://climbquest.app/"
+};
+
 const spotlightFeatures = [
   {
     id: "diy",
@@ -265,6 +270,36 @@ export default function LandingPage() {
                 </article>
               </Link>
             ))}
+          </section>
+
+          <section className="cq-landing-qr-panel" aria-label="QR quick access">
+            <p className="cq-page-eyebrow">Quick Access</p>
+            <h3>Scan To Jump To The Right Area</h3>
+            <div className="cq-landing-qr-grid">
+              <article className="cq-landing-qr-card">
+                <h4>Portfolio Prototype</h4>
+                <img
+                  className="cq-landing-qr-image"
+                  src="/qr/portfolio-prototype-qr.png"
+                  alt="QR code to portfolio prototype area"
+                />
+                <a className="cq-secondary-btn cq-landing-qr-btn" href={QR_TARGETS.portfolio}>
+                  Open Prototype Area
+                </a>
+              </article>
+
+              <article className="cq-landing-qr-card">
+                <h4>Web App Entry</h4>
+                <img
+                  className="cq-landing-qr-image"
+                  src="/qr/webapp-entry-qr.png"
+                  alt="QR code to web app entry"
+                />
+                <a className="cq-primary-btn cq-landing-qr-btn" href={QR_TARGETS.webApp}>
+                  Open Web App
+                </a>
+              </article>
+            </div>
           </section>
         </div>
       </div>
