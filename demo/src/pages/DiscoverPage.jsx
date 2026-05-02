@@ -1,6 +1,7 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { EXPERIENCE_MODES, useExperienceMode } from "../context/ExperienceModeContext";
 
 // Quiz questions for the Discover page.
 // Each option contributes points to one or more climbing profiles.
@@ -110,9 +111,9 @@ const profileResults = {
     secondaryLink: "/community",
     secondaryLabel: "Read Community Beta",
     routes: [
-      { name: "Blue Slab Rhythm", difficulty: "Easy | V0-V1", style: "Balance", reason: "Great for smooth body position and precise feet." },
-      { name: "Silent Corner Flow", difficulty: "Easy | V0-V1", style: "Technique", reason: "Helps you refine quiet movement and weight transfer." },
-      { name: "Glass Wall Glide", difficulty: "Medium | V2-V4", style: "Balance", reason: "Adds confidence on small footholds with controlled pacing." }
+      { name: "Blue Slab Rhythm", difficulty: "Easy | V0-V1", style: "Balance", reason: "Smooth ladder flow with short reaches for stable movement." },
+      { name: "Glass Wall Glide", difficulty: "Medium | V2-V4", style: "Balance", reason: "Zig-zag sequence with varied body positions and tempo." },
+      { name: "Flow Precision Circuit", difficulty: "Hard | V5+", style: "Technique", reason: "Longer precision chain with sharper body control demands." }
     ]
   },
   power: {
@@ -137,9 +138,9 @@ const profileResults = {
     secondaryLink: "/community",
     secondaryLabel: "See Hard Route Ratings",
     routes: [
-      { name: "Crimson Power Burst", difficulty: "Hard | V5+", style: "Power", reason: "Explosive pulls and short, high-intensity sequences." },
-      { name: "Volume Dyno Punch", difficulty: "Medium | V2-V4", style: "Power", reason: "Builds confidence in dynamic movement and lock-offs." },
-      { name: "Overhang Strike Line", difficulty: "Hard | V5+", style: "Strength", reason: "Perfect for body tension and powerful finishing moves." }
+      { name: "Power Warmup Punch", difficulty: "Easy | V0-V1", style: "Power", reason: "Accessible power line with clear rhythm and safe movement." },
+      { name: "Volume Dyno Punch", difficulty: "Medium | V2-V4", style: "Power", reason: "Dynamic sequence with controlled lock-off transitions." },
+      { name: "Crimson Power Burst", difficulty: "Hard | V5+", style: "Strength", reason: "Explosive chain with larger moves and high tension finish." }
     ]
   },
   endurance: {
@@ -164,9 +165,9 @@ const profileResults = {
     secondaryLink: "/create",
     secondaryLabel: "Design a Long Route",
     routes: [
-      { name: "Long Traverse Engine", difficulty: "Medium | V2-V4", style: "Endurance", reason: "Sustained movement with limited resting positions." },
-      { name: "Circuit River", difficulty: "Medium | V2-V4", style: "Endurance", reason: "Great for pacing and maintaining form under fatigue." },
-      { name: "Wall Marathon Lite", difficulty: "Easy | V0-V1", style: "Flow", reason: "Builds session volume while preserving technique quality." }
+      { name: "Wall Marathon Lite", difficulty: "Easy | V0-V1", style: "Flow", reason: "Steady low-risk sequence to build movement volume." },
+      { name: "Long Traverse Engine", difficulty: "Medium | V2-V4", style: "Endurance", reason: "Sustained route with few full rest opportunities." },
+      { name: "Endurance Pressure Loop", difficulty: "Hard | V5+", style: "Endurance", reason: "Long high-load chain requiring efficient pacing and recovery." }
     ]
   },
   tech: {
@@ -191,9 +192,9 @@ const profileResults = {
     secondaryLink: "/community",
     secondaryLabel: "Explore Technical Beta",
     routes: [
-      { name: "Volume Logic Maze", difficulty: "Medium | V2-V4", style: "Technique", reason: "Designed for body positioning and subtle foot decisions." },
-      { name: "Heel Hook Study", difficulty: "Hard | V5+", style: "Technique", reason: "Focuses on sequencing with advanced foot and hip control." },
-      { name: "Micro Beta Lab", difficulty: "Medium | V2-V4", style: "Technique", reason: "Encourages route reading and efficient move planning." }
+      { name: "Micro Beta Lab", difficulty: "Easy | V0-V1", style: "Technique", reason: "Readable puzzle line for beginner route-reading practice." },
+      { name: "Volume Logic Maze", difficulty: "Medium | V2-V4", style: "Technique", reason: "Multi-angle sequence with deliberate positional choices." },
+      { name: "Heel Hook Study", difficulty: "Hard | V5+", style: "Technique", reason: "Advanced sequencing with tighter precision windows." }
     ]
   },
   social: {
@@ -218,9 +219,9 @@ const profileResults = {
     secondaryLink: "/create",
     secondaryLabel: "Publish a New Route",
     routes: [
-      { name: "Partner Session Circuit", difficulty: "Easy | V0-V1", style: "Fun", reason: "Great for climbing in pairs and exchanging beta quickly." },
-      { name: "Crowd Favorite Ladder", difficulty: "Medium | V2-V4", style: "Social", reason: "Popular line with lots of community feedback and variations." },
-      { name: "Group Warmup Relay", difficulty: "Easy | V0-V1", style: "Flow", reason: "Perfect for team sessions and confidence building." }
+      { name: "Group Warmup Relay", difficulty: "Easy | V0-V1", style: "Flow", reason: "Team-friendly intro line with safe and clear movement." },
+      { name: "Crowd Favorite Ladder", difficulty: "Medium | V2-V4", style: "Social", reason: "Collaborative beta route with mixed move styles." },
+      { name: "Partner Session Circuit", difficulty: "Hard | V5+", style: "Fun", reason: "Team project line with bigger commitment moves." }
     ]
   }
 };
@@ -519,12 +520,148 @@ function parseDifficultyLabel(difficultyLabel) {
   return "Easy";
 }
 
+function hashStringToInt(value) {
+  return String(value || "")
+    .split("")
+    .reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) % 100000, 7);
+}
+
+function clampPercent(value) {
+  return Math.max(2, Math.min(98, Number(value.toFixed(1))));
+}
+
+function shiftPoint(point, deltaX, deltaY) {
+  return {
+    x: clampPercent(point.x + deltaX),
+    y: clampPercent(point.y + deltaY)
+  };
+}
+
+function validateRoutePlan(plan, difficulty) {
+  if (!plan || !plan.start || !plan.finish) return false;
+
+  const minHands = difficulty === "Hard" ? 6 : difficulty === "Medium" ? 5 : 4;
+  const maxJump = difficulty === "Hard" ? 26 : difficulty === "Medium" ? 20 : 16;
+  const hands = Array.isArray(plan.hands) ? plan.hands : [];
+  const feet = Array.isArray(plan.feet) ? plan.feet : [];
+  if (hands.length < minHands || feet.length < 2) return false;
+  if (plan.start.y <= plan.finish.y + 8) return false;
+
+  const sequence = [plan.start, ...hands, plan.finish];
+  let upwardSegments = 0;
+  let maxSegmentJump = 0;
+  for (let index = 1; index < sequence.length; index += 1) {
+    const prev = sequence[index - 1];
+    const next = sequence[index];
+    if (next.y < prev.y) upwardSegments += 1;
+    const jump = Math.hypot(next.x - prev.x, next.y - prev.y);
+    maxSegmentJump = Math.max(maxSegmentJump, jump);
+  }
+
+  return upwardSegments >= sequence.length - 1 && maxSegmentJump <= maxJump;
+}
+
+function buildDifficultyRoutePlan(difficulty, wallPhotoIndex, seed) {
+  const templates = {
+    Easy: [
+      {
+        start: { x: 18, y: 86 },
+        finish: { x: 52, y: 33 },
+        hands: [{ x: 24, y: 78 }, { x: 31, y: 69 }, { x: 38, y: 59 }, { x: 45, y: 47 }],
+        feet: [{ x: 19, y: 89 }, { x: 28, y: 81 }]
+      },
+      {
+        start: { x: 78, y: 86 },
+        finish: { x: 46, y: 32 },
+        hands: [{ x: 71, y: 77 }, { x: 64, y: 67 }, { x: 57, y: 57 }, { x: 50, y: 45 }],
+        feet: [{ x: 79, y: 89 }, { x: 70, y: 80 }]
+      },
+      {
+        start: { x: 24, y: 84 },
+        finish: { x: 58, y: 30 },
+        hands: [{ x: 30, y: 75 }, { x: 38, y: 65 }, { x: 45, y: 54 }, { x: 53, y: 42 }],
+        feet: [{ x: 26, y: 87 }, { x: 34, y: 78 }]
+      }
+    ],
+    Medium: [
+      {
+        start: { x: 22, y: 87 },
+        finish: { x: 70, y: 24 },
+        hands: [{ x: 30, y: 78 }, { x: 27, y: 67 }, { x: 41, y: 59 }, { x: 38, y: 47 }, { x: 54, y: 36 }],
+        feet: [{ x: 23, y: 90 }, { x: 35, y: 81 }, { x: 44, y: 70 }]
+      },
+      {
+        start: { x: 74, y: 86 },
+        finish: { x: 34, y: 22 },
+        hands: [{ x: 66, y: 76 }, { x: 69, y: 65 }, { x: 56, y: 56 }, { x: 60, y: 44 }, { x: 46, y: 33 }],
+        feet: [{ x: 75, y: 89 }, { x: 64, y: 80 }, { x: 55, y: 69 }]
+      },
+      {
+        start: { x: 28, y: 86 },
+        finish: { x: 64, y: 23 },
+        hands: [{ x: 37, y: 77 }, { x: 33, y: 66 }, { x: 47, y: 57 }, { x: 43, y: 45 }, { x: 56, y: 34 }],
+        feet: [{ x: 30, y: 89 }, { x: 40, y: 80 }, { x: 49, y: 68 }]
+      }
+    ],
+    Hard: [
+      {
+        start: { x: 32, y: 88 },
+        finish: { x: 86, y: 15 },
+        hands: [{ x: 44, y: 79 }, { x: 57, y: 71 }, { x: 51, y: 59 }, { x: 66, y: 49 }, { x: 60, y: 37 }, { x: 76, y: 26 }],
+        feet: [{ x: 33, y: 91 }, { x: 47, y: 82 }, { x: 58, y: 70 }]
+      },
+      {
+        start: { x: 70, y: 88 },
+        finish: { x: 26, y: 14 },
+        hands: [{ x: 62, y: 79 }, { x: 68, y: 68 }, { x: 54, y: 58 }, { x: 59, y: 46 }, { x: 45, y: 34 }, { x: 35, y: 23 }],
+        feet: [{ x: 71, y: 91 }, { x: 60, y: 82 }, { x: 50, y: 70 }]
+      },
+      {
+        start: { x: 38, y: 87 },
+        finish: { x: 90, y: 16 },
+        hands: [{ x: 50, y: 77 }, { x: 63, y: 68 }, { x: 57, y: 56 }, { x: 72, y: 45 }, { x: 66, y: 33 }, { x: 82, y: 24 }],
+        feet: [{ x: 39, y: 90 }, { x: 53, y: 81 }, { x: 64, y: 69 }]
+      }
+    ]
+  };
+
+  const pool = templates[difficulty] || templates.Easy;
+  const fallbackIndex = Math.abs(seed) % pool.length;
+  const preferred = pool[wallPhotoIndex] || pool[fallbackIndex];
+  const shiftX = ((seed % 9) - 4) * 0.8;
+  const shiftY = ((seed % 5) - 2) * 0.5;
+
+  return {
+    wallPhotoIndex,
+    start: shiftPoint(preferred.start, shiftX, shiftY),
+    finish: shiftPoint(preferred.finish, shiftX, shiftY),
+    hands: preferred.hands.map((point) => shiftPoint(point, shiftX, shiftY)),
+    feet: preferred.feet.map((point) => shiftPoint(point, shiftX, shiftY))
+  };
+}
+
+function resolveRoutePlan(route) {
+  const difficulty = parseDifficultyLabel(route.difficulty);
+  const seed = hashStringToInt(`${route.name}-${route.style}-${route.difficulty}`);
+  const difficultyWallMap = { Easy: 0, Medium: 1, Hard: 2 };
+  const preset = routePlanPresets[route.name] || null;
+  const wallPhotoIndex =
+    typeof difficultyWallMap[difficulty] === "number"
+      ? difficultyWallMap[difficulty]
+      : typeof preset?.wallPhotoIndex === "number"
+        ? preset.wallPhotoIndex
+        : seed % 3;
+
+  return buildDifficultyRoutePlan(difficulty, wallPhotoIndex, seed);
+}
+
 function buildRouteDetailState(route, result) {
-  const plan = routePlanPresets[route.name] || null;
+  const plan = resolveRoutePlan(route);
+  const difficulty = parseDifficultyLabel(route.difficulty);
 
   return {
     title: route.name,
-    difficulty: parseDifficultyLabel(route.difficulty),
+    difficulty,
     tags: [route.style],
     description: route.reason,
     suitableFor: "Quiz Recommendation",
@@ -564,8 +701,23 @@ function sanitizeAnswerMap(rawAnswerMap) {
   return next;
 }
 
+function deriveOptionIcon(label) {
+  const lower = label.toLowerCase();
+  if (lower.includes("slab") || lower.includes("calm") || lower.includes("smooth")) return "F";
+  if (lower.includes("power") || lower.includes("hard") || lower.includes("strength")) return "P";
+  if (lower.includes("endurance") || lower.includes("long") || lower.includes("steady"))
+    return "E";
+  if (lower.includes("friends") || lower.includes("community") || lower.includes("share"))
+    return "S";
+  return "T";
+}
+
 export default function DiscoverPage() {
   const { currentUser } = useAuth();
+  const { mode } = useExperienceMode();
+  const isLite = mode === EXPERIENCE_MODES.LITE;
+  const isGuided = mode === EXPERIENCE_MODES.GUIDED;
+  const isImpact = mode === EXPERIENCE_MODES.IMPACT;
   const navigate = useNavigate();
   const storageKey = `${DISCOVER_QUIZ_DRAFT_KEY}::${currentUser?.email || "guest"}`;
 
@@ -629,6 +781,7 @@ export default function DiscoverPage() {
   const currentQuestion = quizQuestions[currentQuestionIndex];
   const answeredCount = Object.keys(answerMap).length;
   const progressPercent = Math.round((answeredCount / quizQuestions.length) * 100);
+  const guidedStepPercent = Math.round(((currentQuestionIndex + 1) / quizQuestions.length) * 100);
 
   const scoreBoard = useMemo(() => {
     const base = { flow: 0, power: 0, endurance: 0, tech: 0, social: 0 };
@@ -708,11 +861,30 @@ export default function DiscoverPage() {
       <header className="cq-discover-quiz-header">
         <p className="cq-page-eyebrow">Discover</p>
         <h2>Climb Style Quiz</h2>
-        <p>Answer a few quick questions to find your climbing profile and best next action.</p>
+        <p>
+          {isLite
+            ? "Tap fast options to get your profile."
+            : "Answer a few quick questions to find your climbing profile and best next action."}
+        </p>
       </header>
 
+      {isGuided && !isFinished && (
+        <section className="cq-discover-guided-card" aria-label="Quiz guidance">
+          <div className="cq-discover-quiz-meta">
+            <span>
+              Step {currentQuestionIndex + 1} / {quizQuestions.length}
+            </span>
+            <span>{guidedStepPercent}%</span>
+          </div>
+          <p>Read less, tap one option each step, then get your route action card.</p>
+          <div className="cq-quest-progress-track" aria-hidden="true">
+            <div className="cq-quest-progress-fill" style={{ width: `${guidedStepPercent}%` }} />
+          </div>
+        </section>
+      )}
+
       {!isFinished && (
-        <article className="cq-discover-quiz-card">
+        <article className={`cq-discover-quiz-card ${isImpact ? "cq-discover-quiz-card-impact" : ""}`}>
           <div className="cq-discover-quiz-meta">
             <span>
               Question {currentQuestionIndex + 1} / {quizQuestions.length}
@@ -729,6 +901,7 @@ export default function DiscoverPage() {
           <div className="cq-discover-option-list">
             {currentQuestion.options.map((option, optionIndex) => {
               const isSelected = answerMap[currentQuestion.id] === optionIndex;
+              const icon = deriveOptionIcon(option.label);
 
               return (
                 <button
@@ -739,7 +912,10 @@ export default function DiscoverPage() {
                   }`}
                   onClick={() => handleSelectOption(optionIndex)}
                 >
-                  {option.label}
+                  <span className="cq-discover-option-icon" aria-hidden="true">
+                    {icon}
+                  </span>
+                  <span>{isLite ? option.label.split(" ").slice(0, 4).join(" ") : option.label}</span>
                 </button>
               );
             })}
@@ -767,7 +943,9 @@ export default function DiscoverPage() {
       )}
 
       {isFinished && (
-        <article className="cq-discover-result-card">
+        <article
+          className={`cq-discover-result-card ${isImpact ? "cq-discover-result-card-impact" : ""}`}
+        >
           <p className="cq-page-eyebrow">Your Result</p>
           <h3>
             {result.name} {result.emoji}
@@ -790,7 +968,7 @@ export default function DiscoverPage() {
           <section className="cq-discover-route-pick">
             <p className="cq-discover-route-label">Suggested route vibe</p>
             <p className="cq-discover-route-name">{result.routePick}</p>
-            <p className="cq-discover-route-reason">{result.reason}</p>
+            {!isLite && <p className="cq-discover-route-reason">{result.reason}</p>}
           </section>
 
           <section className="cq-discover-reco-list" aria-label="Recommended routes by profile">
@@ -835,7 +1013,3 @@ export default function DiscoverPage() {
     </section>
   );
 }
-
-
-
-

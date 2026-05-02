@@ -334,6 +334,7 @@ export default function CreatePage() {
   const [submitFeedback, setSubmitFeedback] = useState({ type: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cloudSyncStatus, setCloudSyncStatus] = useState("idle");
+  const [showAdvancedDetails, setShowAdvancedDetails] = useState(false);
   const [isTracing, setIsTracing] = useState(false);
   const [isZoomEditorOpen, setIsZoomEditorOpen] = useState(false);
   const [zoomScale, setZoomScale] = useState(getDefaultZoomScale());
@@ -359,6 +360,34 @@ export default function CreatePage() {
     formData.description.trim() ||
     "Add a short description to help climbers understand this route.";
   const previewLevel = useMemo(() => formData.suitableFor, [formData.suitableFor]);
+  const hasSelectedHolds = holdContours.length + smallHoldPoints.length > 0;
+  const hasStartPoint = Boolean(routePointsByType.start);
+  const hasFinishPoint = Boolean(routePointsByType.finish);
+  const hasRouteName = Boolean(formData.routeName.trim());
+  const hasDifficulty = Boolean(formData.difficulty);
+  const checklistItems = [
+    { key: "holds", done: hasSelectedHolds, label: "Select holds" },
+    { key: "start", done: hasStartPoint, label: "Set start" },
+    { key: "finish", done: hasFinishPoint, label: "Set finish" },
+    { key: "name", done: hasRouteName, label: "Route name" },
+    { key: "difficulty", done: hasDifficulty, label: "Difficulty" }
+  ];
+  const completionCount = checklistItems.filter((item) => item.done).length;
+  const completionPercent = Math.round((completionCount / checklistItems.length) * 100);
+  const currentBuildStep = !hasSelectedHolds ? 1 : !hasStartPoint || !hasFinishPoint ? 2 : 3;
+  const missingItems = checklistItems.filter((item) => !item.done).map((item) => item.label);
+  const nextAction =
+    !hasSelectedHolds
+      ? "Mark a few holds first."
+      : !hasStartPoint
+        ? "Pick the Start point."
+        : !hasFinishPoint
+          ? "Pick the Finish point."
+          : !hasRouteName
+            ? "Add a route name."
+            : !hasDifficulty
+              ? "Choose route difficulty."
+              : "Ready to submit.";
   const activeWallImageSrc = formData.imageDataUrl || WALL_GALLERY_PHOTOS[selectedWallPhotoIndex];
   const routePlan = useMemo(() => {
     const start = routePointsByType.start ? { x: routePointsByType.start.x, y: routePointsByType.start.y } : null;
@@ -1261,9 +1290,7 @@ export default function CreatePage() {
         </Link>
         <p className="cq-page-eyebrow">Create</p>
         <h2>Build your own climbing route</h2>
-        <p>
-          Tap holds on wall {selectedWallPhotoIndex + 1} to create contour-style selection masks.
-        </p>
+        <p>Wall {selectedWallPhotoIndex + 1} · Less text mode: choose wall, mark holds, set start/finish.</p>
       </header>
 
       {submitFeedback.type === "success" && (
@@ -1287,21 +1314,32 @@ export default function CreatePage() {
       <form className="cq-create-form" onSubmit={handleSubmit} noValidate>
         <section className="cq-diy-focus-banner" aria-label="DIY wall first workflow">
           <p className="cq-page-eyebrow">DIY Wall First</p>
-          <h3>1. Choose Wall  2. Draw/Mark Holds  3. Set Start + Finish</h3>
-          <p>
-            For big holds, draw contours. For tiny holds, place a small point marker.
-            Path points are auto-generated from both contour centers and small-hold points.
-            You only need to place start and finish.
-          </p>
+          <h3>1. Pick wall  2. Mark holds  3. Name + submit</h3>
+          <div className="cq-create-step-progress" aria-label="Create route progress">
+            {[1, 2, 3].map((step) => (
+              <span
+                key={`create-step-${step}`}
+                className={`cq-create-step-dot ${currentBuildStep >= step ? "cq-create-step-dot-active" : ""}`}
+              >
+                {step}
+              </span>
+            ))}
+          </div>
+          <div className="cq-create-guide-chips">
+            <span className="cq-create-guide-chip">🧱 Select wall</span>
+            <span className="cq-create-guide-chip">✍️ Trace / point</span>
+            <span className="cq-create-guide-chip">🏁 Set start + finish</span>
+          </div>
+          <p className="cq-create-banner-quickline">{nextAction}</p>
         </section>
 
         <label className="cq-field">
-          <span>Upload climbing wall image (optional)</span>
+          <span>Upload wall photo (optional)</span>
           <input type="file" accept="image/*" onChange={handleImageChange} />
         </label>
 
         <div className="cq-field">
-          <span>Or use built-in wall photos (recommended for community matching)</span>
+          <span>Or use built-in walls</span>
           <div className="cq-tag-grid" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
             {WALL_GALLERY_PHOTOS.map((photoSrc, index) => (
               <button
@@ -1319,9 +1357,7 @@ export default function CreatePage() {
         {activeWallImageSrc && (
           <section className="cq-wall-editor" aria-label="Wall hold contour annotation editor">
             <div className="cq-wall-editor-head">
-              <p>
-                DIY editor: trace big holds, mark small holds as points, then place start/finish.
-              </p>
+              <p>Edit mode: trace big holds, tap tiny holds, then set start/finish.</p>
               <div className="cq-tag-grid" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
                 <button
                   type="button"
@@ -1432,15 +1468,13 @@ export default function CreatePage() {
               <p className="cq-hold-count">Tracing hold contour...</p>
             )}
             {editorMode === "small-points" && (
-              <p className="cq-hold-count">
-                Small hold mode: tap tiny holds to add point markers.
-              </p>
+              <p className="cq-hold-count">Small mode: tap tiny holds.</p>
             )}
             {editorMode === "route-points" && (
               <p className="cq-hold-count">
                 Active point type:{" "}
                 <strong>{ROUTE_POINT_TYPES.find((type) => type.key === activeRoutePointType)?.label}</strong>.
-                Drag to move wall, tap hold to preview, tap again to confirm. Middle path points are auto-generated.
+                Drag to move wall, tap to preview, tap again to confirm.
               </p>
             )}
 
@@ -1476,7 +1510,7 @@ export default function CreatePage() {
 
             <div className="cq-point-list-wrap" aria-label="Created hold contour list">
               {holdContours.length === 0 ? (
-                <p className="cq-point-list-empty">No hold selected yet.</p>
+                <p className="cq-point-list-empty">No holds yet.</p>
               ) : (
                 <ul className="cq-point-list">
                   {holdContours.map((hold, index) => (
@@ -1490,7 +1524,7 @@ export default function CreatePage() {
 
             <div className="cq-point-list-wrap" aria-label="Small hold point list">
               {smallHoldPoints.length === 0 ? (
-                <p className="cq-point-list-empty">No small hold points yet.</p>
+                <p className="cq-point-list-empty">No small points yet.</p>
               ) : (
                 <ul className="cq-point-list">
                   {smallHoldPoints.map((point, index) => (
@@ -1504,7 +1538,7 @@ export default function CreatePage() {
 
             <div className="cq-point-list-wrap" aria-label="Selected route point list">
               {Object.keys(routePointsByType).length === 0 ? (
-                <p className="cq-point-list-empty">No route points assigned yet.</p>
+                <p className="cq-point-list-empty">No start/finish yet.</p>
               ) : (
                 <ul className="cq-point-list">
                   {ROUTE_POINT_TYPES.filter((type) => routePointsByType[type.key]).map((type) => (
@@ -1521,7 +1555,16 @@ export default function CreatePage() {
         )}
 
         <section className="cq-create-meta-card" aria-label="Route metadata form">
-          <h3>Route Details</h3>
+          <div className="cq-create-meta-head">
+            <h3>Route Details</h3>
+            <button
+              type="button"
+              className="cq-secondary-btn cq-create-meta-toggle"
+              onClick={() => setShowAdvancedDetails((prev) => !prev)}
+            >
+              {showAdvancedDetails ? "Hide advanced" : "Show advanced"}
+            </button>
+          </div>
 
           <label className="cq-field">
             <span>Route name *</span>
@@ -1548,55 +1591,57 @@ export default function CreatePage() {
             {errors.difficulty && <small className="cq-field-error">{errors.difficulty}</small>}
           </label>
 
-          <div className="cq-field">
-            <span>Style tags</span>
-            <div className="cq-tag-grid">
-              {styleTagOptions.map((tag) => {
-                const isActive = formData.styleTags.includes(tag);
-                return (
-                  <button
-                    key={tag}
-                    type="button"
-                    className={`cq-tag-btn ${isActive ? "cq-tag-btn-active" : ""}`}
-                    onClick={() => toggleStyleTag(tag)}
-                  >
-                    {tag}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          {showAdvancedDetails && (
+            <>
+              <div className="cq-field">
+                <span>Style tags</span>
+                <div className="cq-tag-grid">
+                  {styleTagOptions.map((tag) => {
+                    const isActive = formData.styleTags.includes(tag);
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        className={`cq-tag-btn ${isActive ? "cq-tag-btn-active" : ""}`}
+                        onClick={() => toggleStyleTag(tag)}
+                      >
+                        {tag}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
-          <label className="cq-field">
-            <span>Description</span>
-            <textarea
-              rows={4}
-              value={formData.description}
-              onChange={(event) => updateField("description", event.target.value)}
-              placeholder="Describe the moves, pacing, and feeling of this route."
-            />
-          </label>
+              <label className="cq-field">
+                <span>Description</span>
+                <textarea
+                  rows={4}
+                  value={formData.description}
+                  onChange={(event) => updateField("description", event.target.value)}
+                  placeholder="Describe the moves, pacing, and feeling of this route."
+                />
+              </label>
 
-          <label className="cq-field">
-            <span>Suitable for</span>
-            <select
-              value={formData.suitableFor}
-              onChange={(event) => updateField("suitableFor", event.target.value)}
-            >
-              {levelOptions.map((level) => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
-              ))}
-            </select>
-          </label>
+              <label className="cq-field">
+                <span>Suitable for</span>
+                <select
+                  value={formData.suitableFor}
+                  onChange={(event) => updateField("suitableFor", event.target.value)}
+                >
+                  {levelOptions.map((level) => (
+                    <option key={level} value={level}>
+                      {level}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </>
+          )}
         </section>
 
         <section className="cq-route-check-panel" aria-label="Route sanity check reminders">
           <h3>Route Sanity Check</h3>
-          <p className="cq-route-check-note">
-            Quick reminder only. You can still submit, but these checks help improve route quality.
-          </p>
+          <p className="cq-route-check-note">Quick quality hints before submit.</p>
 
           <div className="cq-route-check-metrics">
             {routeSanity.checks.map((item) => (
@@ -1666,6 +1711,25 @@ export default function CreatePage() {
 
       <article className="cq-create-preview">
         <p className="cq-page-eyebrow">Live Preview</p>
+        <section className="cq-preview-guide-card" aria-label="Build progress guide">
+          <div className="cq-preview-guide-head">
+            <strong>Completion</strong>
+            <span>{completionPercent}%</span>
+          </div>
+          <div className="cq-quest-progress-track" aria-hidden="true">
+            <div className="cq-quest-progress-fill" style={{ width: `${completionPercent}%` }} />
+          </div>
+          <p className="cq-route-check-note">Next: {nextAction}</p>
+          {missingItems.length > 0 ? (
+            <ul className="cq-preview-missing-list">
+              {missingItems.map((item) => (
+                <li key={`missing-${item}`}>{item}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="cq-route-check-ok">All essentials done. Ready to submit.</p>
+          )}
+        </section>
         <div className="cq-route-top-row">
           <h3>{previewTitle}</h3>
           <span

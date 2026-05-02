@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import MobileAppLayout from "./components/layout/MobileAppLayout";
 import CommunityPage from "./pages/CommunityPage";
@@ -13,71 +12,11 @@ import OnboardingPage from "./pages/OnboardingPage";
 import ProfilePage from "./pages/ProfilePage";
 import RouteDetailPage from "./pages/RouteDetailPage";
 import SignupPage from "./pages/SignupPage";
+import { ExperienceModeProvider } from "./context/ExperienceModeContext";
 
 export default function App() {
-  const location = useLocation();
-  const [ambientPointer, setAmbientPointer] = useState({ x: 50, y: 32 });
-  const [globalScrollProgress, setGlobalScrollProgress] = useState(0);
-
-  const isLandingRoute = location.pathname === "/";
-
-  useEffect(() => {
-    function syncGlobalScrollProgress() {
-      const root = document.documentElement;
-      const maxScrollable = root.scrollHeight - window.innerHeight;
-      if (maxScrollable <= 0) {
-        setGlobalScrollProgress(0);
-        return;
-      }
-      const progress = (window.scrollY / maxScrollable) * 100;
-      setGlobalScrollProgress(Math.max(0, Math.min(100, progress)));
-    }
-
-    syncGlobalScrollProgress();
-    window.addEventListener("scroll", syncGlobalScrollProgress, { passive: true });
-    window.addEventListener("resize", syncGlobalScrollProgress);
-    return () => {
-      window.removeEventListener("scroll", syncGlobalScrollProgress);
-      window.removeEventListener("resize", syncGlobalScrollProgress);
-    };
-  }, [location.pathname]);
-
-  function handleAmbientPointerMove(event) {
-    setAmbientPointer({
-      x: Number(((event.clientX / window.innerWidth) * 100).toFixed(2)),
-      y: Number(((event.clientY / window.innerHeight) * 100).toFixed(2))
-    });
-  }
-
-  function handleAmbientPointerLeave() {
-    setAmbientPointer({ x: 50, y: 32 });
-  }
-
-  function handleAmbientTouchMove(event) {
-    const touch = event.touches?.[0];
-    if (!touch) return;
-    setAmbientPointer({
-      x: Number(((touch.clientX / window.innerWidth) * 100).toFixed(2)),
-      y: Number(((touch.clientY / window.innerHeight) * 100).toFixed(2))
-    });
-  }
-
   return (
-    <div
-      className={`cq-global-interaction-shell ${isLandingRoute ? "cq-global-interaction-shell-landing" : ""}`}
-      onMouseMove={handleAmbientPointerMove}
-      onMouseLeave={handleAmbientPointerLeave}
-      onTouchMove={handleAmbientTouchMove}
-      style={{
-        "--cq-global-pointer-x": `${ambientPointer.x}%`,
-        "--cq-global-pointer-y": `${ambientPointer.y}%`,
-        "--cq-global-scroll-progress": `${globalScrollProgress}%`
-      }}
-    >
-      <div className="cq-global-progress-rail" aria-hidden="true">
-        <span className="cq-global-progress-fill" />
-      </div>
-
+    <ExperienceModeProvider>
       <Routes>
         {/* Public pages without bottom tab navigation */}
         <Route path="/" element={<LandingPage />} />
@@ -105,6 +44,6 @@ export default function App() {
         {/* Any unknown URL redirects back to landing */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </div>
+    </ExperienceModeProvider>
   );
 }

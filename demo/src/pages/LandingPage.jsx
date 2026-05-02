@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const spotlightFeatures = [
@@ -60,11 +60,7 @@ const secondaryFeatures = [
 ];
 
 export default function LandingPage() {
-  const scrollContainerRef = useRef(null);
-  const heroSectionRef = useRef(null);
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
-  const [pointerGlow, setPointerGlow] = useState({ x: 50, y: 36 });
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [flippedCardId, setFlippedCardId] = useState("");
   const [visibleSections, setVisibleSections] = useState({});
 
@@ -88,30 +84,6 @@ export default function LandingPage() {
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return undefined;
-
-    function syncScrollProgress() {
-      const maxScrollable = container.scrollHeight - container.clientHeight;
-      if (maxScrollable <= 0) {
-        setScrollProgress(0);
-        return;
-      }
-      const progress = (container.scrollTop / maxScrollable) * 100;
-      setScrollProgress(Math.max(0, Math.min(100, progress)));
-    }
-
-    syncScrollProgress();
-    container.addEventListener("scroll", syncScrollProgress, { passive: true });
-    window.addEventListener("resize", syncScrollProgress);
-
-    return () => {
-      container.removeEventListener("scroll", syncScrollProgress);
-      window.removeEventListener("resize", syncScrollProgress);
-    };
-  }, []);
-
   function handleParallaxMove(event) {
     const rect = event.currentTarget.getBoundingClientRect();
     const offsetX = (event.clientX - rect.left) / rect.width - 0.5;
@@ -121,66 +93,34 @@ export default function LandingPage() {
       x: Number((offsetX * 14).toFixed(2)),
       y: Number((offsetY * 14).toFixed(2))
     });
-
-    setPointerGlow({
-      x: Number((((event.clientX - rect.left) / rect.width) * 100).toFixed(2)),
-      y: Number((((event.clientY - rect.top) / rect.height) * 100).toFixed(2))
-    });
   }
 
   function handleParallaxLeave() {
     setParallax({ x: 0, y: 0 });
-    setPointerGlow({ x: 50, y: 36 });
   }
 
   function toggleCardFlip(cardId) {
     setFlippedCardId((prev) => (prev === cardId ? "" : cardId));
   }
 
-  function handleEnterExperience() {
-    const container = scrollContainerRef.current;
-    const target = heroSectionRef.current;
-    if (!container || !target) return;
-
-    const targetOffset = target.offsetTop - 12;
-    container.scrollTo({ top: targetOffset, behavior: "smooth" });
-  }
-
   return (
     <div
-      ref={scrollContainerRef}
       className="cq-landing-bg cq-landing-interactive cq-landing-scroll"
       onMouseMove={handleParallaxMove}
       onMouseLeave={handleParallaxLeave}
       style={{
         "--parallax-x": `${parallax.x}px`,
-        "--parallax-y": `${parallax.y}px`,
-        "--pointer-x": `${pointerGlow.x}%`,
-        "--pointer-y": `${pointerGlow.y}%`,
-        "--scroll-progress": `${scrollProgress}%`
+        "--parallax-y": `${parallax.y}px`
       }}
     >
-      <div className="cq-landing-progress-rail" aria-hidden="true">
-        <span className="cq-landing-progress-fill" />
-      </div>
-
       <div className="cq-landing-page cq-landing-page-scroll">
         <section className="cq-welcome-cover cq-scroll-stage">
-          <div className="cq-welcome-atmosphere" aria-hidden="true">
-            <span className="cq-welcome-node cq-welcome-node-a" />
-            <span className="cq-welcome-node cq-welcome-node-b" />
-            <span className="cq-welcome-node cq-welcome-node-c" />
-          </div>
           <div className="cq-welcome-cover-core">
-            <p className="cq-eyebrow cq-welcome-eyebrow">Human-Centered Climbing App</p>
-            <h1 className="cq-welcome-title">
-              <span className="cq-welcome-title-front">Climb</span>
-              <span className="cq-welcome-title-accent">Quest</span>
+            <p className="cq-eyebrow">Human-Centered Climbing App</p>
+            <h1>
+              Climb<span>Quest</span>
             </h1>
-            <p className="cq-welcome-tagline">Tap into route design and persona strategy.</p>
-            <button className="cq-primary-btn cq-enter-btn" type="button" onClick={handleEnterExperience}>
-              Enter Experience
-            </button>
+            <p>Tap into route design and persona strategy.</p>
           </div>
           <div className="cq-scroll-hint" aria-hidden="true">
             <span>Scroll to enter</span>
@@ -190,7 +130,6 @@ export default function LandingPage() {
 
         <div className="cq-landing-main-stack">
           <section
-            ref={heroSectionRef}
             className={`cq-hero-card cq-landing-hero-card cq-scroll-stage cq-scroll-reveal ${
               visibleSections.hero ? "is-visible" : ""
             }`}
