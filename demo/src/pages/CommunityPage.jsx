@@ -148,6 +148,32 @@ function mergeAndDedupeRoutes(...routeLists) {
   return Array.from(byKey.values());
 }
 
+function hashString(value) {
+  return String(value || "")
+    .split("")
+    .reduce((acc, char) => (acc * 33 + char.charCodeAt(0)) % 100000, 7);
+}
+
+function getAvatarTheme(creatorName, source) {
+  if (source === "AI") {
+    return { bgA: "#8b5cf6", bgB: "#4f46e5", ring: "#d8cbfb" };
+  }
+
+  const palettes = [
+    { bgA: "#22c55e", bgB: "#16a34a", ring: "#c7ecd7" },
+    { bgA: "#0ea5e9", bgB: "#2563eb", ring: "#c8dcfb" },
+    { bgA: "#f59e0b", bgB: "#d97706", ring: "#f1d9b0" },
+    { bgA: "#ec4899", bgB: "#db2777", ring: "#f4c8db" }
+  ];
+  return palettes[hashString(creatorName) % palettes.length];
+}
+
+function getInitialLetter(name) {
+  const clean = String(name || "").trim();
+  if (!clean) return "U";
+  return clean.charAt(0).toUpperCase();
+}
+
 export default function CommunityPage() {
   const { mode } = useExperienceMode();
   const isLite = mode === EXPERIENCE_MODES.LITE;
@@ -360,6 +386,7 @@ export default function CommunityPage() {
         <section className="cq-community-list" aria-label="Community route feed">
           {filteredRoutes.map((route) => {
             const difficultyMeta = getDifficultyMeta(route.difficulty);
+            const avatarTheme = getAvatarTheme(route.creatorName, route.source);
 
             return (
               <article
@@ -374,7 +401,20 @@ export default function CommunityPage() {
                 </div>
 
                 <div className="cq-community-meta">
-                  <span>By {route.creatorName}</span>
+                  <span className="cq-community-author">
+                    <span
+                      className="cq-community-avatar"
+                      style={{
+                        "--avatar-a": avatarTheme.bgA,
+                        "--avatar-b": avatarTheme.bgB,
+                        "--avatar-ring": avatarTheme.ring
+                      }}
+                      aria-hidden="true"
+                    >
+                      {getInitialLetter(route.creatorName)}
+                    </span>
+                    <span>By {route.creatorName}</span>
+                  </span>
                   <span className="cq-community-rating">
                     Community score: {formatRating(route.averageRating)}
                   </span>
