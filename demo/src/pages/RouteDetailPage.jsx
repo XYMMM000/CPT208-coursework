@@ -693,7 +693,9 @@ export default function RouteDetailPage() {
       await Promise.all(checks);
     }
 
-    ensureAiSeedComments();
+    ensureAiSeedComments().catch(() => {
+      // If Firestore rules block writes, UI fallback comments will still be shown.
+    });
 
     const commentsRef = collection(firestoreDb, "routeThreads", routeThreadId, "comments");
     const commentsQuery = query(commentsRef, orderBy("createdAt", "asc"));
@@ -916,6 +918,20 @@ export default function RouteDetailPage() {
   const topLevelComments = useMemo(() => {
     return comments.filter((comment) => !comment.parentId).reverse();
   }, [comments]);
+
+  const aiFallbackTopLevelComments = useMemo(() => {
+    return AI_SEED_COMMENTS.map((text, index) => ({
+      id: `ai-fallback-${index + 1}`,
+      author: "ClimbQuest AI",
+      text,
+      isAi: true,
+      parentId: null
+    }));
+  }, []);
+
+  const displayedTopLevelComments = useMemo(() => {
+    return topLevelComments.length > 0 ? topLevelComments : aiFallbackTopLevelComments;
+  }, [topLevelComments, aiFallbackTopLevelComments]);
 
   const repliesByParentId = useMemo(() => {
     return comments.reduce((acc, comment) => {
@@ -1216,7 +1232,12 @@ export default function RouteDetailPage() {
           </div>
 
           <div className="cq-detail-comments-list">
-            {topLevelComments.map((comment) => (
+            {topLevelComments.length === 0 && (
+              <p className="cq-detail-feedback">
+                Showing AI reference comments. User comments will appear here once posted.
+              </p>
+            )}
+            {displayedTopLevelComments.map((comment) => (
               <article key={comment.id} className="cq-detail-comment-item">
                 <p className="cq-detail-comment-author">
                   {comment.author}
