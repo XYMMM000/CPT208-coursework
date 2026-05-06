@@ -1236,6 +1236,18 @@ a {
   margin-bottom: 5px;
 }
 
+.cq-detail-ai-badge {
+  margin-left: 8px;
+  display: inline-block;
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #e9f3ff;
+  color: #235a97;
+  border: 1px solid #bfd8f6;
+}
+
 .cq-detail-reply-toggle-btn {
   margin-top: 8px;
 }

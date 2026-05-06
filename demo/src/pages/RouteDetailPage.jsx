@@ -3,9 +3,12 @@ import { Link, useLocation } from "react-router-dom";
 import {
   addDoc,
   collection,
+  doc,
+  getDoc,
   onSnapshot,
   orderBy,
   query,
+  setDoc,
   serverTimestamp
 } from "firebase/firestore";
 import { EXPERIENCE_MODES, useExperienceMode } from "../context/ExperienceModeContext";
@@ -40,6 +43,11 @@ const initialRoute = {
 };
 
 const WALL_GALLERY_PHOTOS = [wallPhotoA, wallPhotoB, wallPhotoC];
+const AI_SEED_COMMENTS = [
+  "Try keeping your hips close to the wall on the middle section to reduce pump.",
+  "For the last move, look for a quiet foot swap before reaching the top hold.",
+  "If this feels hard, downclimb once and retry with slower pacing on each hand move."
+];
 
 function buildRouteThreadId(title, creatorName) {
   const raw = `${title || "untitled"}::${creatorName || "unknown"}`.toLowerCase();
@@ -661,6 +669,32 @@ export default function RouteDetailPage() {
   }, [isLite, isGuided]);
 
   useEffect(() => {
+    async function ensureAiSeedComments() {
+      const checks = AI_SEED_COMMENTS.map(async (text, index) => {
+        const aiDocRef = doc(
+          firestoreDb,
+          "routeThreads",
+          routeThreadId,
+          "comments",
+          `ai-seed-${index + 1}`
+        );
+        const existing = await getDoc(aiDocRef);
+        if (!existing.exists()) {
+          await setDoc(aiDocRef, {
+            author: "ClimbQuest AI",
+            text,
+            parentId: null,
+            isAi: true,
+            createdAt: serverTimestamp()
+          });
+        }
+      });
+
+      await Promise.all(checks);
+    }
+
+    ensureAiSeedComments();
+
     const commentsRef = collection(firestoreDb, "routeThreads", routeThreadId, "comments");
     const commentsQuery = query(commentsRef, orderBy("createdAt", "asc"));
 
@@ -671,7 +705,8 @@ export default function RouteDetailPage() {
           id: docSnap.id,
           author: data.author || "Anonymous",
           text: data.text || "",
-          parentId: data.parentId || null
+          parentId: data.parentId || null,
+          isAi: Boolean(data.isAi)
         };
       });
       setComments(nextComments);
@@ -1183,7 +1218,10 @@ export default function RouteDetailPage() {
           <div className="cq-detail-comments-list">
             {topLevelComments.map((comment) => (
               <article key={comment.id} className="cq-detail-comment-item">
-                <p className="cq-detail-comment-author">{comment.author}</p>
+                <p className="cq-detail-comment-author">
+                  {comment.author}
+                  {comment.isAi && <span className="cq-detail-ai-badge">AI suggestion</span>}
+                </p>
                 <p>{comment.text}</p>
                 <button
                   type="button"
@@ -1220,7 +1258,10 @@ export default function RouteDetailPage() {
 
                 {(repliesByParentId[comment.id] || []).map((reply) => (
                   <div key={reply.id} className="cq-detail-reply-item">
-                    <p className="cq-detail-comment-author">{reply.author}</p>
+                    <p className="cq-detail-comment-author">
+                      {reply.author}
+                      {reply.isAi && <span className="cq-detail-ai-badge">AI suggestion</span>}
+                    </p>
                     <p>{reply.text}</p>
                   </div>
                 ))}
