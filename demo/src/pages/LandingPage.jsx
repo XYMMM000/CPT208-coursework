@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-const QR_TARGETS = {
-  portfolio: "https://xymmm000.github.io/CPT208-coursework/portfolio/pages/prototype.html",
-  webApp: "https://climbquest.app/"
-};
-
 const spotlightFeatures = [
   {
     id: "diy",
@@ -18,7 +13,6 @@ const spotlightFeatures = [
     progressLabel: "Workflow readiness",
     progress: 92,
     to: "/create",
-    coverImage: "/DIY%E9%A1%B5%E9%9D%A2.jpeg",
     cta: "Start DIY Route",
     backTitle: "Precision Route Design",
     backText: "Shape movement flow, lock in start and finish, and build a line that feels competition-ready.",
@@ -35,7 +29,6 @@ const spotlightFeatures = [
     progressLabel: "Personalization quality",
     progress: 88,
     to: "/discover",
-    coverImage: "/%E9%97%AE%E5%8D%B7%E5%8D%A1%E9%9D%A2.jpeg",
     cta: "Take Persona Quiz",
     backTitle: "Competition Mindset Scan",
     backText: "Reveal your pressure style, decision rhythm, and route profile for stronger challenge performance.",
@@ -228,10 +221,6 @@ export default function LandingPage() {
                     </div>
 
                     <div className="cq-flip-face cq-flip-face-back">
-                      <div className="cq-flip-back-media">
-                        <img src={feature.coverImage} alt={`${feature.title} back cover`} />
-                        <div className="cq-flip-back-overlay" />
-                      </div>
                       <div className="cq-flip-back-content">
                         <h3>{feature.backTitle}</h3>
                         <p>{feature.backText}</p>
@@ -272,35 +261,6 @@ export default function LandingPage() {
             ))}
           </section>
 
-          <section className="cq-landing-qr-panel" aria-label="QR quick access">
-            <p className="cq-page-eyebrow">Quick Access</p>
-            <h3>Scan To Jump To The Right Area</h3>
-            <div className="cq-landing-qr-grid">
-              <article className="cq-landing-qr-card">
-                <h4>Portfolio Prototype</h4>
-                <img
-                  className="cq-landing-qr-image"
-                  src="/qr/portfolio-prototype-qr.png"
-                  alt="QR code to portfolio prototype area"
-                />
-                <a className="cq-secondary-btn cq-landing-qr-btn" href={QR_TARGETS.portfolio}>
-                  Open Prototype Area
-                </a>
-              </article>
-
-              <article className="cq-landing-qr-card">
-                <h4>Web App Entry</h4>
-                <img
-                  className="cq-landing-qr-image"
-                  src="/qr/webapp-entry-qr.png"
-                  alt="QR code to web app entry"
-                />
-                <a className="cq-primary-btn cq-landing-qr-btn" href={QR_TARGETS.webApp}>
-                  Open Web App
-                </a>
-              </article>
-            </div>
-          </section>
         </div>
       </div>
     </div>
