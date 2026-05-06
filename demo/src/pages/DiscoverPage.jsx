@@ -690,6 +690,7 @@ function buildRouteDetailState(route, result) {
     description: route.reason,
     suitableFor: "Quiz Recommendation",
     holdContours: [],
+    visualOnlyPreview: isFixedMbtiRoute,
     imageDataUrl: route.imageDataUrl || "",
     wallPhotoIndex: plan?.wallPhotoIndex ?? 0,
     createdTimeLabel: "Recommended now",

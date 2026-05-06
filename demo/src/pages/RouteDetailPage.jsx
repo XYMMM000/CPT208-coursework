@@ -775,6 +775,7 @@ export default function RouteDetailPage() {
     // Discover/AI recommendations should emphasize route flow only.
     return source.includes("ai") || source.includes("discover");
   }, [routeState.source]);
+  const isVisualOnlyPreview = Boolean(routeState.visualOnlyPreview);
   const pathOnlyLinePoints = useMemo(() => {
     return routePlanLinePoints || contourPathPoints;
   }, [routePlanLinePoints, contourPathPoints]);
@@ -1029,9 +1030,11 @@ export default function RouteDetailPage() {
       )}
 
       <section className="cq-detail-card">
-        <h3>{shouldShowPathOnly ? "Route Path Preview" : "Hold Contour Preview"}</h3>
+        <h3>{isVisualOnlyPreview ? "Wall Preview" : shouldShowPathOnly ? "Route Path Preview" : "Hold Contour Preview"}</h3>
         <p className="cq-detail-creator">
-          {shouldShowPathOnly
+          {isVisualOnlyPreview
+            ? "Showing the selected wall image without generated overlays."
+            : shouldShowPathOnly
             ? "Showing the matched wall photo with route flow only."
             : "Showing the matched wall photo for this route with aligned hold contours."}
         </p>
@@ -1047,13 +1050,13 @@ export default function RouteDetailPage() {
             }
           />
 
-          {/* Render only the contours matched to this wall image. */}
-          <svg
-            className="cq-wall-svg-overlay"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
+          {!isVisualOnlyPreview && (
+            <svg
+              className="cq-wall-svg-overlay"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
             {pathOnlyLinePoints && shouldShowPathOnly && (
               <>
                 <polyline
@@ -1161,7 +1164,8 @@ export default function RouteDetailPage() {
                 </text>
               </g>
             ))}
-          </svg>
+            </svg>
+          )}
         </div>
 
         {routeState.routePlan && shouldShowRoutePointMarkers && (
