@@ -5,6 +5,352 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ideation | ClimbQuest</title>
   <link rel="stylesheet" href="../style.css" />
+  <style>
+    .ideation-page .section-heading {
+      margin-bottom: 32px;
+    }
+
+    .ideation-card {
+      margin-top: 24px;
+      padding: 30px;
+    }
+
+    .ideation-card h3 {
+      color: var(--navy);
+    }
+
+    .ideation-card p {
+      color: #475569;
+      line-height: 1.75;
+    }
+
+    .ideation-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .ideation-list li {
+      padding: 12px 14px;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 16px;
+      background: rgba(248, 250, 252, 0.92);
+      color: var(--navy);
+      font-weight: 600;
+    }
+
+    .sketch-gallery-title {
+      margin-top: 26px;
+      margin-bottom: 16px;
+      color: var(--navy);
+      font-size: 1.15rem;
+    }
+
+    .sketch-gallery {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 14px;
+    }
+
+    .sketch-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
+    }
+
+    .sketch-number {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: var(--orange);
+      color: #ffffff;
+      font-weight: 800;
+      box-shadow: 0 8px 16px rgba(244, 124, 47, 0.24);
+    }
+
+    .sketch-image-frame {
+      display: grid;
+      place-items: center;
+      min-height: 300px;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(244, 124, 47, 0.08);
+      border: 1px solid rgba(244, 124, 47, 0.12);
+    }
+
+    .sketch-image-frame img {
+      display: block;
+      width: 100%;
+      height: 285px;
+      object-fit: contain;
+    }
+
+    .sketch-card h4 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+
+    .sketch-card p {
+      margin: 0;
+      color: #5f6b80;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .sketch-gallery-caption {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(23, 35, 59, 0.05);
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .alternatives-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .concept-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 24px;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
+    }
+
+    .concept-card.selected {
+      border-color: rgba(111, 205, 181, 0.55);
+      box-shadow: 0 18px 42px rgba(23, 35, 59, 0.12);
+      background: linear-gradient(180deg, rgba(236, 253, 245, 0.88), rgba(255, 255, 255, 0.98));
+    }
+
+    .concept-topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .concept-label {
+      color: #c2410c;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .decision-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+      color: var(--navy);
+      background: rgba(23, 35, 59, 0.08);
+      border: 1px solid rgba(23, 35, 59, 0.1);
+    }
+
+    .decision-badge.selected {
+      color: #0f3f3a;
+      background: rgba(111, 205, 181, 0.2);
+      border-color: rgba(111, 205, 181, 0.45);
+    }
+
+    .final-direction-label {
+      display: inline-flex;
+      width: fit-content;
+      margin-top: 8px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(111, 205, 181, 0.16);
+      color: #0f3f3a;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .concept-card h4 {
+      color: var(--navy);
+      font-size: 1.35rem;
+      margin: 0;
+    }
+
+    .concept-field {
+      padding-top: 12px;
+      border-top: 1px solid rgba(23, 35, 59, 0.08);
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    .concept-field strong {
+      display: inline-flex;
+      width: fit-content;
+      margin-bottom: 7px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(244, 124, 47, 0.1);
+      border: 1px solid rgba(244, 124, 47, 0.16);
+      color: #9a3412;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .concept-card.selected .concept-field strong {
+      background: rgba(111, 205, 181, 0.18);
+      border-color: rgba(111, 205, 181, 0.36);
+      color: #0f3f3a;
+    }
+
+    .experience-loop {
+      margin: 20px 0;
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(244, 124, 47, 0.2);
+      background: rgba(244, 124, 47, 0.1);
+      color: var(--navy);
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .flow-card {
+      padding: 22px;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
+    }
+
+    .flow-card h4 {
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+
+    .prototype-overview {
+      margin-top: 22px;
+      margin-bottom: 24px;
+    }
+
+    .prototype-overview h4 {
+      color: var(--navy);
+      margin-bottom: 8px;
+      font-size: 1.15rem;
+    }
+
+    .prototype-image-card {
+      margin-top: 16px;
+      padding: 12px;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
+    }
+
+    .prototype-image-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 16px;
+      background: rgba(244, 124, 47, 0.06);
+      border: 1px solid rgba(244, 124, 47, 0.12);
+    }
+
+    .prototype-image-caption {
+      margin-top: 14px;
+      color: #5f6b80;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .prototype-focus {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 20px;
+      background: rgba(23, 35, 59, 0.05);
+      border: 1px solid rgba(23, 35, 59, 0.08);
+    }
+
+    .prototype-focus ul {
+      margin-top: 10px;
+    }
+
+    .figma-placeholder {
+      margin-top: 18px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    @media (max-width: 900px) {
+      .alternatives-grid,
+      .flow-grid,
+      .ideation-list {
+        grid-template-columns: 1fr;
+      }
+
+      .sketch-gallery {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .ideation-card,
+      .concept-card,
+      .flow-card {
+        padding: 20px;
+      }
+
+      .sketch-gallery {
+        grid-template-columns: 1fr;
+      }
+
+      .sketch-image-frame {
+        min-height: 360px;
+      }
+
+      .sketch-image-frame img {
+        height: 340px;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -30,85 +376,230 @@
     </div>
   </header>
 
-  <main class="section">
+  <main class="section ideation-page">
     <div class="container">
       <div class="section-heading">
         <p class="section-label">Ideation</p>
         <h2>Concept Development and Design Alternatives</h2>
       </div>
 
-      <div class="card">
+      <div class="card ideation-card">
         <h3>Crazy Eights</h3>
         <p>
-          In the early ideation stage, we generated multiple fast concepts for route
-          selection, motivation systems, social interaction, and coaching support.
-          These sketches helped us explore different levels of complexity, playfulness,
-          and feasibility before narrowing the concept direction.
+          In the early ideation stage, we used the Crazy Eights method to quickly explore multiple design directions for ClimbQuest.
+          Each sketch focused on one or more user needs identified from our research: reducing route-selection uncertainty, increasing
+          creative ownership, and supporting motivation through social interaction.
         </p>
+
+        <h4 class="sketch-gallery-title">Selected sketch directions</h4>
+        <div class="sketch-gallery">
+          <article class="sketch-card">
+            <span class="sketch-number">1</span>
+            <div class="sketch-image-frame">
+              <img src="../assets/Crazy%20Eights_01.png" alt="Crazy Eights sketch 1: Route-Matching Quiz" />
+            </div>
+            <h4>Sketch 1 &mdash; Route-Matching Quiz</h4>
+            <p>Entry screen for the MBTI-style route recommendation quiz.</p>
+          </article>
+
+          <article class="sketch-card">
+            <span class="sketch-number">2</span>
+            <div class="sketch-image-frame">
+              <img src="../assets/Crazy%20Eights_02.png" alt="Crazy Eights sketch 2: Quiz Result / Route Persona" />
+            </div>
+            <h4>Sketch 2 &mdash; Quiz Result / Route Persona</h4>
+            <p>Shows the user's climbing type and recommended route style.</p>
+          </article>
+
+          <article class="sketch-card">
+            <span class="sketch-number">3</span>
+            <div class="sketch-image-frame">
+              <img src="../assets/Crazy%20Eights_03.png" alt="Crazy Eights sketch 3: Recommended Route Screen" />
+            </div>
+            <h4>Sketch 3 &mdash; Recommended Route Screen</h4>
+            <p>Displays personalized route suggestions based on quiz results.</p>
+          </article>
+
+          <article class="sketch-card">
+            <span class="sketch-number">4</span>
+            <div class="sketch-image-frame">
+              <img src="../assets/Crazy%20Eights_04.png" alt="Crazy Eights sketch 4: Route Detail / Preview" />
+            </div>
+            <h4>Sketch 4 &mdash; Route Detail / Preview</h4>
+            <p>Route preview with difficulty, tags, and a "Try this route" action.</p>
+          </article>
+
+          <article class="sketch-card">
+            <span class="sketch-number">5</span>
+            <div class="sketch-image-frame">
+              <img src="../assets/Crazy%20Eights_05.png" alt="Crazy Eights sketch 5: DIY Route Creation Canvas" />
+            </div>
+            <h4>Sketch 5 &mdash; DIY Route Creation Canvas</h4>
+            <p>Users select holds on the wall image to create a custom route.</p>
+          </article>
+
+          <article class="sketch-card">
+            <span class="sketch-number">6</span>
+            <div class="sketch-image-frame">
+              <img src="../assets/Crazy%20Eights_06.png" alt="Crazy Eights sketch 6: DIY Route Metadata" />
+            </div>
+            <h4>Sketch 6 &mdash; DIY Route Metadata</h4>
+            <p>Users add route name, difficulty, style, and description.</p>
+          </article>
+
+          <article class="sketch-card">
+            <span class="sketch-number">7</span>
+            <div class="sketch-image-frame">
+              <img src="../assets/Crazy%20Eights_07.png" alt="Crazy Eights sketch 7: Community Feed" />
+            </div>
+            <h4>Sketch 7 &mdash; Community Feed</h4>
+            <p>A browse page for community-shared climbing routes.</p>
+          </article>
+
+          <article class="sketch-card">
+            <span class="sketch-number">8</span>
+            <div class="sketch-image-frame">
+              <img src="../assets/Crazy%20Eights_08.png" alt="Crazy Eights sketch 8: Route Interaction Page" />
+            </div>
+            <h4>Sketch 8 &mdash; Route Interaction Page</h4>
+            <p>Users can like, comment on, and try a shared route.</p>
+          </article>
+        </div>
+        <p class="sketch-gallery-caption">
+          These eight sketches show our Crazy Eights ideation process, exploring route recommendation, DIY route creation, and community interaction as possible interface directions.
+        </p>
+
       </div>
 
-      <div class="grid-3" style="margin-top: 24px;">
-        <div class="card">
-          <h3>Concept A</h3>
-          <p><strong>Name:</strong> ClimbBuddy</p>
-          <p>
-            A social matching tool focused on finding climbing partners and building
-            community in the gym.
-          </p>
-          <p><strong>Strength:</strong> Strong social value</p>
-          <p><strong>Limitation:</strong> Less support for route progression and skill growth</p>
-        </div>
+      <div class="card ideation-card">
+        <h3>Design Alternatives</h3>
+        <div class="alternatives-grid">
+          <article class="concept-card">
+            <div class="concept-topline">
+              <div>
+                <div class="concept-label">Concept A</div>
+                <h4>RoutePilot</h4>
+              </div>
+              <span class="decision-badge">Not selected</span>
+            </div>
+            <div class="concept-field"><strong>Core Idea</strong>A simple personalized route recommendation tool.</div>
+            <div class="concept-field"><strong>Description</strong>Users answer a short ability and preference quiz. The system recommends suitable climbing routes based on their answers.</div>
+            <div class="concept-field"><strong>Main User Need Addressed</strong>Helps users who feel unsure about which route to choose.</div>
+            <div class="concept-field"><strong>Strength</strong>Very simple and easy for beginners to understand. Low learning curve.</div>
+            <div class="concept-field"><strong>Limitation</strong>Too narrow. It only helps users choose routes but does not support route creation or social motivation.</div>
+            <div class="concept-field"><strong>Decision</strong>Not selected. Useful but too limited as a standalone solution.</div>
+          </article>
 
-        <div class="card">
-          <h3>Concept B</h3>
-          <p><strong>Name:</strong> RouteSpark</p>
-          <p>
-            A beginner-friendly system that helps new users choose routes and feel
-            more confident during early sessions.
-          </p>
-          <p><strong>Strength:</strong> Inclusive and beginner-focused</p>
-          <p><strong>Limitation:</strong> Less engaging for experienced climbers</p>
-        </div>
+          <article class="concept-card">
+            <div class="concept-topline">
+              <div>
+                <div class="concept-label">Concept B</div>
+                <h4>BuildMyRoute</h4>
+              </div>
+              <span class="decision-badge">Not selected</span>
+            </div>
+            <div class="concept-field"><strong>Core Idea</strong>A DIY route creation tool for designing custom climbing routes.</div>
+            <div class="concept-field"><strong>Description</strong>Users select holds on a wall image to create their own climbing route, then name it and assign difficulty or style tags.</div>
+            <div class="concept-field"><strong>Main User Need Addressed</strong>Supports users who want more autonomy, creativity, and involvement in route design.</div>
+            <div class="concept-field"><strong>Strength</strong>Gives users strong creative freedom and makes climbing feel more participatory.</div>
+            <div class="concept-field"><strong>Limitation</strong>Creative, but beginners may still not know where to start. It also lacks a discovery and feedback loop.</div>
+            <div class="concept-field"><strong>Decision</strong>Not selected. Strong creative value but does not fully solve route-selection uncertainty.</div>
+          </article>
 
-        <div class="card">
-          <h3>Concept C</h3>
-          <p><strong>Name:</strong> ClimbQuest</p>
-          <p>
-            A route challenge and growth system that combines guided climbing tasks,
-            progress tracking, and coaching feedback.
-          </p>
-          <p><strong>Strength:</strong> Balanced across motivation, learning, and engagement</p>
-          <p><strong>Limitation:</strong> Requires careful interface simplification</p>
+          <article class="concept-card selected">
+            <div class="concept-topline">
+              <div>
+                <div class="concept-label">Concept C</div>
+                <h4>ClimbQuest</h4>
+                <span class="final-direction-label">Final direction</span>
+              </div>
+              <span class="decision-badge selected">Selected</span>
+            </div>
+            <div class="concept-field"><strong>Core Idea</strong>An integrated route experience combining personalized recommendation, DIY route creation, and community sharing.</div>
+            <div class="concept-field"><strong>Description</strong>Users complete a playful MBTI-style quiz to receive route recommendations, create their own routes by selecting holds, and share or discover routes in the community.</div>
+            <div class="concept-field"><strong>Main User Need Addressed</strong>Responds to three recurring user needs: route-selection support, creative ownership, and sustained motivation through peer interaction.</div>
+            <div class="concept-field"><strong>Strength</strong>Most complete solution. It connects route discovery, route creation, and community engagement into one playful experience.</div>
+            <div class="concept-field"><strong>Limitation</strong>More complex to design and implement, so the prototype must focus on the clearest core flows first.</div>
+            <div class="concept-field"><strong>Decision</strong>Selected. Best fit for our user research and final product direction.</div>
+          </article>
         </div>
       </div>
 
-      <div class="card" style="margin-top: 24px;">
+      <div class="card ideation-card">
         <h3>Why We Chose ClimbQuest</h3>
+        <p>We selected Concept C: ClimbQuest because it best integrates the three main user needs identified in our research.</p>
         <p>
-          We selected ClimbQuest because it best integrates the human-centred needs
-          identified in our research. It supports beginners who need guidance,
-          allows coaches to offer structured feedback, and adds playful motivation
-          through progress-based interaction. Compared with the other alternatives,
-          it offers the strongest balance between feasibility, onsite usefulness,
-          and playful experience.
+          First, users often struggle with route selection. They may not know which route matches their skill level, confidence, preferred style,
+          or training goal. The Personalized Route Recommendation feature addresses this by using a playful MBTI-style questionnaire to guide users
+          toward suitable routes.
         </p>
+        <p>
+          Second, users want more autonomy and creative involvement. Instead of only completing routes designed by others, some users want to design
+          challenges themselves. The DIY Route Creation feature allows users to select holds on a wall image, create their own route, and define its
+          name, difficulty, style, and description.
+        </p>
+        <p>
+          Third, users need ongoing motivation and social feedback. Climbing can feel isolated when users do not know what others are trying or when
+          their progress ends after a single session. The Community Sharing & Interaction feature allows users to upload routes, browse routes created
+          by others, like, comment, and try community-shared routes.
+        </p>
+        <p>
+          Compared with the other two alternatives, ClimbQuest offers the strongest balance between feasibility, creativity, and human-centred value.
+          It does not only recommend routes; it creates a full route experience loop:
+        </p>
+        <div class="experience-loop">Discover a route -> Try a route -> Create a route -> Share a route -> Receive feedback -> Try again</div>
+        <p>This makes ClimbQuest more playful, participatory, and socially engaging than a single-function route tool.</p>
       </div>
 
-      <div class="card" style="margin-top: 24px;">
+      <div class="card ideation-card">
         <h3>Low-Fidelity Prototype</h3>
-        <p>
-          Our low-fidelity prototype focused on a mobile-first layout with three
-          main flows: selecting a route challenge, viewing progress rewards, and
-          checking coaching feedback. The early design prioritised clarity, minimal
-          text, and quick interactions that fit real climbing sessions.
-        </p>
-        <img
-          class="content-image"
-          src="../assets/low-fi-wireframe.png"
-          alt="ClimbQuest low-fidelity wireframe showing four mobile flow screens"
-          loading="lazy"
-        />
-        <p><strong>Figma Link:</strong> Add your Figma low-fi link here</p>
+        <p>Our low-fidelity prototype focused on a mobile-first experience with three core user flows.</p>
+
+        <div class="prototype-overview">
+          <h4>Low-Fidelity Prototype Overview</h4>
+          <p>This overview shows the early mobile wireframes used to structure ClimbQuest's core user flows before moving into high-fidelity design.</p>
+          <figure class="prototype-image-card">
+            <img src="../assets/Low-Fidelity%20Prototype.png" alt="Low-fidelity prototype overview for ClimbQuest mobile wireframes" />
+            <figcaption class="prototype-image-caption">
+              Low-fidelity prototype overview showing early wireframe structures for ClimbQuest's recommendation, creation, community, and profile-related flows.
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="flow-grid">
+          <article class="flow-card">
+            <h4>Flow 1: Personalized Route Recommendation</h4>
+            <p>
+              Users complete a playful MBTI-style quiz and receive route suggestions based on experience, preferences, confidence, and goals.
+              This reduces route-selection pressure before climbing.
+            </p>
+          </article>
+
+          <article class="flow-card">
+            <h4>Flow 2: DIY Route Creation</h4>
+            <p>
+              Users select holds on a wall image, preview the route, and add name, difficulty, style, and description. This supports creative ownership.
+            </p>
+          </article>
+
+          <article class="flow-card">
+            <h4>Flow 3: Community Sharing & Interaction</h4>
+            <p>
+              Users browse, like, comment on, upload, and try shared routes. This extends motivation beyond a single climbing session.
+            </p>
+          </article>
+        </div>
+
+        <div class="prototype-focus">
+          <strong>Prototype Focus:</strong>
+          <ul>
+            <li>clear navigation between the three main features</li>
+            <li>simple mobile interactions</li>
+            <li>minimal text</li>
+            <li>fast route discovery and creation</li>
+            <li>visible community feedback actions such as like, comment, and try</li>
+          </ul>
+        </div>
       </div>
     </div>
   </main>
