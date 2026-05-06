@@ -227,6 +227,29 @@ const profileResults = {
 };
 
 const DISCOVER_QUIZ_DRAFT_KEY = "climbquest_discover_quiz_draft";
+const MBTI_FIXED_ROUTES = [
+  {
+    name: "Route Photo A",
+    difficulty: "Medium | V2-V4",
+    style: "Mixed",
+    reason: "Wall line from your selected route pack.",
+    imageDataUrl: "/mbti-routes/mbti-route-1.png"
+  },
+  {
+    name: "Route Photo B",
+    difficulty: "Medium | V2-V4",
+    style: "Mixed",
+    reason: "Wall line from your selected route pack.",
+    imageDataUrl: "/mbti-routes/mbti-route-2.png"
+  },
+  {
+    name: "Route Photo C",
+    difficulty: "Medium | V2-V4",
+    style: "Mixed",
+    reason: "Wall line from your selected route pack.",
+    imageDataUrl: "/mbti-routes/mbti-route-3.png"
+  }
+];
 
 function getMascotVariant(result, seed) {
   const avatars = result.mascot.avatars || [];
@@ -666,6 +689,7 @@ function buildRouteDetailState(route, result) {
     description: route.reason,
     suitableFor: "Quiz Recommendation",
     holdContours: [],
+    imageDataUrl: route.imageDataUrl || "",
     wallPhotoIndex: plan?.wallPhotoIndex ?? 0,
     createdTimeLabel: "Recommended now",
     source: "AI",
@@ -710,6 +734,17 @@ function deriveOptionIcon(label) {
   if (lower.includes("friends") || lower.includes("community") || lower.includes("share"))
     return "S";
   return "T";
+}
+
+function shuffleWithSeed(list, seed) {
+  const result = [...list];
+  let state = hashStringToInt(String(seed || "seed"));
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    state = (state * 1664525 + 1013904223) % 4294967296;
+    const swapIndex = state % (index + 1);
+    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+  }
+  return result;
 }
 
 export default function DiscoverPage() {
@@ -802,6 +837,9 @@ export default function DiscoverPage() {
 
   const topProfileKey = useMemo(() => getTopProfileKey(scoreBoard), [scoreBoard]);
   const result = profileResults[topProfileKey];
+  const shuffledRecommendedRoutes = useMemo(() => {
+    return shuffleWithSeed(MBTI_FIXED_ROUTES, `${topProfileKey}-${mascotSeed}`);
+  }, [topProfileKey, mascotSeed]);
   const mascotVariant = useMemo(
     () => getMascotVariant(result, mascotSeed),
     [result, mascotSeed]
@@ -972,15 +1010,16 @@ export default function DiscoverPage() {
           </section>
 
           <section className="cq-discover-reco-list" aria-label="Recommended routes by profile">
-            {result.routes.map((route) => (
+            {shuffledRecommendedRoutes.map((route) => (
               <Link
-                key={`${result.name}-${route.name}`}
+                key={`${result.name}-${route.name}-${route.imageDataUrl}`}
                 className="cq-discover-reco-link cq-discover-reco-card"
                 to="/route-detail"
                 state={{
                   route: buildRouteDetailState(route, result)
                 }}
               >
+                <img className="cq-discover-reco-image" src={route.imageDataUrl} alt={route.name} />
                 <div className="cq-route-top-row">
                   <h4>{route.name}</h4>
                   <span className="cq-route-difficulty">{route.difficulty}</span>
@@ -996,7 +1035,7 @@ export default function DiscoverPage() {
             <button
               type="button"
               className="cq-primary-btn cq-discover-result-btn"
-              onClick={() => openRecommendedRoute(result.routes[0])}
+              onClick={() => openRecommendedRoute(shuffledRecommendedRoutes[0])}
             >
               {result.primaryLabel}
             </button>
