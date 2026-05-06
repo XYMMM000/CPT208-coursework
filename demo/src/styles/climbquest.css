@@ -1236,6 +1236,35 @@ a {
   margin-bottom: 5px;
 }
 
+.cq-detail-reply-toggle-btn {
+  margin-top: 8px;
+}
+
+.cq-detail-reply-box {
+  margin-top: 8px;
+  display: grid;
+  gap: 8px;
+}
+
+.cq-detail-reply-box textarea {
+  width: 100%;
+  border: 1px solid #cddcf0;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 8px 10px;
+  color: var(--cq-text);
+  font: inherit;
+  resize: vertical;
+}
+
+.cq-detail-reply-item {
+  margin-top: 8px;
+  border-left: 3px solid #d9e5f7;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
 .cq-detail-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;

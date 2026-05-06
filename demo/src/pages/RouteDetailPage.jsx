@@ -1,6 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp
+} from "firebase/firestore";
 import { EXPERIENCE_MODES, useExperienceMode } from "../context/ExperienceModeContext";
+import { useAuth } from "../context/AuthContext";
+import { firestoreDb } from "../lib/firebase";
 import wallPhotoA from "../assets/photo/8a4c9063-e850-4c6f-9245-36835a1d0c3d.png";
 import wallPhotoB from "../assets/photo/c6ca442c-7547-46d8-8083-250e3c29a877.png";
 import wallPhotoC from "../assets/photo/c9d8dd37-6805-4547-973a-69ebcf0663ae.png";
@@ -30,6 +40,11 @@ const initialRoute = {
 };
 
 const WALL_GALLERY_PHOTOS = [wallPhotoA, wallPhotoB, wallPhotoC];
+
+function buildRouteThreadId(title, creatorName) {
+  const raw = `${title || "untitled"}::${creatorName || "unknown"}`.toLowerCase();
+  return raw.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 120) || "route-thread";
+}
 
 // Hand-crafted contour templates aligned to visible holds in each wall photo.
 const WALL_GALLERY_CONTOUR_BASE_PRESETS = [
@@ -592,6 +607,7 @@ function writeRouteInteractions(data) {
 
 export default function RouteDetailPage() {
   const { mode } = useExperienceMode();
+  const { currentUser } = useAuth();
   const isLite = mode === EXPERIENCE_MODES.LITE;
   const isGuided = mode === EXPERIENCE_MODES.GUIDED;
   const isImpact = mode === EXPERIENCE_MODES.IMPACT;
@@ -612,6 +628,10 @@ export default function RouteDetailPage() {
     Number(resolvedInitialRoute.wallPhotoIndex)
   );
   const routeKey = `${resolvedInitialRoute.title}::${resolvedInitialRoute.creator.name}`;
+  const routeThreadId = buildRouteThreadId(
+    resolvedInitialRoute.title,
+    resolvedInitialRoute.creator.name
+  );
   const savedInteractions = readRouteInteractions()[routeKey];
 
   // Route state is kept in one object so interaction updates are easier to follow.
@@ -627,10 +647,9 @@ export default function RouteDetailPage() {
   });
   const [userRating, setUserRating] = useState(0);
   const [commentInput, setCommentInput] = useState("");
-  const [comments, setComments] = useState([
-    { id: 1, author: "Mia", text: "Great flow and very beginner-friendly beta." },
-    { id: 2, author: "Leo", text: "Loved the finish move. Super satisfying route." }
-  ]);
+  const [comments, setComments] = useState([]);
+  const [replyInputs, setReplyInputs] = useState({});
+  const [replyingToId, setReplyingToId] = useState(null);
   const [showAdvancedDetails, setShowAdvancedDetails] = useState(() => !(isLite || isGuided));
 
   useEffect(() => {
@@ -640,6 +659,26 @@ export default function RouteDetailPage() {
       setShowAdvancedDetails(true);
     }
   }, [isLite, isGuided]);
+
+  useEffect(() => {
+    const commentsRef = collection(firestoreDb, "routeThreads", routeThreadId, "comments");
+    const commentsQuery = query(commentsRef, orderBy("createdAt", "asc"));
+
+    const unsubscribe = onSnapshot(commentsQuery, (snapshot) => {
+      const nextComments = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          author: data.author || "Anonymous",
+          text: data.text || "",
+          parentId: data.parentId || null
+        };
+      });
+      setComments(nextComments);
+    });
+
+    return unsubscribe;
+  }, [routeThreadId]);
 
   const difficultyMeta = getDifficultyMeta(routeState.difficulty);
   const hasOriginalDIYData = useMemo(() => {
@@ -784,18 +823,32 @@ export default function RouteDetailPage() {
     });
   }
 
-  function handleAddComment() {
-    const cleaned = commentInput.trim();
+  async function submitComment(rawText, parentId = null) {
+    const cleaned = rawText.trim();
     if (!cleaned) return;
 
-    const newComment = {
-      id: Date.now(),
-      author: "You",
-      text: cleaned
-    };
+    const author =
+      currentUser?.displayName || currentUser?.email?.split("@")[0] || "Guest climber";
 
-    setComments((prev) => [newComment, ...prev]);
+    await addDoc(collection(firestoreDb, "routeThreads", routeThreadId, "comments"), {
+      text: cleaned,
+      author,
+      authorUid: currentUser?.uid || null,
+      parentId,
+      createdAt: serverTimestamp()
+    });
+  }
+
+  async function handleAddComment() {
+    await submitComment(commentInput, null);
     setCommentInput("");
+  }
+
+  async function handleAddReply(parentId) {
+    const rawReply = replyInputs[parentId] || "";
+    await submitComment(rawReply, parentId);
+    setReplyInputs((prev) => ({ ...prev, [parentId]: "" }));
+    setReplyingToId(null);
   }
 
   function toggleLike() {
@@ -824,6 +877,19 @@ export default function RouteDetailPage() {
       isCompleted: !prev.isCompleted
     }));
   }
+
+  const topLevelComments = useMemo(() => {
+    return comments.filter((comment) => !comment.parentId).reverse();
+  }, [comments]);
+
+  const repliesByParentId = useMemo(() => {
+    return comments.reduce((acc, comment) => {
+      if (!comment.parentId) return acc;
+      if (!acc[comment.parentId]) acc[comment.parentId] = [];
+      acc[comment.parentId].push(comment);
+      return acc;
+    }, {});
+  }, [comments]);
 
   return (
     <section className={`cq-detail-page ${isImpact ? "cq-detail-page-impact" : ""}`}>
@@ -1115,10 +1181,49 @@ export default function RouteDetailPage() {
           </div>
 
           <div className="cq-detail-comments-list">
-            {comments.map((comment) => (
+            {topLevelComments.map((comment) => (
               <article key={comment.id} className="cq-detail-comment-item">
                 <p className="cq-detail-comment-author">{comment.author}</p>
                 <p>{comment.text}</p>
+                <button
+                  type="button"
+                  className="cq-secondary-btn cq-detail-reply-toggle-btn"
+                  onClick={() =>
+                    setReplyingToId((prev) => (prev === comment.id ? null : comment.id))
+                  }
+                >
+                  Reply
+                </button>
+
+                {replyingToId === comment.id && (
+                  <div className="cq-detail-reply-box">
+                    <textarea
+                      rows={2}
+                      placeholder="Write a reply..."
+                      value={replyInputs[comment.id] || ""}
+                      onChange={(event) =>
+                        setReplyInputs((prev) => ({
+                          ...prev,
+                          [comment.id]: event.target.value
+                        }))
+                      }
+                    />
+                    <button
+                      type="button"
+                      className="cq-primary-btn cq-detail-comment-btn"
+                      onClick={() => handleAddReply(comment.id)}
+                    >
+                      Post Reply
+                    </button>
+                  </div>
+                )}
+
+                {(repliesByParentId[comment.id] || []).map((reply) => (
+                  <div key={reply.id} className="cq-detail-reply-item">
+                    <p className="cq-detail-comment-author">{reply.author}</p>
+                    <p>{reply.text}</p>
+                  </div>
+                ))}
               </article>
             ))}
           </div>
