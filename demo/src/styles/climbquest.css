@@ -3629,6 +3629,84 @@ a {
   animation: cq-fade-up 360ms ease both;
 }
 
+.cq-community-comments {
+  margin-top: 10px;
+  border-top: 1px dashed #d8e2ef;
+  padding-top: 10px;
+}
+
+.cq-community-comments-title {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #2f3f57;
+}
+
+.cq-community-comment-box {
+  display: grid;
+  gap: 8px;
+}
+
+.cq-community-comment-box textarea,
+.cq-community-reply-box textarea {
+  width: 100%;
+  border: 1px solid #cddcf0;
+  border-radius: 10px;
+  background: #f8fbff;
+  padding: 8px 10px;
+  color: var(--cq-text);
+  font: inherit;
+  resize: vertical;
+}
+
+.cq-community-comment-list {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.cq-community-comment-item {
+  border: 1px solid #dde7f5;
+  border-radius: 10px;
+  background: #f9fbff;
+  padding: 8px 10px;
+}
+
+.cq-community-comment-item p {
+  margin: 0;
+}
+
+.cq-community-comment-author {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #6b512f;
+  margin-bottom: 4px;
+}
+
+.cq-community-comment-reply-btn {
+  margin-top: 7px;
+  background: transparent;
+  border: 0;
+  color: #2e5f99;
+  font-weight: 700;
+  padding: 0;
+  cursor: pointer;
+}
+
+.cq-community-reply-box {
+  margin-top: 8px;
+  display: grid;
+  gap: 8px;
+}
+
+.cq-community-reply-item {
+  margin-top: 8px;
+  border-left: 3px solid #d9e5f7;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
 /* Discover mode upgrades */
 .cq-discover-guided-card {
   background: #f4f8ff;

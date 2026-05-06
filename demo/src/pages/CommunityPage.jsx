@@ -1,6 +1,19 @@
-import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc
+} from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { EXPERIENCE_MODES, useExperienceMode } from "../context/ExperienceModeContext";
 import { firestoreDb } from "../lib/firebase";
 
@@ -10,6 +23,16 @@ const FAST_FETCH_TIMEOUT_MS = 2600;
 const difficultyChips = ["All", "Easy", "Medium", "Hard"];
 const styleChips = ["All", "Balance", "Power", "Endurance", "Technique"];
 const sourceChips = ["All", "Community", "AI"];
+const AI_SEED_COMMENTS = [
+  "Try a quieter foot sequence through the middle holds for better balance.",
+  "Pause before the top move and reset hips to keep the finish controlled.",
+  "If you get pumped early, shorten each reach and keep rhythm steady."
+];
+
+function buildRouteThreadId(routeName, creatorName) {
+  const raw = `${routeName || "untitled"}::${creatorName || "unknown"}`.toLowerCase();
+  return raw.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 120) || "route-thread";
+}
 
 function getDifficultyMeta(difficulty) {
   if (difficulty === "Easy") return { grade: "V0-V1", toneClass: "cq-difficulty-easy" };
@@ -143,6 +166,7 @@ function mergeAndDedupeRoutes(...routeLists) {
 }
 
 export default function CommunityPage() {
+  const { currentUser } = useAuth();
   const { mode } = useExperienceMode();
   const isLite = mode === EXPERIENCE_MODES.LITE;
   const isGuided = mode === EXPERIENCE_MODES.GUIDED;
@@ -162,6 +186,10 @@ export default function CommunityPage() {
   const [styleFilter, setStyleFilter] = useState("All");
   const [sourceFilter, setSourceFilter] = useState("All");
   const [expandedCardMap, setExpandedCardMap] = useState({});
+  const [routeCommentsMap, setRouteCommentsMap] = useState({});
+  const [commentInputMap, setCommentInputMap] = useState({});
+  const [replyInputMap, setReplyInputMap] = useState({});
+  const [replyingToMap, setReplyingToMap] = useState({});
 
   useEffect(() => {
     let isActive = true;
@@ -216,6 +244,64 @@ export default function CommunityPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (communityRoutes.length === 0) return undefined;
+    const unsubs = [];
+
+    async function ensureAiSeedComments(routeThreadId) {
+      const checks = AI_SEED_COMMENTS.map(async (text, index) => {
+        const aiDocRef = doc(
+          firestoreDb,
+          "routeThreads",
+          routeThreadId,
+          "comments",
+          `ai-seed-${index + 1}`
+        );
+        const existing = await getDoc(aiDocRef);
+        if (!existing.exists()) {
+          await setDoc(aiDocRef, {
+            author: "ClimbQuest AI",
+            text,
+            parentId: null,
+            isAi: true,
+            createdAt: serverTimestamp()
+          });
+        }
+      });
+      await Promise.all(checks);
+    }
+
+    for (const route of communityRoutes) {
+      const routeThreadId = buildRouteThreadId(route.routeName, route.creatorName);
+      ensureAiSeedComments(routeThreadId).catch(() => {});
+
+      const commentsRef = collection(firestoreDb, "routeThreads", routeThreadId, "comments");
+      const commentsQuery = query(commentsRef, orderBy("createdAt", "asc"));
+      const unsub = onSnapshot(commentsQuery, (snapshot) => {
+        const nextComments = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return {
+            id: docSnap.id,
+            author: data.author || "Anonymous",
+            text: data.text || "",
+            parentId: data.parentId || null,
+            isAi: Boolean(data.isAi)
+          };
+        });
+
+        setRouteCommentsMap((prev) => ({
+          ...prev,
+          [route.id]: nextComments
+        }));
+      });
+      unsubs.push(unsub);
+    }
+
+    return () => {
+      unsubs.forEach((unsub) => unsub());
+    };
+  }, [communityRoutes]);
+
   // Search + filter logic works on the Firestore-loaded routes.
   const filteredRoutes = useMemo(() => {
     return communityRoutes.filter((route) => {
@@ -250,6 +336,36 @@ export default function CommunityPage() {
 
   function toggleExpanded(routeId) {
     setExpandedCardMap((prev) => ({ ...prev, [routeId]: !prev[routeId] }));
+  }
+
+  async function submitComment(route, rawText, parentId = null) {
+    const cleaned = rawText.trim();
+    if (!cleaned) return;
+    const author =
+      currentUser?.displayName || currentUser?.email?.split("@")[0] || "Guest climber";
+    const routeThreadId = buildRouteThreadId(route.routeName, route.creatorName);
+    await addDoc(collection(firestoreDb, "routeThreads", routeThreadId, "comments"), {
+      text: cleaned,
+      author,
+      authorUid: currentUser?.uid || null,
+      parentId,
+      isAi: false,
+      createdAt: serverTimestamp()
+    });
+  }
+
+  async function handlePostComment(route) {
+    const text = commentInputMap[route.id] || "";
+    await submitComment(route, text, null);
+    setCommentInputMap((prev) => ({ ...prev, [route.id]: "" }));
+  }
+
+  async function handlePostReply(route, parentId) {
+    const key = `${route.id}::${parentId}`;
+    const text = replyInputMap[key] || "";
+    await submitComment(route, text, parentId);
+    setReplyInputMap((prev) => ({ ...prev, [key]: "" }));
+    setReplyingToMap((prev) => ({ ...prev, [route.id]: null }));
   }
 
   return (
@@ -353,6 +469,24 @@ export default function CommunityPage() {
         <section className="cq-community-list" aria-label="Community route feed">
           {filteredRoutes.map((route) => {
             const difficultyMeta = getDifficultyMeta(route.difficulty);
+            const routeComments = routeCommentsMap[route.id] || [];
+            const topLevelComments = routeComments.filter((comment) => !comment.parentId).reverse();
+            const repliesByParentId = routeComments.reduce((acc, comment) => {
+              if (!comment.parentId) return acc;
+              if (!acc[comment.parentId]) acc[comment.parentId] = [];
+              acc[comment.parentId].push(comment);
+              return acc;
+            }, {});
+            const displayComments =
+              topLevelComments.length > 0
+                ? topLevelComments
+                : AI_SEED_COMMENTS.map((text, index) => ({
+                    id: `ai-fallback-${route.id}-${index + 1}`,
+                    author: "ClimbQuest AI",
+                    text,
+                    isAi: true,
+                    parentId: null
+                  }));
 
             return (
               <article
@@ -425,6 +559,93 @@ export default function CommunityPage() {
                     {expandedCardMap[route.id] ? "Hide details" : "Show details"}
                   </button>
                 )}
+
+                <section className="cq-community-comments">
+                  <p className="cq-community-comments-title">AI & Community comments</p>
+                  <div className="cq-community-comment-box">
+                    <textarea
+                      rows={2}
+                      placeholder="Comment on this wall..."
+                      value={commentInputMap[route.id] || ""}
+                      onChange={(event) =>
+                        setCommentInputMap((prev) => ({
+                          ...prev,
+                          [route.id]: event.target.value
+                        }))
+                      }
+                    />
+                    <button
+                      type="button"
+                      className="cq-secondary-btn"
+                      onClick={() => handlePostComment(route)}
+                    >
+                      Post
+                    </button>
+                  </div>
+
+                  <div className="cq-community-comment-list">
+                    {displayComments.map((comment) => {
+                      const replyKey = `${route.id}::${comment.id}`;
+                      const isReplying = replyingToMap[route.id] === comment.id;
+                      return (
+                        <article key={comment.id} className="cq-community-comment-item">
+                          <p className="cq-community-comment-author">
+                            {comment.author}
+                            {comment.isAi && <span className="cq-detail-ai-badge">AI suggestion</span>}
+                          </p>
+                          <p>{comment.text}</p>
+                          <button
+                            type="button"
+                            className="cq-community-comment-reply-btn"
+                            onClick={() =>
+                              setReplyingToMap((prev) => ({
+                                ...prev,
+                                [route.id]: prev[route.id] === comment.id ? null : comment.id
+                              }))
+                            }
+                          >
+                            Reply
+                          </button>
+
+                          {isReplying && (
+                            <div className="cq-community-reply-box">
+                              <textarea
+                                rows={2}
+                                placeholder="Write a reply..."
+                                value={replyInputMap[replyKey] || ""}
+                                onChange={(event) =>
+                                  setReplyInputMap((prev) => ({
+                                    ...prev,
+                                    [replyKey]: event.target.value
+                                  }))
+                                }
+                              />
+                              <button
+                                type="button"
+                                className="cq-secondary-btn"
+                                onClick={() => handlePostReply(route, comment.id)}
+                              >
+                                Post Reply
+                              </button>
+                            </div>
+                          )}
+
+                          {(repliesByParentId[comment.id] || []).map((reply) => (
+                            <div key={reply.id} className="cq-community-reply-item">
+                              <p className="cq-community-comment-author">
+                                {reply.author}
+                                {reply.isAi && (
+                                  <span className="cq-detail-ai-badge">AI suggestion</span>
+                                )}
+                              </p>
+                              <p>{reply.text}</p>
+                            </div>
+                          ))}
+                        </article>
+                      );
+                    })}
+                  </div>
+                </section>
 
                 <Link
                   className="cq-secondary-btn cq-community-detail-link"
