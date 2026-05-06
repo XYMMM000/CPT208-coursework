@@ -229,24 +229,24 @@ const profileResults = {
 const DISCOVER_QUIZ_DRAFT_KEY = "climbquest_discover_quiz_draft";
 const MBTI_FIXED_ROUTES = [
   {
-    name: "Route Photo A",
-    difficulty: "Medium | V2-V4",
-    style: "Mixed",
-    reason: "Wall line from your selected route pack.",
+    name: "蓝脊起步线",
+    difficulty: "Easy | V0-V1",
+    style: "Flow",
+    reason: "平稳入门路线，节奏清晰，适合热身和建立脚点信心。",
     imageDataUrl: "/mbti-routes/mbti-route-1.png"
   },
   {
-    name: "Route Photo B",
+    name: "灰面节奏线",
     difficulty: "Medium | V2-V4",
-    style: "Mixed",
-    reason: "Wall line from your selected route pack.",
+    style: "Technique",
+    reason: "变换角度更丰富，适合练习重心转换和连续控点。",
     imageDataUrl: "/mbti-routes/mbti-route-2.png"
   },
   {
-    name: "Route Photo C",
-    difficulty: "Medium | V2-V4",
-    style: "Mixed",
-    reason: "Wall line from your selected route pack.",
+    name: "橙域冲顶线",
+    difficulty: "Hard | V5+",
+    style: "Power",
+    reason: "冲顶动作更直接，强调爆发发力和高张力完成。",
     imageDataUrl: "/mbti-routes/mbti-route-3.png"
   }
 ];
@@ -1019,7 +1019,6 @@ export default function DiscoverPage() {
                   route: buildRouteDetailState(route, result)
                 }}
               >
-                <img className="cq-discover-reco-image" src={route.imageDataUrl} alt={route.name} />
                 <div className="cq-route-top-row">
                   <h4>{route.name}</h4>
                   <span className="cq-route-difficulty">{route.difficulty}</span>

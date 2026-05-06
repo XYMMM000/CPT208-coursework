@@ -881,29 +881,49 @@ a {
 }
 
 .cq-discover-reco-card {
-  border: 1px solid #e4d5be;
-  border-radius: 12px;
-  background: #fffaef;
-  padding: 10px;
+  border: 1px solid #ddcbb2;
+  border-radius: 18px;
+  background: #f7f2e8;
+  padding: 16px;
   transition: transform 160ms ease, box-shadow 160ms ease;
-}
-
-.cq-discover-reco-image {
-  width: 100%;
-  display: block;
-  border-radius: 10px;
-  border: 1px solid #dfd2bc;
-  margin-bottom: 8px;
 }
 
 .cq-discover-reco-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 18px rgba(58, 44, 31, 0.12);
+  box-shadow: 0 10px 20px rgba(67, 52, 32, 0.14);
 }
 
 .cq-discover-reco-card h4 {
   margin: 0;
-  font-size: 0.98rem;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.cq-discover-reco-card .cq-route-difficulty {
+  border: 1px solid #e0c9a8;
+  background: #f8f0e2;
+  color: #5b3718;
+}
+
+.cq-discover-reco-card .cq-route-style-tag {
+  margin-top: 12px;
+  border-style: dashed;
+  color: #6d3f17;
+  background: #f8f0df;
+}
+
+.cq-discover-reco-card .cq-route-description {
+  margin-top: 12px;
+  color: #495466;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.cq-discover-reco-card .cq-route-reason {
+  margin-top: 10px;
+  color: #1f4f83;
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 .cq-discover-result-actions {
