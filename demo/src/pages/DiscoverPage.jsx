@@ -229,24 +229,24 @@ const profileResults = {
 const DISCOVER_QUIZ_DRAFT_KEY = "climbquest_discover_quiz_draft";
 const MBTI_FIXED_ROUTES = [
   {
-    name: "蓝脊起步线",
+    name: "Blue Ridge Starter",
     difficulty: "Easy | V0-V1",
     style: "Flow",
-    reason: "平稳入门路线，节奏清晰，适合热身和建立脚点信心。",
+    reason: "A stable entry route with clear rhythm, ideal for warming up and building foot trust.",
     imageDataUrl: "/mbti-routes/mbti-route-1.png"
   },
   {
-    name: "灰面节奏线",
+    name: "Gray Face Rhythm",
     difficulty: "Medium | V2-V4",
     style: "Technique",
-    reason: "变换角度更丰富，适合练习重心转换和连续控点。",
+    reason: "Richer angle changes for practicing weight transfer and continuous movement control.",
     imageDataUrl: "/mbti-routes/mbti-route-2.png"
   },
   {
-    name: "橙域冲顶线",
+    name: "Orange Summit Drive",
     difficulty: "Hard | V5+",
     style: "Power",
-    reason: "冲顶动作更直接，强调爆发发力和高张力完成。",
+    reason: "A direct top-out sequence focused on explosive power and high-tension finishing.",
     imageDataUrl: "/mbti-routes/mbti-route-3.png"
   }
 ];
@@ -679,7 +679,8 @@ function resolveRoutePlan(route) {
 }
 
 function buildRouteDetailState(route, result) {
-  const plan = resolveRoutePlan(route);
+  const isFixedMbtiRoute = Boolean(route.imageDataUrl);
+  const plan = isFixedMbtiRoute ? null : resolveRoutePlan(route);
   const difficulty = parseDifficultyLabel(route.difficulty);
 
   return {
@@ -692,7 +693,7 @@ function buildRouteDetailState(route, result) {
     imageDataUrl: route.imageDataUrl || "",
     wallPhotoIndex: plan?.wallPhotoIndex ?? 0,
     createdTimeLabel: "Recommended now",
-    source: "AI",
+    source: isFixedMbtiRoute ? "Community" : "AI",
     creator: {
       name: result.mascot.name,
       club: "ClimbQuest Quiz Coach"
