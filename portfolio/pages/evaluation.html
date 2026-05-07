@@ -5,6 +5,329 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Evaluation | ClimbQuest</title>
   <link rel="stylesheet" href="../style.css" />
+  <style>
+    .evaluation-page .section-heading {
+      margin-bottom: 32px;
+    }
+
+    .eval-section {
+      margin-top: 28px;
+      padding: 32px;
+    }
+
+    .eval-section:first-of-type {
+      margin-top: 0;
+    }
+
+    .eval-section h3,
+    .eval-card h4,
+    .score-card h4 {
+      color: var(--navy);
+    }
+
+    .eval-section p {
+      color: #475569;
+      line-height: 1.72;
+    }
+
+    .eval-kicker {
+      display: inline-flex;
+      width: fit-content;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(244, 124, 47, 0.12);
+      border: 1px solid rgba(244, 124, 47, 0.2);
+      color: #9a3412;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .process-flow,
+    .focus-grid,
+    .persona-grid,
+    .score-grid,
+    .findings-grid,
+    .refinement-grid,
+    .future-grid {
+      display: grid;
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .process-flow {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .process-step,
+    .eval-card,
+    .score-card,
+    .finding-card,
+    .refinement-card,
+    .future-card {
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
+    }
+
+    .process-step {
+      padding: 18px;
+      min-height: 150px;
+    }
+
+    .process-step strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--navy);
+      font-size: 1.02rem;
+    }
+
+    .process-step span {
+      color: #475569;
+      line-height: 1.55;
+    }
+
+    .focus-grid,
+    .refinement-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .persona-grid,
+    .findings-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .future-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .eval-card,
+    .finding-card,
+    .refinement-card,
+    .future-card {
+      padding: 22px;
+    }
+
+    .eval-card h4,
+    .finding-card h4,
+    .refinement-card h4,
+    .future-card h4 {
+      margin: 0 0 10px;
+      color: var(--navy);
+    }
+
+    .persona-meta {
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(111, 205, 181, 0.16);
+      border: 1px solid rgba(111, 205, 181, 0.32);
+      color: #0f3f3a;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .score-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .score-card {
+      padding: 20px;
+    }
+
+    .score-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .score-value {
+      font-size: 1.45rem;
+    }
+
+    .score-track {
+      height: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e9eff8;
+    }
+
+    .score-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--orange), var(--mint));
+    }
+
+    .total-score {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(244, 124, 47, 0.12);
+      border: 1px solid rgba(244, 124, 47, 0.22);
+      color: var(--navy);
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .finding-list,
+    .future-list {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: #475569;
+      line-height: 1.75;
+    }
+
+    .finding-list strong {
+      color: var(--navy);
+    }
+
+    .validation-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+      margin-top: 18px;
+    }
+
+    .validation-table th {
+      color: var(--navy);
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 0.92rem;
+    }
+
+    .validation-table td {
+      padding: 14px;
+      background: rgba(248, 250, 252, 0.95);
+      border-top: 1px solid rgba(23, 35, 59, 0.08);
+      border-bottom: 1px solid rgba(23, 35, 59, 0.08);
+      color: #475569;
+      line-height: 1.55;
+      vertical-align: top;
+    }
+
+    .validation-table td:first-child {
+      border-left: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 16px 0 0 16px;
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .validation-table td:last-child {
+      border-right: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 0 16px 16px 0;
+    }
+
+    .status {
+      display: inline-flex;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(111, 205, 181, 0.18);
+      color: #0f3f3a;
+      font-size: 0.85rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status.partial {
+      background: rgba(245, 198, 91, 0.2);
+      color: #8a5b00;
+    }
+
+    .validation-note,
+    .reflection-callout {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(111, 205, 181, 0.12);
+      border: 1px solid rgba(111, 205, 181, 0.24);
+      color: var(--navy);
+      font-weight: 700;
+      line-height: 1.65;
+    }
+
+    .card-block {
+      padding-top: 12px;
+      margin-top: 12px;
+      border-top: 1px solid rgba(23, 35, 59, 0.08);
+      color: #475569;
+      line-height: 1.65;
+    }
+
+    .card-block strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--navy);
+    }
+
+    .future-card {
+      min-height: 160px;
+    }
+
+    .future-card .number {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      margin-bottom: 12px;
+      border-radius: 999px;
+      background: var(--orange);
+      color: #ffffff;
+      font-weight: 800;
+    }
+
+    @media (max-width: 1000px) {
+      .process-flow,
+      .focus-grid,
+      .persona-grid,
+      .score-grid,
+      .findings-grid,
+      .refinement-grid,
+      .future-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .eval-section,
+      .eval-card,
+      .score-card,
+      .finding-card,
+      .refinement-card,
+      .future-card,
+      .process-step {
+        padding: 20px;
+      }
+
+      .validation-table,
+      .validation-table thead,
+      .validation-table tbody,
+      .validation-table th,
+      .validation-table td,
+      .validation-table tr {
+        display: block;
+      }
+
+      .validation-table thead {
+        display: none;
+      }
+
+      .validation-table td,
+      .validation-table td:first-child,
+      .validation-table td:last-child {
+        border: 1px solid rgba(23, 35, 59, 0.08);
+        border-radius: 14px;
+        margin-top: 6px;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -30,138 +353,214 @@
     </div>
   </header>
 
-  <main class="section">
+  <main class="section evaluation-page">
     <div class="container">
       <div class="section-heading">
         <p class="section-label">Evaluation</p>
         <h2>Usability Testing and Reflection</h2>
       </div>
 
-      <div class="card">
-        <h3>Testing Plan</h3>
+      <section class="card eval-section">
+        <span class="eval-kicker">E01 Evaluation Process</span>
+        <h3>Evaluation Process</h3>
         <p>
-          We conducted usability testing with three target users to evaluate whether
-          the prototype was clear, motivating, and suitable for use in an onsite
-          climbing environment. Participants were asked to complete key tasks such as
-          selecting a route challenge, checking progress, and reading coaching feedback.
+          Our evaluation followed a staged process: users first completed an onboarding questionnaire, then completed a baseline task without ClimbQuest, interacted with the ClimbQuest prototype, and finally provided feedback on how the climbing experience changed.
         </p>
-      </div>
-
-      <div class="grid-3" style="margin-top: 24px;">
-        <div class="card">
-          <h3>Participant 1</h3>
-          <p>Beginner climber with limited prior climbing experience.</p>
+        <div class="process-flow">
+          <div class="process-step"><strong>Onboarding</strong><span>Randomized questionnaire survey.</span></div>
+          <div class="process-step"><strong>Baseline Task</strong><span>Users completed the climbing experience through traditional methods without ClimbQuest.</span></div>
+          <div class="process-step"><strong>System Interaction</strong><span>Users interacted with ClimbQuest.</span></div>
+          <div class="process-step"><strong>Evaluation & Feedback</strong><span>Users discussed how the climbing experience changed after using the system.</span></div>
         </div>
+      </section>
 
-        <div class="card">
-          <h3>Participant 2</h3>
-          <p>Intermediate climber familiar with climbing gyms and route grading.</p>
+      <section class="card eval-section">
+        <span class="eval-kicker">E02 Evaluation Focus</span>
+        <h3>Evaluation Focus from User Journey</h3>
+        <p>
+          The user journey map helped us identify key moments where climbers experience uncertainty or frustration: route recognition, tool search, product discovery, route design, completion, and sharing. These moments shaped the evaluation focus of ClimbQuest.
+        </p>
+        <div class="focus-grid">
+          <article class="eval-card">
+            <h4>Route Choice Clarity</h4>
+            <p>Can ClimbQuest help users find routes that match their current level and preferences?</p>
+          </article>
+          <article class="eval-card">
+            <h4>Motivation and Achievement</h4>
+            <p>Can ClimbQuest make users feel more motivated after completing or attempting a route?</p>
+          </article>
+          <article class="eval-card">
+            <h4>Feedback and Sharing</h4>
+            <p>Can ClimbQuest support post-climb reflection, recording, and community interaction?</p>
+          </article>
         </div>
+      </section>
 
-        <div class="card">
-          <h3>Participant 3</h3>
-          <p>Experienced climber / mentor interested in coaching and feedback tools.</p>
+      <section class="card eval-section">
+        <span class="eval-kicker">E03 Persona Context</span>
+        <h3>Persona-Based Evaluation Context</h3>
+        <div class="persona-grid">
+          <article class="eval-card">
+            <span class="persona-meta">Featured Persona</span>
+            <h4>Rin Zhao</h4>
+            <p><strong>Profile:</strong> Age 22, university student, indoor beginner.</p>
+            <p><strong>Evaluation relevance:</strong> Rin climbs 1-2 times per week and wants routes that match her current level, visible progress after each session, and confidence-building guidance.</p>
+          </article>
+          <article class="eval-card">
+            <span class="persona-meta">Edge Persona</span>
+            <h4>Leo Sun</h4>
+            <p><strong>Profile:</strong> Age 27, working professional, low-frequency climber.</p>
+            <p><strong>Evaluation relevance:</strong> Leo climbs once or twice a month and needs quick guidance, low setup effort, and a clear next action after a long break.</p>
+          </article>
         </div>
-      </div>
+      </section>
 
-      <div class="card" style="margin-top: 24px;">
+      <section class="card eval-section">
+        <span class="eval-kicker">E04 Results</span>
+        <h3>Post-Use Evaluation Results</h3>
+        <div class="score-grid">
+          <article class="score-card">
+            <div class="score-meta"><h4>Personalization</h4><span class="score-value">4.91 / 5</span></div>
+            <div class="score-track"><div class="score-fill" style="width: 98.2%;"></div></div>
+          </article>
+          <article class="score-card">
+            <div class="score-meta"><h4>AI assistance accuracy</h4><span class="score-value">3.82 / 5</span></div>
+            <div class="score-track"><div class="score-fill" style="width: 76.4%;"></div></div>
+          </article>
+          <article class="score-card">
+            <div class="score-meta"><h4>Engagement</h4><span class="score-value">3.97 / 5</span></div>
+            <div class="score-track"><div class="score-fill" style="width: 79.4%;"></div></div>
+          </article>
+          <article class="score-card">
+            <div class="score-meta"><h4>Usability</h4><span class="score-value">4.94 / 5</span></div>
+            <div class="score-track"><div class="score-fill" style="width: 98.8%;"></div></div>
+          </article>
+          <article class="score-card">
+            <div class="score-meta"><h4>Adoption Intention</h4><span class="score-value">4.45 / 5</span></div>
+            <div class="score-track"><div class="score-fill" style="width: 89%;"></div></div>
+          </article>
+        </div>
+        <div class="total-score">Total Weighted Score: 4.352 / 5</div>
+        <p style="margin-top: 16px;">
+          The strongest scores were usability and personalization, suggesting that users found ClimbQuest easy to use and relevant to their climbing preferences. The lower scores for AI assistance accuracy and engagement indicate that future iterations should improve recommendation transparency and strengthen long-term motivational features.
+        </p>
+      </section>
+
+      <section class="card eval-section">
+        <span class="eval-kicker">E05 Key Findings</span>
         <h3>Key Findings</h3>
-        <ul>
-          <li>Users liked the route challenge framing because it made sessions feel more structured.</li>
-          <li>The badge and progress elements increased motivation and made improvement easier to notice.</li>
-          <li>Some users wanted more visual clarity in navigation and larger buttons for mobile interaction.</li>
-          <li>Feedback cards were seen as useful, but users preferred concise wording and clear tags.</li>
-        </ul>
-      </div>
+        <div class="findings-grid">
+          <article class="finding-card">
+            <h4>What Worked Well</h4>
+            <ol class="finding-list">
+              <li><strong>Personalization was highly valued.</strong><br />Personalization scored 4.91 / 5, showing that users valued route guidance adapted to their needs.</li>
+              <li><strong>The app experience was smooth.</strong><br />Usability scored 4.94 / 5, suggesting that users found the interaction flow clear and easy to use.</li>
+              <li><strong>Users showed adoption potential.</strong><br />Adoption intention scored 4.45 / 5, indicating promising willingness to continue using or recommending the app.</li>
+            </ol>
+          </article>
+          <article class="finding-card">
+            <h4>Areas for Improvement</h4>
+            <ol class="finding-list">
+              <li><strong>Recommendation support needs clearer explanation.</strong><br />AI assistance accuracy scored 3.82 / 5, lower than personalization and usability.</li>
+              <li><strong>Engagement can be strengthened.</strong><br />Engagement scored 3.97 / 5, suggesting that long-term motivation and community interaction need further refinement.</li>
+              <li><strong>Community sharing needs trust and safety design.</strong><br />Since ClimbQuest includes user-generated routes, future versions need clearer safety guidance and moderation.</li>
+            </ol>
+          </article>
+        </div>
+      </section>
 
-      <div class="card" style="margin-top: 24px;">
-        <h3>Usability Testing Results: Detailed Findings</h3>
-        <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
+      <section class="card eval-section">
+        <span class="eval-kicker">E06 Requirements Validation</span>
+        <h3>Requirements Validation</h3>
+        <table class="validation-table">
           <thead>
-            <tr style="background-color: #f0f0f0;">
-              <th style="border: 1px solid #ddd; padding: 8px;">Aspect</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Participant Feedback</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Action Taken</th>
+            <tr>
+              <th>Requirement</th>
+              <th>Design Goal</th>
+              <th>System Feature</th>
+              <th>Evidence</th>
+              <th>Result</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;"><strong>Route Selection</strong></td>
-              <td style="border: 1px solid #ddd; padding: 8px;">Clear recommendations; one user wanted more context about why a route was suggested</td>
-              <td style="border: 1px solid #ddd; padding: 8px;">Added brief reason (e.g., "Build on climbing skills")</td>
+              <td>R1 Personalized route guidance</td>
+              <td>DG1 Reduce route-selection uncertainty</td>
+              <td>SF1 Personalized Route Recommendation</td>
+              <td>Personalization 4.91 / 5</td>
+              <td><span class="status">Validated</span></td>
             </tr>
             <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;"><strong>Progress Display</strong></td>
-              <td style="border: 1px solid #ddd; padding: 8px;">Badges were motivating; streak counter was memorable</td>
-              <td style="border: 1px solid #ddd; padding: 8px;">Emphasized streak counter and badge visuals</td>
+              <td>R2 Route recording / DIY route creation</td>
+              <td>DG2 Increase creative ownership</td>
+              <td>SF2 DIY Route Creation</td>
+              <td>Usability 4.94 / 5; evaluation confirms route recording demand</td>
+              <td><span class="status">Validated with refinement</span></td>
             </tr>
             <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;"><strong>Coaching Feedback</strong></td>
-              <td style="border: 1px solid #ddd; padding: 8px;">Users appreciated quick notes, but wanted emoji or icons for fast scanning</td>
-              <td style="border: 1px solid #ddd; padding: 8px;">Added emoji tags to feedback cards (e.g., 💪, 🎯)</td>
-            </tr>
-            <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;"><strong>Mobile Usability</strong></td>
-              <td style="border: 1px solid #ddd; padding: 8px;">Buttons and text were hard to tap on small screens</td>
-              <td style="border: 1px solid #ddd; padding: 8px;">Increased touch target size; improved line-height</td>
+              <td>R3 Community motivation and sharing</td>
+              <td>DG3 Support social motivation</td>
+              <td>SF3 Community Sharing & Interaction</td>
+              <td>Engagement 3.97 / 5; Adoption intention 4.45 / 5</td>
+              <td><span class="status partial">Partially validated</span></td>
             </tr>
           </tbody>
         </table>
-      </div>
-
-      <div class="card" style="margin-top: 24px;">
-        <h3>Iterative Refinement: Before and After</h3>
-        <p>
-          <strong>Before:</strong> The initial prototype had dense text on route selection, small buttons, and unclear navigation.
-        </p>
-        <p>
-          <strong>After:</strong> We streamlined the layout, increased whitespace, added visual icons, and made buttons larger.
-          Feedback cards now use emoji and shorter text, and progress is displayed more prominently.
-        </p>
-        <p style="margin-top: 12px; font-style: italic; color: #666;">
-          Note: Before and after screenshots will be uploaded in the final submission.
-        </p>
-      </div>
-
-      <div class="card" style="margin-top: 24px;">
-        <h3>Final Reflection: Design Implications</h3>
-        <p>
-          <strong>Human-Centred Design Outcome:</strong> This project demonstrates the importance of grounding design decisions in user research. By engaging directly with climbers and coaches, we were able to identify authentic pain points that generic fitness apps overlook. The iterative evaluation process confirmed that even small tweaks (emoji, spacing, wording) significantly impact user confidence and motivation.
-        </p>
-        <p>
-          <strong>Social and Ethical Considerations:</strong> We intentionally avoided competitive leaderboards or judgment-based framing. Instead, ClimbQuest emphasises personal growth, peer support, and lightweight coaching. This design choice reflects our commitment to accessibility and inclusion, ensuring that climbers of all levels feel welcomed and supported, not intimidated.
-        </p>
-        <p>
-          <strong>AI Reflection:</strong> During this project, we used AI tools for code scaffolding and design ideation (as permitted). However, all user research, persona development, core design logic, and evaluation decisions were conducted autonomously by the team. AI was used as a productivity assistant, not as a substitute for authentic human-centred design thinking. All AI-generated code was carefully reviewed and modified to align with our specific user requirements and testing feedback.
-        </p>
-      </div>
-
-      <div class="grid-2" style="margin-top: 24px;">
-        <div class="card">
-          <h3>Social and Ethical Reflection</h3>
-          <p>
-            We considered issues of accessibility, user confidence, and inclusion.
-            The system avoids overly competitive framing and instead supports gradual
-            growth, encouragement, and low-pressure participation for beginners.
-          </p>
+        <div class="validation-note">
+          The evaluation results suggest that ClimbQuest strongly supports personalization and usability, while engagement and community-based motivation still need further iteration.
         </div>
+      </section>
 
-        <div class="card">
-          <h3>Technical Reflection</h3>
-          <p>
-            During development, we focused on keeping the prototype lightweight and
-            mobile-friendly. We also reflected on the role of AI-assisted tools in
-            ideation and implementation, ensuring that key design decisions remained
-            grounded in our own research and testing.
-          </p>
+      <section class="card eval-section">
+        <span class="eval-kicker">E07 Iterative Refinement</span>
+        <h3>Iterative Refinement Direction</h3>
+        <div class="refinement-grid">
+          <article class="refinement-card">
+            <h4>Iteration 1 — Improve Recommendation Transparency</h4>
+            <div class="card-block"><strong>Evidence</strong>AI assistance accuracy scored 3.82 / 5.</div>
+            <div class="card-block"><strong>Design response</strong>Add clearer route-matching explanations, ability-level cues, and style tags so users understand why a route is recommended.</div>
+            <div class="card-block"><strong>Linked to</strong>R1 -> DG1 -> SF1</div>
+          </article>
+          <article class="refinement-card">
+            <h4>Iteration 2 — Preserve Mobile-First Usability</h4>
+            <div class="card-block"><strong>Evidence</strong>Usability scored 4.94 / 5.</div>
+            <div class="card-block"><strong>Design response</strong>Maintain the simple mobile-first flow while refining visual hierarchy and interaction feedback.</div>
+            <div class="card-block"><strong>Linked to</strong>R2 -> DG2 -> SF2</div>
+          </article>
+          <article class="refinement-card">
+            <h4>Iteration 3 — Strengthen Engagement and Community Motivation</h4>
+            <div class="card-block"><strong>Evidence</strong>Engagement scored 3.97 / 5, lower than usability and personalization.</div>
+            <div class="card-block"><strong>Design response</strong>Improve community route sharing, route feedback, and post-climb interaction to increase long-term motivation.</div>
+            <div class="card-block"><strong>Linked to</strong>R3 -> DG3 -> SF3</div>
+          </article>
         </div>
-      </div>
+      </section>
+
+      <section class="card eval-section">
+        <span class="eval-kicker">E08 Future Development</span>
+        <h3>Future Development Plan</h3>
+        <div class="future-grid">
+          <article class="future-card"><span class="number">1</span><h4>Improve Rock Point Identification</h4><p>Improve rock point identification during AI-assisted route generation.</p></article>
+          <article class="future-card"><span class="number">2</span><h4>Add Professional Route Assistance</h4><p>Explore coach or professional assistance for safer and more reliable route generation.</p></article>
+          <article class="future-card"><span class="number">3</span><h4>Improve Recommendation Transparency</h4><p>Explain why a route is recommended and what user profile data influenced the suggestion.</p></article>
+          <article class="future-card"><span class="number">4</span><h4>Strengthen Community Safety</h4><p>Add moderation or review mechanisms for user-generated routes.</p></article>
+          <article class="future-card"><span class="number">5</span><h4>Conduct Broader Testing</h4><p>Evaluate the prototype with more climbers of different skill levels and visit frequencies.</p></article>
+        </div>
+      </section>
+
+      <section class="card eval-section">
+        <span class="eval-kicker">E09 Final Reflection</span>
+        <h3>Final Evaluation Reflection</h3>
+        <div class="reflection-callout">
+          The evaluation suggests that ClimbQuest improves the perceived climbing experience, especially in personalization and usability. Users responded positively to route guidance that felt relevant to their needs, and the mobile-first flow was easy to use. However, the lower scores for AI assistance accuracy and engagement show that the system should better explain recommendations and strengthen community-based motivation. Overall, the evaluation supports the value of ClimbQuest while identifying clear directions for future refinement.
+        </div>
+      </section>
     </div>
   </main>
 
   <footer class="site-footer">
     <div class="container">
-      <p>© 2026 ClimbQuest Team · CPT208 Coursework Portfolio</p>
+      <p>漏 2026 ClimbQuest Team 路 CPT208 Coursework Portfolio</p>
     </div>
   </footer>
 </body>

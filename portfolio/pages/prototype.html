@@ -43,95 +43,81 @@
       text-transform: uppercase;
     }
 
-    .feature-grid,
-    .stack-grid,
-    .reflection-grid {
+    .card-grid-3,
+    .feature-implementation-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 18px;
       margin-top: 22px;
     }
 
-    .proto-feature-card,
-    .stack-card,
-    .reflection-card,
-    .arch-card {
+    .arch-card,
+    .feature-implementation-card,
+    .trace-card {
       border: 1px solid rgba(23, 35, 59, 0.08);
       border-radius: 22px;
       background: rgba(255, 255, 255, 0.96);
       box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
     }
 
-    .proto-feature-card {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      padding: 24px;
+    .arch-card,
+    .feature-implementation-card {
+      padding: 22px;
     }
 
-    .proto-feature-card h4,
-    .flow-detail-card h4,
-    .stack-card h4,
-    .reflection-card h4,
-    .arch-card h4 {
+    .arch-card h4,
+    .feature-implementation-card h4,
+    .flow-row h4,
+    .live-copy h4 {
+      margin: 0 0 10px;
+      color: var(--navy);
+    }
+
+    .arch-card p {
       margin: 0;
-      color: var(--navy);
     }
 
-    .goal-badge {
-      display: inline-flex;
-      width: fit-content;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(111, 205, 181, 0.16);
-      border: 1px solid rgba(111, 205, 181, 0.32);
-      color: #0f3f3a;
-      font-size: 0.82rem;
-      font-weight: 800;
+    .data-flow-stack {
+      display: grid;
+      gap: 16px;
+      margin-top: 22px;
     }
 
-    .field-block {
-      padding-top: 12px;
-      border-top: 1px solid rgba(23, 35, 59, 0.08);
-      color: #475569;
-      line-height: 1.6;
-    }
-
-    .field-block strong {
-      display: block;
-      margin-bottom: 4px;
-      color: var(--navy);
+    .flow-row {
+      padding: 20px;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
     }
 
     .flow-chain {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
-      margin-top: 8px;
+      margin-top: 12px;
     }
 
     .flow-chain span {
-      display: inline-flex;
-      align-items: center;
-      min-height: 34px;
-      padding: 7px 10px;
+      padding: 9px 12px;
       border-radius: 999px;
       background: rgba(244, 124, 47, 0.1);
+      border: 1px solid rgba(244, 124, 47, 0.16);
       color: var(--navy);
-      font-weight: 700;
-      font-size: 0.92rem;
+      font-weight: 800;
+      font-size: 0.94rem;
     }
 
     .flow-chain i {
-      color: var(--muted);
+      color: var(--orange);
       font-style: normal;
-      font-weight: 800;
+      font-weight: 900;
     }
 
     .image-card {
       margin-top: 20px;
-      padding: 14px;
+      padding: 12px;
       border: 1px solid rgba(23, 35, 59, 0.08);
       border-radius: 24px;
       background: #ffffff;
@@ -155,283 +141,12 @@
       line-height: 1.55;
     }
 
-    .screenshot-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 20px;
-      margin-top: 22px;
-    }
-
-    .screenshot-grid.highfi {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      margin-bottom: 22px;
-    }
-
-    .screenshot-card {
-      padding: 14px 12px 12px;
-      border: 1px solid rgba(23, 35, 59, 0.08);
-      border-radius: 22px;
-      background: rgba(255, 255, 255, 0.96);
-      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
-      cursor: zoom-in;
-    }
-
-    .screenshot-frame {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: min(100%, 250px);
-      height: 510px;
-      margin: 0 auto;
-      padding: 22px 10px 14px;
-      border-radius: 34px;
-      background: #ffffff;
-      border: 2px solid rgba(23, 35, 59, 0.16);
-      box-shadow: inset 0 0 0 5px rgba(23, 35, 59, 0.035), 0 14px 28px rgba(23, 35, 59, 0.12);
-      overflow: hidden;
-    }
-
-    .screenshot-frame::before {
-      content: "";
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      width: 58px;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(23, 35, 59, 0.18);
-      transform: translateX(-50%);
-      z-index: 1;
-    }
-
-    .screenshot-frame img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      object-position: center;
-      border-radius: 24px;
-    }
-
-    .screenshot-placeholder {
-      display: none;
-      padding: 22px;
-      color: #5f6b80;
-      font-weight: 800;
-      text-align: center;
-      line-height: 1.45;
-    }
-
-    .screenshot-card.is-missing .screenshot-placeholder {
-      display: block;
-    }
-
-    .screenshot-caption {
-      margin-top: 8px;
-      padding: 0 4px 2px;
-      color: var(--navy);
-      font-size: 0.9rem;
-      font-weight: 800;
-      line-height: 1.3;
-    }
-
-    .feature-preview {
-      margin-top: 4px;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      box-shadow: none;
-    }
-
-    .feature-preview .screenshot-frame {
-      width: min(100%, 230px);
-      height: 420px;
-    }
-
-    .feature-preview .screenshot-frame img {
-      height: 100%;
-    }
-
-    .screenshot-lightbox {
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 28px;
-      background: rgba(15, 23, 42, 0.78);
-      backdrop-filter: blur(4px);
-    }
-
-    .screenshot-lightbox.is-open {
-      display: flex;
-    }
-
-    .lightbox-inner {
-      position: relative;
-      width: min(96vw, 980px);
-      max-height: 94vh;
-      padding: 18px;
-      border-radius: 24px;
-      background: #ffffff;
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
-    }
-
-    .lightbox-inner img {
-      display: block;
-      width: 100%;
-      max-height: 82vh;
-      object-fit: contain;
-      border-radius: 16px;
-      background: rgba(244, 124, 47, 0.04);
-    }
-
-    .lightbox-caption {
-      margin-top: 10px;
-      color: var(--navy);
-      font-weight: 800;
-      text-align: center;
-    }
-
-    .lightbox-close {
-      position: absolute;
-      top: -14px;
-      right: -14px;
-      display: grid;
-      place-items: center;
-      width: 38px;
-      height: 38px;
-      border: 0;
-      border-radius: 999px;
-      background: var(--orange);
-      color: #ffffff;
-      font-size: 1.2rem;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
-    }
-
-    .flow-detail-card {
-      margin-top: 20px;
-      padding: 24px;
-      border: 1px solid rgba(23, 35, 59, 0.08);
-      border-radius: 22px;
-      background: rgba(255, 255, 255, 0.96);
-      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
-    }
-
-    .detail-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-      margin-top: 18px;
-    }
-
-    .detail-panel {
-      padding: 18px;
-      border-radius: 18px;
-      background: rgba(248, 250, 252, 0.94);
-      border: 1px solid rgba(23, 35, 59, 0.08);
-    }
-
-    .detail-panel h5 {
-      margin: 0 0 10px;
-      color: var(--navy);
-      font-size: 0.98rem;
-    }
-
-    .detail-panel ul,
-    .implemented-list,
-    .reflection-card ul {
-      margin: 0;
-      padding-left: 18px;
-      color: #475569;
-      line-height: 1.7;
-    }
-
-    .value-callout {
-      margin-top: 18px;
-      padding: 16px 18px;
-      border-radius: 18px;
-      background: rgba(111, 205, 181, 0.12);
-      border: 1px solid rgba(111, 205, 181, 0.24);
-      color: var(--navy);
-      font-weight: 700;
-      line-height: 1.6;
-    }
-
-    .architecture-grid {
-      display: grid;
-      gap: 16px;
-      margin-top: 22px;
-    }
-
-    .arch-card {
-      padding: 20px;
-    }
-
-    .arch-flow {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      margin-top: 12px;
-    }
-
-    .arch-flow span {
-      padding: 9px 12px;
-      border-radius: 14px;
-      background: rgba(248, 250, 252, 0.96);
-      border: 1px solid rgba(23, 35, 59, 0.08);
-      color: var(--navy);
-      font-weight: 700;
-    }
-
-    .arch-flow i {
-      color: var(--orange);
-      font-style: normal;
-      font-weight: 900;
-    }
-
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin: 18px 0;
-    }
-
-    .proto-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      padding: 10px 16px;
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: 800;
-      border: 1px solid rgba(23, 35, 59, 0.12);
-    }
-
-    .proto-button.primary {
-      background: var(--orange);
-      color: #ffffff;
-      border-color: var(--orange);
-      box-shadow: 0 10px 20px rgba(244, 124, 47, 0.24);
-    }
-
-    .proto-button.secondary {
-      background: #ffffff;
-      color: var(--navy);
-    }
-
     .live-access-card {
       display: grid;
       grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
       gap: 24px;
       align-items: center;
-      margin: 22px 0;
+      margin-top: 22px;
       padding: 24px;
       border: 1px solid rgba(23, 35, 59, 0.08);
       border-radius: 24px;
@@ -439,13 +154,31 @@
       box-shadow: 0 14px 30px rgba(23, 35, 59, 0.07);
     }
 
-    .live-access-copy h4 {
-      margin: 0 0 12px;
-      color: var(--navy);
-      font-size: 1.35rem;
+    .proto-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      margin-top: 12px;
+      margin-right: 8px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: var(--orange);
+      color: #ffffff;
+      border: 1px solid var(--orange);
+      box-shadow: 0 10px 20px rgba(244, 124, 47, 0.24);
+      font-weight: 800;
+      text-decoration: none;
     }
 
-    .live-access-copy .microcopy {
+    .proto-button.secondary {
+      background: #ffffff;
+      color: var(--navy);
+      border-color: rgba(23, 35, 59, 0.14);
+      box-shadow: none;
+    }
+
+    .microcopy {
       margin-top: 10px;
       color: #5f6b80;
       font-size: 0.95rem;
@@ -479,190 +212,102 @@
       line-height: 1.4;
     }
 
-    .live-note {
-      margin-top: 18px;
-      padding: 16px 18px;
-      border-radius: 18px;
-      background: rgba(111, 205, 181, 0.12);
-      border: 1px solid rgba(111, 205, 181, 0.24);
-      color: var(--navy);
-      font-weight: 700;
-      line-height: 1.6;
+    .implemented-list,
+    .feature-list {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: #475569;
+      line-height: 1.7;
     }
 
     .implemented-list {
       columns: 2;
-      margin-top: 12px;
     }
 
-    .phase-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0 10px;
-      margin: 18px 0 22px;
+    .feature-badge {
+      display: inline-flex;
+      width: fit-content;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(111, 205, 181, 0.16);
+      border: 1px solid rgba(111, 205, 181, 0.32);
+      color: #0f3f3a;
+      font-size: 0.82rem;
+      font-weight: 800;
     }
 
-    .phase-table th {
-      padding: 10px 14px;
-      color: var(--navy);
-      text-align: left;
-      font-size: 0.92rem;
-    }
-
-    .phase-table td {
-      padding: 14px;
-      background: rgba(248, 250, 252, 0.95);
+    .feature-block {
+      padding-top: 14px;
+      margin-top: 14px;
       border-top: 1px solid rgba(23, 35, 59, 0.08);
-      border-bottom: 1px solid rgba(23, 35, 59, 0.08);
-      color: #475569;
-      line-height: 1.55;
     }
 
-    .phase-table td:first-child {
-      width: 32%;
-      border-left: 1px solid rgba(23, 35, 59, 0.08);
-      border-radius: 16px 0 0 16px;
+    .feature-block strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--navy);
+    }
+
+    .trace-grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .trace-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px 20px;
       color: var(--navy);
       font-weight: 800;
     }
 
-    .phase-table td:last-child {
-      border-right: 1px solid rgba(23, 35, 59, 0.08);
-      border-radius: 0 16px 16px 0;
-    }
-
-    .stack-card,
-    .reflection-card {
-      padding: 20px;
-    }
-
-    .contribution-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0 10px;
-      margin-top: 18px;
-    }
-
-    .contribution-table th {
-      color: var(--navy);
-      text-align: left;
-      padding: 10px 14px;
-      font-size: 0.92rem;
-    }
-
-    .contribution-table td {
-      padding: 14px;
-      background: rgba(248, 250, 252, 0.95);
-      border-top: 1px solid rgba(23, 35, 59, 0.08);
-      border-bottom: 1px solid rgba(23, 35, 59, 0.08);
-      color: #475569;
-      line-height: 1.55;
-    }
-
-    .contribution-table td:first-child {
-      border-left: 1px solid rgba(23, 35, 59, 0.08);
-      border-radius: 16px 0 0 16px;
-      color: var(--navy);
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .contribution-table td:last-child {
-      border-right: 1px solid rgba(23, 35, 59, 0.08);
-      border-radius: 0 16px 16px 0;
+    .trace-card span:last-child {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: rgba(111, 205, 181, 0.22);
+      color: #0f3f3a;
     }
 
     @media (max-width: 900px) {
-      .feature-grid,
-      .stack-grid,
-      .reflection-grid,
-      .detail-grid {
+      .card-grid-3,
+      .feature-implementation-grid,
+      .live-access-card {
         grid-template-columns: 1fr;
       }
 
       .implemented-list {
         columns: 1;
       }
-
-      .live-access-card {
-        grid-template-columns: 1fr;
-      }
-
-      .screenshot-grid,
-      .screenshot-grid.highfi {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .screenshot-frame,
-      .screenshot-frame img {
-        height: 470px;
-      }
     }
 
     @media (max-width: 680px) {
       .proto-section,
-      .proto-feature-card,
-      .flow-detail-card,
-      .stack-card,
-      .reflection-card,
-      .arch-card {
+      .arch-card,
+      .feature-implementation-card,
+      .live-access-card,
+      .flow-row {
         padding: 20px;
       }
 
-      .arch-flow,
       .flow-chain {
         align-items: stretch;
         flex-direction: column;
       }
 
-      .arch-flow i,
       .flow-chain i {
         text-align: center;
       }
 
-      .contribution-table,
-      .phase-table,
-      .contribution-table thead,
-      .phase-table thead,
-      .contribution-table tbody,
-      .phase-table tbody,
-      .contribution-table th,
-      .phase-table th,
-      .contribution-table td,
-      .phase-table td,
-      .contribution-table tr {
-        display: block;
-      }
-
-      .contribution-table thead,
-      .phase-table thead {
-        display: none;
-      }
-
-      .contribution-table td,
-      .contribution-table td:first-child,
-      .contribution-table td:last-child,
-      .phase-table td,
-      .phase-table td:first-child,
-      .phase-table td:last-child {
-        border: 1px solid rgba(23, 35, 59, 0.08);
-        border-radius: 14px;
-        margin-top: 6px;
-        width: 100%;
-      }
-
-      .screenshot-grid,
-      .screenshot-grid.highfi {
-        grid-template-columns: 1fr;
-      }
-
-      .screenshot-frame,
-      .screenshot-frame img {
-        height: 560px;
-      }
-
-      .screenshot-frame {
-        width: min(100%, 280px);
+      .trace-card {
+        align-items: flex-start;
+        flex-direction: column;
       }
     }
   </style>
@@ -699,296 +344,69 @@
       </div>
 
       <section class="card proto-section">
-        <span class="proto-kicker">P01 Prototype Overview</span>
-        <h3>Mobile-First Route Experience</h3>
+        <span class="proto-kicker">01 System Architecture</span>
+        <h3>Mobile-First Prototype Structure</h3>
         <p>
-          The ClimbQuest prototype is a mobile-first web app that transforms three final user requirements into interactive flows:
-          Personalized Route Recommendation, DIY Route Creation, and Community Sharing & Interaction.
+          ClimbQuest is a mobile-first web prototype connecting three core flows: Personalized Route Recommendation, DIY Route Creation, and Community Sharing & Interaction.
         </p>
-
-        <div class="feature-grid">
-          <article class="proto-feature-card">
-            <span class="goal-badge">Feature 1</span>
-            <h4>Personalized Route Recommendation</h4>
-            <figure class="screenshot-card feature-preview">
-              <div class="screenshot-frame">
-                <img src="../assets/prototype/Screenshot%20placeholder%20feature1-preview.jpg" alt="Preview of Personalized Route Recommendation flow" onerror="this.closest('.screenshot-card').classList.add('is-missing'); this.remove();" />
-                <div class="screenshot-placeholder">Screenshot placeholder<br />feature1-preview.png</div>
-              </div>
-            </figure>
-            <div class="field-block"><strong>Linked Design Goal</strong>DG1 Reduce route-selection uncertainty</div>
-            <div class="field-block"><strong>User Need</strong>Users do not know which route best fits their ability and preference.</div>
-            <div class="field-block">
-              <strong>Prototype Flow</strong>
-              <div class="flow-chain"><span>Quiz</span><i>-></i><span>Climbing Type</span><i>-></i><span>Recommended Routes</span><i>-></i><span>Route Detail</span></div>
-            </div>
+        <div class="card-grid-3">
+          <article class="arch-card">
+            <h4>Frontend / Interface</h4>
+            <p>Mobile web app, quiz interface, DIY route editor, community feed, and route detail pages.</p>
           </article>
-
-          <article class="proto-feature-card">
-            <span class="goal-badge">Feature 2</span>
-            <h4>DIY Route Creation</h4>
-            <figure class="screenshot-card feature-preview">
-              <div class="screenshot-frame">
-                <img src="../assets/prototype/Screenshot%20placeholder%20feature2-preview.jpg" alt="Preview of DIY Route Creation flow" onerror="this.closest('.screenshot-card').classList.add('is-missing'); this.remove();" />
-                <div class="screenshot-placeholder">Screenshot placeholder<br />feature2-preview.png</div>
-              </div>
-            </figure>
-            <div class="field-block"><strong>Linked Design Goal</strong>DG2 Increase creative ownership</div>
-            <div class="field-block"><strong>User Need</strong>Users want more autonomy and involvement in route design.</div>
-            <div class="field-block">
-              <strong>Prototype Flow</strong>
-              <div class="flow-chain"><span>Select Holds</span><i>-></i><span>Connect Path</span><i>-></i><span>Add Details</span><i>-></i><span>Preview / Upload</span></div>
-            </div>
+          <article class="arch-card">
+            <h4>Data / State</h4>
+            <p>Quiz answers, recommendation result, selected holds, route metadata, likes, comments, and try actions.</p>
           </article>
-
-          <article class="proto-feature-card">
-            <span class="goal-badge">Feature 3</span>
-            <h4>Community Sharing & Interaction</h4>
-            <figure class="screenshot-card feature-preview">
-              <div class="screenshot-frame">
-                <img src="../assets/prototype/Screenshot%20placeholder%20feature3-preview.jpg" alt="Preview of Community Sharing and Interaction flow" onerror="this.closest('.screenshot-card').classList.add('is-missing'); this.remove();" />
-                <div class="screenshot-placeholder">Screenshot placeholder<br />feature3-preview.png</div>
-              </div>
-            </figure>
-            <div class="field-block"><strong>Linked Design Goal</strong>DG3 Support social motivation</div>
-            <div class="field-block"><strong>User Need</strong>Users need motivation, feedback, and route discovery beyond one session.</div>
-            <div class="field-block">
-              <strong>Prototype Flow</strong>
-              <div class="flow-chain"><span>Browse</span><i>-></i><span>Like / Comment</span><i>-></i><span>Try Route</span><i>-></i><span>Share Feedback</span></div>
-            </div>
+          <article class="arch-card">
+            <h4>Deployment</h4>
+            <p>Vercel live app and GitHub repository for access, review, and version control.</p>
           </article>
         </div>
       </section>
 
       <section class="card proto-section">
-        <span class="proto-kicker">P02 From Low-Fi to High-Fi</span>
-        <h3>From Low-Fidelity Wireframes to Prototype Structure</h3>
-        <p>
-          After selecting ClimbQuest as the final concept, we translated the three core flows into low-fidelity mobile wireframes.
-          These wireframes helped us test navigation, screen hierarchy, and how users move between recommendation, DIY creation,
-          and community interaction before applying visual design.
-        </p>
+        <span class="proto-kicker">02 Data Flow</span>
+        <h3>Core Interaction Flows</h3>
+        <div class="data-flow-stack">
+          <article class="flow-row">
+            <h4>Recommendation Flow</h4>
+            <div class="flow-chain"><span>Quiz Answers</span><i>-></i><span>Matching Logic</span><i>-></i><span>Climbing Type</span><i>-></i><span>Recommended Route</span></div>
+          </article>
+          <article class="flow-row">
+            <h4>DIY Creation Flow</h4>
+            <div class="flow-chain"><span>Wall Image</span><i>-></i><span>Selected Holds</span><i>-></i><span>Route Path</span><i>-></i><span>Route Metadata</span><i>-></i><span>Saved / Uploaded Route</span></div>
+          </article>
+          <article class="flow-row">
+            <h4>Community Flow</h4>
+            <div class="flow-chain"><span>Uploaded Route</span><i>-></i><span>Community Feed</span><i>-></i><span>Like / Comment / Try</span><i>-></i><span>Updated Route Detail</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="card proto-section">
+        <span class="proto-kicker">03 Low-Fidelity Prototype</span>
+        <h3>Wireframe Structure</h3>
+        <p>These wireframes helped us test navigation structure and how the three core flows connect before visual refinement.</p>
         <figure class="image-card">
           <img src="../assets/low-fi-wireframe.png" alt="Low-fidelity overview of ClimbQuest mobile wireframes" />
           <figcaption class="image-caption">
-            Low-fidelity overview showing early screen structures for route recommendation, DIY creation, community interaction, and supporting profile-related flows.
+            Low-fidelity overview showing early screen structures for route recommendation, DIY creation, and community interaction flows.
           </figcaption>
         </figure>
       </section>
 
       <section class="card proto-section">
-        <span class="proto-kicker">P03 Feature 1</span>
-        <h3>Personalized Route Recommendation</h3>
-        <span class="goal-badge">Linked to DG1: Reduce route-selection uncertainty</span>
-        <div class="flow-detail-card">
-          <p><strong>User Need:</strong> Users often feel unsure about which route fits their ability, confidence, preferred climbing style, or training goal.</p>
-          <p><strong>Prototype Flow:</strong> The prototype guides users through a playful MBTI-style questionnaire. Based on their answers, the system presents a climbing type result and recommends suitable routes.</p>
-          <div class="detail-grid">
-            <div class="detail-panel">
-              <h5>Key Screens</h5>
-              <ul>
-                <li>Quiz Screen</li>
-                <li>Climbing Type Result</li>
-                <li>Recommended Routes</li>
-              </ul>
-            </div>
-            <div class="detail-panel">
-              <h5>Key Interactions</h5>
-              <ul>
-                <li>Select quiz answers</li>
-                <li>Generate a climbing type result</li>
-                <li>View recommended routes</li>
-                <li>Open route details</li>
-                <li>Choose "Try this route"</li>
-              </ul>
-            </div>
-            <div class="detail-panel">
-              <h5>Flow Logic</h5>
-              <div class="flow-chain"><span>Quiz</span><i>-></i><span>Type</span><i>-></i><span>Routes</span><i>-></i><span>Detail</span></div>
-            </div>
-          </div>
-          <div class="screenshot-grid">
-            <figure class="screenshot-card">
-              <div class="screenshot-frame">
-                <img src="../assets/prototype/Screenshot%20placeholder%20feature1-quiz-screen.jpg" alt="Feature 1 quiz input screen" onerror="this.closest('.screenshot-card').classList.add('is-missing'); this.remove();" />
-                <div class="screenshot-placeholder">Screenshot placeholder<br />feature1-quiz-screen.png</div>
-              </div>
-              <figcaption class="screenshot-caption">Quiz input</figcaption>
-            </figure>
-            <figure class="screenshot-card">
-              <div class="screenshot-frame">
-                <img src="../assets/prototype/Screenshot%20placeholder%20feature1-result-screen.jpg" alt="Feature 1 route persona result screen" onerror="this.closest('.screenshot-card').classList.add('is-missing'); this.remove();" />
-                <div class="screenshot-placeholder">Screenshot placeholder<br />feature1-result-screen.png</div>
-              </div>
-              <figcaption class="screenshot-caption">Route persona result</figcaption>
-            </figure>
-            <figure class="screenshot-card">
-              <div class="screenshot-frame">
-                <img src="../assets/prototype/Screenshot%20placeholder%20feature1-recommendation-screen.jpg" alt="Feature 1 personalized route list screen" onerror="this.closest('.screenshot-card').classList.add('is-missing'); this.remove();" />
-                <div class="screenshot-placeholder">Screenshot placeholder<br />feature1-recommendation-screen.png</div>
-              </div>
-              <figcaption class="screenshot-caption">Personalized route list</figcaption>
-            </figure>
-          </div>
-          <div class="value-callout">Human-Centred Value: This feature reduces decision pressure and helps users start climbing with clearer, more personalised guidance.</div>
-        </div>
-      </section>
-
-      <section class="card proto-section">
-        <span class="proto-kicker">P04 Feature 2</span>
-        <h3>DIY Route Creation</h3>
-        <span class="goal-badge">Linked to DG2: Increase creative ownership</span>
-        <div class="flow-detail-card">
-          <p><strong>User Need:</strong> Some users want more autonomy and creative involvement instead of only completing routes designed by others.</p>
-          <p><strong>Prototype Flow:</strong> Users create a route by selecting holds on a wall image, connecting a route path, and adding route information such as name, difficulty, style, and description.</p>
-          <div class="detail-grid">
-            <div class="detail-panel">
-              <h5>Key Screens</h5>
-              <ul>
-                <li>Wall Image / Hold Selection</li>
-                <li>Route Path Preview</li>
-                <li>Route Details Form</li>
-                <li>Save or Upload Route</li>
-              </ul>
-            </div>
-            <div class="detail-panel">
-              <h5>Key Interactions</h5>
-              <ul>
-                <li>Select holds on the wall image</li>
-                <li>Connect selected holds into a route path</li>
-                <li>Undo, erase, or clear selections</li>
-                <li>Add name, difficulty, style, and description</li>
-                <li>Save draft or upload route</li>
-              </ul>
-            </div>
-            <div class="detail-panel">
-              <h5>Flow Logic</h5>
-              <div class="flow-chain"><span>Holds</span><i>-></i><span>Path</span><i>-></i><span>Details</span><i>-></i><span>Upload</span></div>
-            </div>
-          </div>
-          <div class="screenshot-grid">
-            <figure class="screenshot-card">
-              <div class="screenshot-frame">
-                <img src="../assets/prototype/Screenshot%20placeholder%20feature2-hold-selection.jpg" alt="Feature 2 hold selection screen" onerror="this.closest('.screenshot-card').classList.add('is-missing'); this.remove();" />
-                <div class="screenshot-placeholder">Screenshot placeholder<br />feature2-hold-selection.png</div>
-              </div>
-              <figcaption class="screenshot-caption">Select holds</figcaption>
-            </figure>
-            <figure class="screenshot-card">
-              <div class="screenshot-frame">
-                <img src="../assets/prototype/Screenshot%20placeholder%20feature2-route-details.jpg" alt="Feature 2 route details screen" onerror="this.closest('.screenshot-card').classList.add('is-missing'); this.remove();" />
-                <div class="screenshot-placeholder">Screenshot placeholder<br />feature2-route-details.png</div>
-              </div>
-              <figcaption class="screenshot-caption">Add route details</figcaption>
-            </figure>
-            <figure class="screenshot-card">
-              <div class="screenshot-frame">
-                <img src="../assets/prototype/Screenshot%20placeholder%20feature2-preview-upload.jpg" alt="Feature 2 preview and upload screen" onerror="this.closest('.screenshot-card').classList.add('is-missing'); this.remove();" />
-                <div class="screenshot-placeholder">Screenshot placeholder<br />feature2-preview-upload.png</div>
-              </div>
-              <figcaption class="screenshot-caption">Save or upload</figcaption>
-            </figure>
-          </div>
-          <div class="value-callout">Human-Centred Value: This feature turns users from route followers into route creators, making the climbing experience more participatory and playful.</div>
-        </div>
-      </section>
-
-      <section class="card proto-section">
-        <span class="proto-kicker">P05 Feature 3</span>
-        <h3>Community Sharing & Interaction</h3>
-        <span class="goal-badge">Linked to DG3: Support social motivation</span>
-        <div class="flow-detail-card">
-          <p><strong>User Need:</strong> Users may lose motivation when climbing alone or when their climbing session ends without feedback, discovery, or follow-up.</p>
-          <p><strong>Prototype Flow:</strong> The community flow allows users to browse routes shared by others, open route details, like and comment on routes, and choose routes to try.</p>
-          <div class="detail-grid">
-            <div class="detail-panel">
-              <h5>Key Screens</h5>
-              <ul>
-                <li>Community Feed</li>
-                <li>Shared Route Detail</li>
-                <li>Like / Comment Interaction</li>
-                <li>Try Route Action</li>
-              </ul>
-            </div>
-            <div class="detail-panel">
-              <h5>Key Interactions</h5>
-              <ul>
-                <li>Browse shared routes</li>
-                <li>Search or filter routes</li>
-                <li>Like a route</li>
-                <li>Comment on a route</li>
-                <li>Try a shared route</li>
-                <li>Upload user-created routes</li>
-              </ul>
-            </div>
-            <div class="detail-panel">
-              <h5>Flow Logic</h5>
-              <div class="flow-chain"><span>Browse</span><i>-></i><span>React</span><i>-></i><span>Try</span><i>-></i><span>Share</span></div>
-            </div>
-          </div>
-          <div class="screenshot-grid">
-            <figure class="screenshot-card">
-              <div class="screenshot-frame">
-                <img src="../assets/prototype/Screenshot%20placeholder%20feature3-community-feed.jpg.jpg" alt="Feature 3 community feed screen" onerror="this.closest('.screenshot-card').classList.add('is-missing'); this.remove();" />
-                <div class="screenshot-placeholder">Screenshot placeholder<br />feature3-community-feed.png</div>
-              </div>
-              <figcaption class="screenshot-caption">Browse shared routes</figcaption>
-            </figure>
-            <figure class="screenshot-card">
-              <div class="screenshot-frame">
-                <img src="../assets/prototype/Screenshot%20placeholder%20feature3-route-detail.jpg" alt="Feature 3 shared route detail screen" onerror="this.closest('.screenshot-card').classList.add('is-missing'); this.remove();" />
-                <div class="screenshot-placeholder">Screenshot placeholder<br />feature3-route-detail.png</div>
-              </div>
-              <figcaption class="screenshot-caption">Open route detail</figcaption>
-            </figure>
-            <figure class="screenshot-card">
-              <div class="screenshot-frame">
-                <img src="../assets/prototype/Screenshot%20placeholder%20feature3-omment-state.jpg" alt="Feature 3 comment interaction screen" onerror="this.closest('.screenshot-card').classList.add('is-missing'); this.remove();" />
-                <div class="screenshot-placeholder">Screenshot placeholder<br />feature3-comment-state.png</div>
-              </div>
-              <figcaption class="screenshot-caption">Like, comment & try</figcaption>
-            </figure>
-          </div>
-          <div class="value-callout">Human-Centred Value: This feature extends the climbing experience beyond a single session and supports motivation through peer-generated challenges.</div>
-        </div>
-      </section>
-
-      <section class="card proto-section">
-        <span class="proto-kicker">P06 System Architecture</span>
-        <h3>Interaction Logic and Data Flows</h3>
-        <div class="architecture-grid">
-          <article class="arch-card">
-            <h4>Recommendation Logic</h4>
-            <div class="arch-flow"><span>Quiz Answers</span><i>-></i><span>Matching Rules</span><i>-></i><span>Recommended Routes</span></div>
-          </article>
-          <article class="arch-card">
-            <h4>DIY Route Object</h4>
-            <div class="arch-flow"><span>Wall Image + Selected Holds</span><i>-></i><span>Route Object</span><i>-></i><span>Saved / Uploaded Route</span></div>
-          </article>
-          <article class="arch-card">
-            <h4>Community Interaction State</h4>
-            <div class="arch-flow"><span>Uploaded Routes</span><i>-></i><span>Community Feed</span><i>-></i><span>Likes / Comments / Tries</span></div>
-          </article>
-        </div>
-        <p style="margin-top: 18px;">
-          The current prototype uses front-end state to demonstrate the intended interaction logic. Quiz answers are mapped to route recommendation results,
-          selected holds form a DIY route object, and community actions such as likes, comments, and tries update the route interaction state. This allows
-          users to experience the main system logic before full backend implementation.
-        </p>
-      </section>
-
-      <section class="card proto-section">
-        <span class="proto-kicker">P07 High-Fidelity Prototype</span>
-        <h3>High-Fidelity Prototype</h3>
-        <p><strong>Live mobile-first web prototype</strong></p>
+        <span class="proto-kicker">04 High-Fidelity Prototype</span>
+        <h3>Live Mobile-First Web App</h3>
         <p>
-          The high-fidelity prototype is deployed as a live web app. Users can access ClimbQuest through the link or QR code below and
-          interact with the three core flows: personalized route recommendation, DIY route creation, and community sharing.
+          The high-fidelity prototype is deployed as a live web app. Users can access ClimbQuest through the link or QR code below and interact with the three core flows.
         </p>
         <div class="live-access-card">
-          <div class="live-access-copy">
+          <div class="live-copy">
             <h4>Try the live ClimbQuest prototype</h4>
-            <a class="proto-button primary" href="https://climb-quest.vercel.app/" target="_blank" rel="noopener noreferrer">Open Live Web App</a>
+            <a class="proto-button" href="https://climb-quest.vercel.app/" target="_blank" rel="noopener noreferrer">Open Live Web App</a>
+            <a class="proto-button secondary" href="https://github.com/XYMMM000/CPT208-coursework" target="_blank" rel="noopener noreferrer">View Source Code</a>
             <p class="microcopy">Best viewed on mobile or in mobile browser mode.</p>
           </div>
           <figure class="qr-panel">
@@ -1007,85 +425,109 @@
           <li>Like and comment interaction</li>
           <li>Try route action</li>
         </ul>
-        <div class="live-note">
-          This live prototype demonstrates the final interaction structure of ClimbQuest. It focuses on the three core feature flows rather than static screen presentation.
+      </section>
+
+      <section class="card proto-section">
+        <span class="proto-kicker">05 System Features</span>
+        <h3>From Design to Implementation</h3>
+        <div class="feature-implementation-grid">
+          <article class="feature-implementation-card">
+            <span class="feature-badge">SF1</span>
+            <h4>Personalized Route Recommendation</h4>
+            <p><strong>Implements DG1 -> R1:</strong> Reduce route-selection uncertainty</p>
+            <p><strong>Linked evidence:</strong> users were unsure which route fits them.</p>
+            <div class="feature-block">
+              <strong>What it does</strong>
+              <p>Users complete a playful quiz and receive route suggestions based on preference, confidence, and goals.</p>
+            </div>
+            <div class="feature-block">
+              <strong>Technical / Interaction Implementation</strong>
+              <ul class="feature-list">
+                <li>Quiz answer selection</li>
+                <li>Rule-based matching logic</li>
+                <li>Climbing type result</li>
+                <li>Recommended route list</li>
+                <li>Route detail entry point</li>
+              </ul>
+            </div>
+            <div class="feature-block">
+              <strong>UX Outcome</strong>
+              <ul class="feature-list">
+                <li>Helps users start with clearer guidance</li>
+                <li>Reduces route-selection pressure</li>
+                <li>Makes recommendations feel playful and personal</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="feature-implementation-card">
+            <span class="feature-badge">SF2</span>
+            <h4>DIY Route Creation</h4>
+            <p><strong>Implements DG2 -> R2:</strong> Increase creative ownership</p>
+            <p><strong>Linked evidence:</strong> users wanted more autonomy and creative involvement.</p>
+            <div class="feature-block">
+              <strong>What it does</strong>
+              <p>Users select holds on a wall image, connect them into a route path, and add route details.</p>
+            </div>
+            <div class="feature-block">
+              <strong>Technical / Interaction Implementation</strong>
+              <ul class="feature-list">
+                <li>Wall image display</li>
+                <li>Hold selection</li>
+                <li>Route path preview</li>
+                <li>Route metadata form</li>
+                <li>Save / upload action</li>
+              </ul>
+            </div>
+            <div class="feature-block">
+              <strong>UX Outcome</strong>
+              <ul class="feature-list">
+                <li>Turns users from route followers into route creators</li>
+                <li>Encourages creative participation</li>
+                <li>Supports playful route-making</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="feature-implementation-card">
+            <span class="feature-badge">SF3</span>
+            <h4>Community Sharing & Interaction</h4>
+            <p><strong>Implements DG3 -> R3:</strong> Support social motivation</p>
+            <p><strong>Linked evidence:</strong> users lacked motivation and peer feedback.</p>
+            <div class="feature-block">
+              <strong>What it does</strong>
+              <p>Users browse routes shared by others, open route details, like/comment, and try shared routes.</p>
+            </div>
+            <div class="feature-block">
+              <strong>Technical / Interaction Implementation</strong>
+              <ul class="feature-list">
+                <li>Community route feed</li>
+                <li>Route detail cards</li>
+                <li>Like/comment interaction</li>
+                <li>Try route action</li>
+                <li>Shared route upload logic</li>
+              </ul>
+            </div>
+            <div class="feature-block">
+              <strong>UX Outcome</strong>
+              <ul class="feature-list">
+                <li>Extends motivation beyond one climbing session</li>
+                <li>Supports peer feedback</li>
+                <li>Makes routes discoverable and reusable</li>
+              </ul>
+            </div>
+          </article>
         </div>
       </section>
 
       <section class="card proto-section">
-        <span class="proto-kicker">P08 Technology Stack</span>
-        <h3>Implementation Stack</h3>
-        <div class="stack-grid">
-          <article class="stack-card"><h4>Front-End</h4><p>HTML, CSS, and JavaScript for the mobile-first interactive interface.</p></article>
-          <article class="stack-card"><h4>Design</h4><p>Figma wireframes and visual references for screen hierarchy and flow planning.</p></article>
-          <article class="stack-card"><h4>Deployment</h4><p>Static web deployment suitable for coursework review and live prototype access.</p></article>
-          <article class="stack-card"><h4>Version Control</h4><p>Git and GitHub for project history, source access, and collaboration.</p></article>
-          <article class="stack-card"><h4>Data Handling</h4><p>Front-end state to simulate quiz results, DIY route objects, and community interactions.</p></article>
-          <article class="stack-card"><h4>Development Support</h4><p>VS Code, browser testing, and assisted debugging during implementation.</p></article>
+        <span class="proto-kicker">06 Traceability Summary</span>
+        <h3>Requirements to Implemented Features</h3>
+        <div class="trace-grid">
+          <div class="trace-card"><span>R1 -> DG1 -> SF1 Personalized Route Recommendation -> Evaluation Task 1</span><span>✓</span></div>
+          <div class="trace-card"><span>R2 -> DG2 -> SF2 DIY Route Creation -> Evaluation Task 2</span><span>✓</span></div>
+          <div class="trace-card"><span>R3 -> DG3 -> SF3 Community Sharing & Interaction -> Evaluation Task 3</span><span>✓</span></div>
         </div>
-      </section>
-
-      <section class="card proto-section">
-        <span class="proto-kicker">P09 Technical Reflection</span>
-        <h3>AI-Assisted Development</h3>
-        <div class="reflection-grid">
-          <article class="reflection-card">
-            <h4>Tools Used</h4>
-            <p>ChatGPT, Codex, VS Code, GitHub</p>
-          </article>
-          <article class="reflection-card">
-            <h4>How AI Assisted</h4>
-            <ul>
-              <li>Generated initial component structures</li>
-              <li>Helped debug layout and responsive CSS</li>
-              <li>Suggested portfolio wording and section organization</li>
-              <li>Supported image placement and Git workflow troubleshooting</li>
-            </ul>
-          </article>
-          <article class="reflection-card">
-            <h4>How We Verified the Work</h4>
-            <ul>
-              <li>Tested each core user flow manually</li>
-              <li>Checked image paths and responsive layouts</li>
-              <li>Compared prototype features with user requirements</li>
-              <li>Reviewed readability, button clarity, and mobile usability</li>
-            </ul>
-          </article>
-        </div>
-        <div class="value-callout">
-          Ethical Considerations: AI was used as implementation and communication support, while the user research, design requirements, and final design decisions remained group-owned. AI-generated or AI-assisted assets are acknowledged where appropriate, and no fabricated user data was used.
-        </div>
-      </section>
-
-      <section class="card proto-section">
-        <span class="proto-kicker">P10 Implementation Contributions</span>
-        <h3>Team Contributions</h3>
-        <table class="contribution-table">
-          <thead>
-            <tr>
-              <th>Member</th>
-              <th>Contribution</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Member A</td>
-              <td>Recommendation flow and quiz interaction</td>
-            </tr>
-            <tr>
-              <td>Member B</td>
-              <td>DIY route creation UI and hold selection logic</td>
-            </tr>
-            <tr>
-              <td>Member C</td>
-              <td>Community page and interaction states</td>
-            </tr>
-            <tr>
-              <td>Member D</td>
-              <td>Testing, content organization, responsive refinement</td>
-            </tr>
-          </tbody>
-        </table>
       </section>
     </div>
   </main>
@@ -1095,47 +537,5 @@
       <p>漏 2026 ClimbQuest Team 路 CPT208 Coursework Portfolio</p>
     </div>
   </footer>
-
-  <div class="screenshot-lightbox" id="screenshot-lightbox" aria-hidden="true">
-    <div class="lightbox-inner" role="dialog" aria-modal="true" aria-label="Expanded prototype screenshot">
-      <button class="lightbox-close" type="button" aria-label="Close expanded screenshot">×</button>
-      <img src="" alt="" />
-      <div class="lightbox-caption"></div>
-    </div>
-  </div>
-
-  <script>
-    const lightbox = document.getElementById("screenshot-lightbox");
-    const lightboxImage = lightbox.querySelector("img");
-    const lightboxCaption = lightbox.querySelector(".lightbox-caption");
-    const closeLightbox = () => {
-      lightbox.classList.remove("is-open");
-      lightbox.setAttribute("aria-hidden", "true");
-      lightboxImage.src = "";
-      lightboxImage.alt = "";
-      lightboxCaption.textContent = "";
-    };
-
-    document.querySelectorAll(".screenshot-card").forEach(card => {
-      card.addEventListener("click", () => {
-        const image = card.querySelector("img");
-        if (!image) return;
-        const caption = card.querySelector(".screenshot-caption");
-        lightboxImage.src = image.src;
-        lightboxImage.alt = image.alt;
-        lightboxCaption.textContent = caption ? caption.textContent : image.alt;
-        lightbox.classList.add("is-open");
-        lightbox.setAttribute("aria-hidden", "false");
-      });
-    });
-
-    lightbox.querySelector(".lightbox-close").addEventListener("click", closeLightbox);
-    lightbox.addEventListener("click", event => {
-      if (event.target === lightbox) closeLightbox();
-    });
-    document.addEventListener("keydown", event => {
-      if (event.key === "Escape" && lightbox.classList.contains("is-open")) closeLightbox();
-    });
-  </script>
 </body>
 </html>
