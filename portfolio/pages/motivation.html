@@ -5,6 +5,226 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Motivation | ClimbQuest</title>
   <link rel="stylesheet" href="../style.css" />
+  <style>
+    .motivation-page .section-heading {
+      margin-bottom: 32px;
+    }
+
+    .motivation-section {
+      margin-top: 28px;
+      padding: 32px;
+    }
+
+    .motivation-section:first-of-type {
+      margin-top: 0;
+    }
+
+    .motivation-section h3,
+    .motivation-card h4,
+    .data-card h4 {
+      color: var(--navy);
+    }
+
+    .motivation-section p {
+      color: #475569;
+      line-height: 1.72;
+    }
+
+    .opening-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(236, 253, 245, 0.7));
+    }
+
+    .motivation-subtitle {
+      margin-top: -6px;
+      color: #5f6b80;
+      font-size: 1.08rem;
+      font-weight: 700;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .pain-chip {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(244, 124, 47, 0.12);
+      border: 1px solid rgba(244, 124, 47, 0.22);
+      color: #9a3412;
+      font-weight: 800;
+    }
+
+    .data-grid,
+    .gap-grid,
+    .target-grid,
+    .value-grid {
+      display: grid;
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .data-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .gap-grid,
+    .value-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .target-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .data-card,
+    .motivation-card {
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
+    }
+
+    .data-card {
+      padding: 20px;
+    }
+
+    .data-card strong {
+      display: block;
+      color: var(--navy);
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .data-card span {
+      display: block;
+      margin-top: 8px;
+      color: #5f6b80;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .motivation-card {
+      padding: 22px;
+    }
+
+    .motivation-card h4 {
+      margin: 0 0 10px;
+    }
+
+    .user-badge {
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(111, 205, 181, 0.16);
+      border: 1px solid rgba(111, 205, 181, 0.32);
+      color: #0f3f3a;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .goal-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+      margin-top: 18px;
+    }
+
+    .goal-table th {
+      color: var(--navy);
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 0.92rem;
+    }
+
+    .goal-table td {
+      padding: 14px;
+      background: rgba(248, 250, 252, 0.95);
+      border-top: 1px solid rgba(23, 35, 59, 0.08);
+      border-bottom: 1px solid rgba(23, 35, 59, 0.08);
+      color: #475569;
+      line-height: 1.55;
+      vertical-align: top;
+    }
+
+    .goal-table td:first-child {
+      border-left: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 16px 0 0 16px;
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .goal-table td:last-child {
+      border-right: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 0 16px 16px 0;
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .closing-callout {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(111, 205, 181, 0.12);
+      border: 1px solid rgba(111, 205, 181, 0.24);
+      color: var(--navy);
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
+    .objective-list {
+      margin-top: 14px;
+      padding-left: 18px;
+      color: #475569;
+      line-height: 1.75;
+    }
+
+    .objective-list li {
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 900px) {
+      .data-grid,
+      .gap-grid,
+      .target-grid,
+      .value-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .motivation-section,
+      .data-card,
+      .motivation-card {
+        padding: 20px;
+      }
+
+      .goal-table,
+      .goal-table thead,
+      .goal-table tbody,
+      .goal-table th,
+      .goal-table td,
+      .goal-table tr {
+        display: block;
+      }
+
+      .goal-table thead {
+        display: none;
+      }
+
+      .goal-table td,
+      .goal-table td:first-child,
+      .goal-table td:last-child {
+        border: 1px solid rgba(23, 35, 59, 0.08);
+        border-radius: 14px;
+        margin-top: 6px;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -30,25 +250,148 @@
     </div>
   </header>
 
-  <main class="section">
+  <main class="section motivation-page">
     <div class="container">
       <div class="section-heading">
         <p class="section-label">Motivation</p>
-        <h2>Why We Chose This Topic</h2>
+        <h2>Motivation</h2>
+        <p class="motivation-subtitle">Why indoor climbers need more personal, creative, and social route experiences</p>
       </div>
 
-      <div class="card">
-        <h3>The Why</h3>
+      <section class="card motivation-section opening-card">
+        <h3>Why ClimbQuest Matters</h3>
         <p>
-          Indoor climbing gyms have become increasingly popular among university students and fitness enthusiasts. However, the climbing experience remains fragmented and inefficient. Climbers struggle with route selection, lack structured progression feedback, and experience limited guidance during their sessions. Coaches often find it difficult to provide timely, personalized feedback to multiple climbers simultaneously. We selected the C2 Go Climbers theme because it directly addresses these human-centered challenges: helping climbers feel confident, supported, and motivated throughout their climbing journey. By designing a playful, supportive system that bridges the gap between climbers' aspirations and current abilities, we can transform casual gym visits into structured, rewarding experiences that enhance both skill development and community engagement.
+          ClimbQuest was motivated by a recurring problem in indoor climbing: many climbers do not only need more routes — they need clearer guidance, easier route recording, and more engaging ways to continue their climbing journey.
         </p>
-      </div>
+      </section>
+
+      <section class="card motivation-section">
+        <h3>Problem Space: Route Choice Is Not Always Obvious</h3>
+        <p>
+          Indoor climbers often rely on wall labels, memory, or informal advice to decide what to climb next. For beginners and low-frequency climbers, route difficulty labels can feel technical, inconsistent, or hard to connect with their own ability. This creates uncertainty when choosing routes and can reduce motivation after a failed attempt or a long break.
+        </p>
+        <div class="chip-row">
+          <span class="pain-chip">Unclear route choice</span>
+          <span class="pain-chip">Weak route recording</span>
+          <span class="pain-chip">Low social motivation</span>
+        </div>
+      </section>
+
+      <section class="card motivation-section">
+        <h3>What Our Preliminary Research Showed</h3>
+        <div class="data-grid">
+          <div class="data-card"><strong>33</strong><span>participants aged 19–22</span></div>
+          <div class="data-card"><strong>25</strong><span>users reported route selection problems</span></div>
+          <div class="data-card"><strong>20</strong><span>users reported recording method problems</span></div>
+          <div class="data-card"><strong>28</strong><span>users expected personalized route recommendation</span></div>
+          <div class="data-card"><strong>26</strong><span>users expected share / record route functions</span></div>
+          <div class="data-card"><strong>21</strong><span>users preferred a mobile app format</span></div>
+        </div>
+      </section>
+
+      <section class="card motivation-section">
+        <h3>What Is Missing in Current Climbing Support</h3>
+        <div class="gap-grid">
+          <article class="motivation-card">
+            <h4>Gap 1 — Route labels do not explain personal fit</h4>
+            <p>Existing route labels usually show difficulty, but they do not explain whether a route fits a climber’s current confidence, style, or goal.</p>
+          </article>
+          <article class="motivation-card">
+            <h4>Gap 2 — Recording routes is still inconvenient</h4>
+            <p>Many climbers rely on memory, photos, or notes. This makes it hard to revisit attempts, compare progress, or share routes clearly.</p>
+          </article>
+          <article class="motivation-card">
+            <h4>Gap 3 — Social motivation is under-supported</h4>
+            <p>Climbers may want to discover what others are trying, but there is often no lightweight platform for sharing custom routes, comments, or route attempts.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card motivation-section">
+        <h3>Who We Design For</h3>
+        <div class="target-grid">
+          <article class="motivation-card">
+            <span class="user-badge">Primary User</span>
+            <h4>Beginner / regular indoor climber</h4>
+            <p>Users like Rin climb regularly but still need clearer route guidance, progress visibility, and confidence-building support.</p>
+          </article>
+          <article class="motivation-card">
+            <span class="user-badge">Edge User</span>
+            <h4>Low-frequency / returning climber</h4>
+            <p>Users like Leo climb occasionally and need quick route suggestions, lightweight setup, and a clear next action after a long break.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card motivation-section">
+        <h3>From Motivation to Design Goals</h3>
+        <table class="goal-table">
+          <thead>
+            <tr>
+              <th>Design Goal</th>
+              <th>Why it matters</th>
+              <th>Prototype Feature</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>DG1 Reduce route-selection uncertainty</td>
+              <td>Users need help choosing routes that fit their ability and style.</td>
+              <td>Personalized Route Recommendation</td>
+            </tr>
+            <tr>
+              <td>DG2 Increase creative ownership</td>
+              <td>Users want to record, create, and revisit their own climbing routes.</td>
+              <td>DIY Route Creation</td>
+            </tr>
+            <tr>
+              <td>DG3 Support social motivation</td>
+              <td>Users need lightweight sharing and feedback beyond one session.</td>
+              <td>Community Sharing & Interaction</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card motivation-section">
+        <h3>Human-Centred and Playful Value</h3>
+        <div class="value-grid">
+          <article class="motivation-card">
+            <h4>Personal guidance, not generic difficulty</h4>
+            <p>ClimbQuest uses quiz-based route matching to make route choice feel more personal and less intimidating.</p>
+          </article>
+          <article class="motivation-card">
+            <h4>Creation, not just consumption</h4>
+            <p>The DIY route tool lets users become route creators, not only route followers.</p>
+          </article>
+          <article class="motivation-card">
+            <h4>Community, not isolated attempts</h4>
+            <p>The community feature turns routes into shareable challenges that can be liked, commented on, and tried by others.</p>
+          </article>
+        </div>
+        <div class="closing-callout">
+          For ClimbQuest, playfulness is not only about visual decoration. It comes from giving climbers a sense of choice, creativity, and social participation.
+        </div>
+      </section>
+
+      <section class="card motivation-section">
+        <h3>Project Aim and Objectives</h3>
+        <p><strong>Aim:</strong> To design and implement a mobile-first climbing route platform that helps indoor climbers discover suitable routes, create custom routes, and share route experiences with others.</p>
+        <p><strong>Objectives:</strong></p>
+        <ul class="objective-list">
+          <li>Help users find routes that match their ability, preference, and goals.</li>
+          <li>Provide a visual DIY editor for creating custom climbing routes.</li>
+          <li>Support route sharing, likes, comments, and trying community routes.</li>
+          <li>Make the experience playful, lightweight, and suitable for mobile use inside climbing gyms.</li>
+          <li>Evaluate whether ClimbQuest improves personalization, usability, engagement, and adoption intention.</li>
+        </ul>
+      </section>
     </div>
   </main>
 
   <footer class="site-footer">
     <div class="container">
-      <p>© 2026 ClimbQuest Team · CPT208 Coursework Portfolio</p>
+      <p>漏 2026 ClimbQuest Team 路 CPT208 Coursework Portfolio</p>
     </div>
   </footer>
 </body>

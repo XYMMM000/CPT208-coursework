@@ -5,6 +5,312 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Prototype | ClimbQuest</title>
   <link rel="stylesheet" href="../style.css" />
+  <style>
+    .prototype-page .section-heading {
+      margin-bottom: 32px;
+    }
+
+    .proto-section {
+      margin-top: 28px;
+      padding: 32px;
+    }
+
+    .proto-section:first-of-type {
+      margin-top: 0;
+    }
+
+    .proto-section h3 {
+      color: var(--navy);
+    }
+
+    .proto-section p {
+      color: #475569;
+      line-height: 1.72;
+    }
+
+    .proto-kicker {
+      display: inline-flex;
+      width: fit-content;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(244, 124, 47, 0.12);
+      border: 1px solid rgba(244, 124, 47, 0.2);
+      color: #9a3412;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .card-grid-3,
+    .feature-implementation-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .arch-card,
+    .feature-implementation-card,
+    .trace-card {
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
+    }
+
+    .arch-card,
+    .feature-implementation-card {
+      padding: 22px;
+    }
+
+    .arch-card h4,
+    .feature-implementation-card h4,
+    .flow-row h4,
+    .live-copy h4 {
+      margin: 0 0 10px;
+      color: var(--navy);
+    }
+
+    .arch-card p {
+      margin: 0;
+    }
+
+    .data-flow-stack {
+      display: grid;
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .flow-row {
+      padding: 20px;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
+    }
+
+    .flow-chain {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .flow-chain span {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(244, 124, 47, 0.1);
+      border: 1px solid rgba(244, 124, 47, 0.16);
+      color: var(--navy);
+      font-weight: 800;
+      font-size: 0.94rem;
+    }
+
+    .flow-chain i {
+      color: var(--orange);
+      font-style: normal;
+      font-weight: 900;
+    }
+
+    .image-card {
+      margin-top: 20px;
+      padding: 12px;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 24px;
+      background: #ffffff;
+      box-shadow: 0 14px 30px rgba(23, 35, 59, 0.07);
+    }
+
+    .image-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 18px;
+      background: rgba(244, 124, 47, 0.06);
+      border: 1px solid rgba(244, 124, 47, 0.12);
+    }
+
+    .image-caption {
+      margin-top: 12px;
+      color: #5f6b80;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .live-access-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
+      gap: 24px;
+      align-items: center;
+      margin-top: 22px;
+      padding: 24px;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 14px 30px rgba(23, 35, 59, 0.07);
+    }
+
+    .proto-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      margin-top: 12px;
+      margin-right: 8px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: var(--orange);
+      color: #ffffff;
+      border: 1px solid var(--orange);
+      box-shadow: 0 10px 20px rgba(244, 124, 47, 0.24);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .proto-button.secondary {
+      background: #ffffff;
+      color: var(--navy);
+      border-color: rgba(23, 35, 59, 0.14);
+      box-shadow: none;
+    }
+
+    .microcopy {
+      margin-top: 10px;
+      color: #5f6b80;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .qr-panel {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(244, 124, 47, 0.06);
+      border: 1px solid rgba(244, 124, 47, 0.14);
+    }
+
+    .qr-panel img {
+      width: min(100%, 230px);
+      height: auto;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      box-shadow: 0 10px 22px rgba(23, 35, 59, 0.08);
+    }
+
+    .qr-panel figcaption {
+      color: var(--navy);
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .implemented-list,
+    .feature-list {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: #475569;
+      line-height: 1.7;
+    }
+
+    .implemented-list {
+      columns: 2;
+    }
+
+    .feature-badge {
+      display: inline-flex;
+      width: fit-content;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(111, 205, 181, 0.16);
+      border: 1px solid rgba(111, 205, 181, 0.32);
+      color: #0f3f3a;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .feature-block {
+      padding-top: 14px;
+      margin-top: 14px;
+      border-top: 1px solid rgba(23, 35, 59, 0.08);
+    }
+
+    .feature-block strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--navy);
+    }
+
+    .trace-grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .trace-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px 20px;
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .trace-card span:last-child {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: rgba(111, 205, 181, 0.22);
+      color: #0f3f3a;
+    }
+
+    @media (max-width: 900px) {
+      .card-grid-3,
+      .feature-implementation-grid,
+      .live-access-card {
+        grid-template-columns: 1fr;
+      }
+
+      .implemented-list {
+        columns: 1;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .proto-section,
+      .arch-card,
+      .feature-implementation-card,
+      .live-access-card,
+      .flow-row {
+        padding: 20px;
+      }
+
+      .flow-chain {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .flow-chain i {
+        text-align: center;
+      }
+
+      .trace-card {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -30,123 +336,205 @@
     </div>
   </header>
 
-  <main class="section">
+  <main class="section prototype-page">
     <div class="container">
       <div class="section-heading">
         <p class="section-label">Prototype</p>
         <h2>System Design and Implementation</h2>
       </div>
 
-      <div class="card">
-        <h3>Prototype Overview</h3>
+      <section class="card proto-section">
+        <span class="proto-kicker">01 System Architecture</span>
+        <h3>Mobile-First Prototype Structure</h3>
         <p>
-          The ClimbQuest prototype is a mobile-first web application designed for
-          use inside climbing gyms. It focuses on simplicity, fast navigation, and
-          clear visual feedback so that users can access information quickly before,
-          during, and after climbing attempts.
+          ClimbQuest is a mobile-first web prototype connecting three core flows: Personalized Route Recommendation, DIY Route Creation, and Community Sharing & Interaction.
         </p>
-      </div>
-
-      <div class="grid-3" style="margin-top: 24px;">
-        <div class="card feature-card">
-          <h3>Feature 1: Route Quest</h3>
-          <p>
-            Users receive suggested route challenges based on their level and goals.
-            The system helps transform route selection into a structured journey.
-          </p>
+        <div class="card-grid-3">
+          <article class="arch-card">
+            <h4>Frontend / Interface</h4>
+            <p>Mobile web app, quiz interface, DIY route editor, community feed, and route detail pages.</p>
+          </article>
+          <article class="arch-card">
+            <h4>Data / State</h4>
+            <p>Quiz answers, recommendation result, selected holds, route metadata, likes, comments, and try actions.</p>
+          </article>
+          <article class="arch-card">
+            <h4>Deployment</h4>
+            <p>Vercel live app and GitHub repository for access, review, and version control.</p>
+          </article>
         </div>
+      </section>
 
-        <div class="card feature-card">
-          <h3>Feature 2: Progress Dashboard</h3>
-          <p>
-            A dashboard displays completed challenges, earned badges, and climbing
-            streaks to encourage consistency and growth.
-          </p>
+      <section class="card proto-section">
+        <span class="proto-kicker">02 Data Flow</span>
+        <h3>Core Interaction Flows</h3>
+        <div class="data-flow-stack">
+          <article class="flow-row">
+            <h4>Recommendation Flow</h4>
+            <div class="flow-chain"><span>Quiz Answers</span><i>-></i><span>Matching Logic</span><i>-></i><span>Climbing Type</span><i>-></i><span>Recommended Route</span></div>
+          </article>
+          <article class="flow-row">
+            <h4>DIY Creation Flow</h4>
+            <div class="flow-chain"><span>Wall Image</span><i>-></i><span>Selected Holds</span><i>-></i><span>Route Path</span><i>-></i><span>Route Metadata</span><i>-></i><span>Saved / Uploaded Route</span></div>
+          </article>
+          <article class="flow-row">
+            <h4>Community Flow</h4>
+            <div class="flow-chain"><span>Uploaded Route</span><i>-></i><span>Community Feed</span><i>-></i><span>Like / Comment / Try</span><i>-></i><span>Updated Route Detail</span></div>
+          </article>
         </div>
+      </section>
 
-        <div class="card feature-card">
-          <h3>Feature 3: Feedback Cards</h3>
-          <p>
-            Coaches can provide short comments linked to attempts, helping users
-            reflect on specific skills and next-step improvements.
-          </p>
-        </div>
-      </div>
+      <section class="card proto-section">
+        <span class="proto-kicker">03 Low-Fidelity Prototype</span>
+        <h3>Wireframe Structure</h3>
+        <p>These wireframes helped us test navigation structure and how the three core flows connect before visual refinement.</p>
+        <figure class="image-card">
+          <img src="../assets/low-fi-wireframe.png" alt="Low-fidelity overview of ClimbQuest mobile wireframes" />
+          <figcaption class="image-caption">
+            Low-fidelity overview showing early screen structures for route recommendation, DIY creation, and community interaction flows.
+          </figcaption>
+        </figure>
+      </section>
 
-      <div class="grid-2" style="margin-top: 24px;">
-        <div class="card">
-          <h3>System Architecture</h3>
-          <p>
-            The interface is structured into three core modules: route guidance,
-            progress tracking, and coaching feedback. These modules are connected
-            through a unified user profile and session-based interaction flow.
-          </p>
-          <p><strong>Architecture Diagram:</strong> Add your image here</p>
-        </div>
-
-        <div class="card">
-          <h3>Technology Stack</h3>
-          <p><strong>Frontend:</strong> HTML, CSS, JavaScript</p>
-          <p><strong>Design:</strong> Figma</p>
-          <p><strong>Hosting:</strong> GitHub Pages / deployment link</p>
-          <p><strong>Repository:</strong> Add your GitHub repo link here</p>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top: 24px;">
-        <h3>High-Fidelity Prototype / Live System</h3>
+      <section class="card proto-section">
+        <span class="proto-kicker">04 High-Fidelity Prototype</span>
+        <h3>Live Mobile-First Web App</h3>
         <p>
-          Our high-fidelity prototype refined the visual hierarchy, clarified the
-          challenge flow, and improved the visibility of progress feedback. The final
-          system is designed to be responsive and easy to use on mobile devices.
+          The high-fidelity prototype is deployed as a live web app. Users can access ClimbQuest through the link or QR code below and interact with the three core flows.
         </p>
-        <p><strong>Live Link:</strong> Add your deployed system link here</p>
-        <p><strong>Figma Link:</strong> Add your high-fi Figma link here</p>
-      </div>
+        <div class="live-access-card">
+          <div class="live-copy">
+            <h4>Try the live ClimbQuest prototype</h4>
+            <a class="proto-button" href="https://climb-quest.vercel.app/" target="_blank" rel="noopener noreferrer">Open Live Web App</a>
+            <a class="proto-button secondary" href="https://github.com/XYMMM000/CPT208-coursework" target="_blank" rel="noopener noreferrer">View Source Code</a>
+            <p class="microcopy">Best viewed on mobile or in mobile browser mode.</p>
+          </div>
+          <figure class="qr-panel">
+            <img src="../assets/prototype/climbquest-qr-code.png" alt="QR code for the ClimbQuest live web app" />
+            <figcaption>Scan to open the ClimbQuest web app on mobile.</figcaption>
+          </figure>
+        </div>
+        <h4>Implemented interactions</h4>
+        <ul class="implemented-list">
+          <li>Quiz option selection</li>
+          <li>Climbing type result display</li>
+          <li>Personalized route recommendation</li>
+          <li>DIY route creation with hold selection</li>
+          <li>Route detail viewing</li>
+          <li>Community route browsing</li>
+          <li>Like and comment interaction</li>
+          <li>Try route action</li>
+        </ul>
+      </section>
 
-      <div class="card" style="margin-top: 24px;">
-        <h3>Individual Contributions</h3>
-        <p>
-          The following table outlines each team member's primary contributions to the project:
-        </p>
-        <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
-          <thead>
-            <tr style="background-color: #f0f0f0;">
-              <th style="border: 1px solid #ddd; padding: 8px;">Team Member</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Student ID</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Contributions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;">Member 1</td>
-              <td style="border: 1px solid #ddd; padding: 8px;">XXXXXXXX</td>
-              <td style="border: 1px solid #ddd; padding: 8px;">User Research, Personas, Content Writing</td>
-            </tr>
-            <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;">Member 2</td>
-              <td style="border: 1px solid #ddd; padding: 8px;">XXXXXXXX</td>
-              <td style="border: 1px solid #ddd; padding: 8px;">UI/UX Design, Figma Prototypes, Visual Hierarchy</td>
-            </tr>
-            <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;">Member 3</td>
-              <td style="border: 1px solid #ddd; padding: 8px;">XXXXXXXX</td>
-              <td style="border: 1px solid #ddd; padding: 8px;">Frontend Development, HTML/CSS/JS Implementation</td>
-            </tr>
-            <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;">Member 4</td>
-              <td style="border: 1px solid #ddd; padding: 8px;">XXXXXXXX</td>
-              <td style="border: 1px solid #ddd; padding: 8px;">Usability Testing, Evaluation, Iteration Documentation</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <section class="card proto-section">
+        <span class="proto-kicker">05 System Features</span>
+        <h3>From Design to Implementation</h3>
+        <div class="feature-implementation-grid">
+          <article class="feature-implementation-card">
+            <span class="feature-badge">SF1</span>
+            <h4>Personalized Route Recommendation</h4>
+            <p><strong>Implements DG1 -> R1:</strong> Reduce route-selection uncertainty</p>
+            <p><strong>Linked evidence:</strong> users were unsure which route fits them.</p>
+            <div class="feature-block">
+              <strong>What it does</strong>
+              <p>Users complete a playful quiz and receive route suggestions based on preference, confidence, and goals.</p>
+            </div>
+            <div class="feature-block">
+              <strong>Technical / Interaction Implementation</strong>
+              <ul class="feature-list">
+                <li>Quiz answer selection</li>
+                <li>Rule-based matching logic</li>
+                <li>Climbing type result</li>
+                <li>Recommended route list</li>
+                <li>Route detail entry point</li>
+              </ul>
+            </div>
+            <div class="feature-block">
+              <strong>UX Outcome</strong>
+              <ul class="feature-list">
+                <li>Helps users start with clearer guidance</li>
+                <li>Reduces route-selection pressure</li>
+                <li>Makes recommendations feel playful and personal</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="feature-implementation-card">
+            <span class="feature-badge">SF2</span>
+            <h4>DIY Route Creation</h4>
+            <p><strong>Implements DG2 -> R2:</strong> Increase creative ownership</p>
+            <p><strong>Linked evidence:</strong> users wanted more autonomy and creative involvement.</p>
+            <div class="feature-block">
+              <strong>What it does</strong>
+              <p>Users select holds on a wall image, connect them into a route path, and add route details.</p>
+            </div>
+            <div class="feature-block">
+              <strong>Technical / Interaction Implementation</strong>
+              <ul class="feature-list">
+                <li>Wall image display</li>
+                <li>Hold selection</li>
+                <li>Route path preview</li>
+                <li>Route metadata form</li>
+                <li>Save / upload action</li>
+              </ul>
+            </div>
+            <div class="feature-block">
+              <strong>UX Outcome</strong>
+              <ul class="feature-list">
+                <li>Turns users from route followers into route creators</li>
+                <li>Encourages creative participation</li>
+                <li>Supports playful route-making</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="feature-implementation-card">
+            <span class="feature-badge">SF3</span>
+            <h4>Community Sharing & Interaction</h4>
+            <p><strong>Implements DG3 -> R3:</strong> Support social motivation</p>
+            <p><strong>Linked evidence:</strong> users lacked motivation and peer feedback.</p>
+            <div class="feature-block">
+              <strong>What it does</strong>
+              <p>Users browse routes shared by others, open route details, like/comment, and try shared routes.</p>
+            </div>
+            <div class="feature-block">
+              <strong>Technical / Interaction Implementation</strong>
+              <ul class="feature-list">
+                <li>Community route feed</li>
+                <li>Route detail cards</li>
+                <li>Like/comment interaction</li>
+                <li>Try route action</li>
+                <li>Shared route upload logic</li>
+              </ul>
+            </div>
+            <div class="feature-block">
+              <strong>UX Outcome</strong>
+              <ul class="feature-list">
+                <li>Extends motivation beyond one climbing session</li>
+                <li>Supports peer feedback</li>
+                <li>Makes routes discoverable and reusable</li>
+              </ul>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="card proto-section">
+        <span class="proto-kicker">06 Traceability Summary</span>
+        <h3>Requirements to Implemented Features</h3>
+        <div class="trace-grid">
+          <div class="trace-card"><span>R1 -> DG1 -> SF1 Personalized Route Recommendation -> Evaluation Task 1</span><span>✓</span></div>
+          <div class="trace-card"><span>R2 -> DG2 -> SF2 DIY Route Creation -> Evaluation Task 2</span><span>✓</span></div>
+          <div class="trace-card"><span>R3 -> DG3 -> SF3 Community Sharing & Interaction -> Evaluation Task 3</span><span>✓</span></div>
+        </div>
+      </section>
     </div>
   </main>
 
   <footer class="site-footer">
     <div class="container">
-      <p>© 2026 ClimbQuest Team · CPT208 Coursework Portfolio</p>
+      <p>漏 2026 ClimbQuest Team 路 CPT208 Coursework Portfolio</p>
     </div>
   </footer>
 </body>
