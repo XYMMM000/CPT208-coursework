@@ -5,6 +5,260 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Users | ClimbQuest</title>
   <link rel="stylesheet" href="../style.css" />
+  <style>
+    .users-research-page .section-heading {
+      margin-bottom: 26px;
+    }
+
+    .research-section {
+      margin-top: 30px;
+      padding: 32px;
+    }
+
+    .research-section:first-of-type {
+      margin-top: 0;
+    }
+
+    .research-section h3,
+    .research-section h4 {
+      color: var(--navy);
+    }
+
+    .research-section p {
+      color: #475569;
+      line-height: 1.72;
+    }
+
+    .section-kicker {
+      display: inline-flex;
+      margin-bottom: 10px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: rgba(244, 124, 47, 0.12);
+      border: 1px solid rgba(244, 124, 47, 0.22);
+      color: #9a3412;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .photo-gallery,
+    .data-grid,
+    .finding-grid,
+    .persona-grid,
+    .requirement-grid {
+      display: grid;
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .photo-gallery {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .photo-card {
+      overflow: hidden;
+      border-radius: 20px;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      background: #ffffff;
+      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
+    }
+
+    .photo-card img {
+      display: block;
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+    }
+
+    .gallery-caption,
+    .journey-note,
+    .design-principle {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(23, 35, 59, 0.05);
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      color: var(--navy);
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
+    .data-grid,
+    .finding-grid,
+    .requirement-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .persona-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .data-card,
+    .finding-card,
+    .persona-card,
+    .requirement-card {
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
+      padding: 22px;
+    }
+
+    .data-card strong {
+      display: block;
+      color: var(--navy);
+      font-size: 2.1rem;
+      line-height: 1;
+    }
+
+    .data-card span {
+      display: block;
+      margin-top: 8px;
+      color: #5f6b80;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .finding-card {
+      border-top: 5px solid rgba(244, 124, 47, 0.76);
+    }
+
+    .finding-card:nth-child(2) {
+      border-top-color: rgba(111, 205, 181, 0.9);
+    }
+
+    .finding-card:nth-child(3) {
+      border-top-color: rgba(116, 180, 240, 0.9);
+    }
+
+    .evidence-line,
+    .persona-link,
+    .feature-label {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(248, 250, 252, 0.95);
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      color: var(--navy);
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .persona-header {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .persona-avatar-small {
+      width: 82px;
+      height: 82px;
+      flex: 0 0 auto;
+      border-radius: 18px;
+      border: 3px solid #ffffff;
+      box-shadow: 0 10px 18px rgba(23, 35, 59, 0.12);
+      background: #ffffff;
+    }
+
+    .persona-role {
+      display: inline-flex;
+      margin-bottom: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(111, 205, 181, 0.14);
+      color: #0f3f3a;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .persona-card ul,
+    .requirement-card ul {
+      margin-top: 12px;
+    }
+
+    .journey-image-card {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 22px;
+      background: rgba(248, 250, 252, 0.95);
+      border: 1px solid rgba(23, 35, 59, 0.08);
+    }
+
+    .journey-image-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 16px;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+    }
+
+    .trace-table-wrap {
+      margin-top: 22px;
+      overflow-x: auto;
+    }
+
+    .trace-table {
+      width: 100%;
+      min-width: 880px;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+    }
+
+    .trace-table th {
+      padding: 10px 14px;
+      color: var(--navy);
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .trace-table td {
+      padding: 16px 14px;
+      background: rgba(248, 250, 252, 0.95);
+      border-top: 1px solid rgba(23, 35, 59, 0.08);
+      border-bottom: 1px solid rgba(23, 35, 59, 0.08);
+      color: #475569;
+      line-height: 1.55;
+      vertical-align: top;
+    }
+
+    .trace-table td:first-child {
+      border-left: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 16px 0 0 16px;
+    }
+
+    .trace-table td:last-child {
+      border-right: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 0 16px 16px 0;
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .mapping-figure {
+      margin-top: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .photo-gallery,
+      .data-grid,
+      .finding-grid,
+      .persona-grid,
+      .requirement-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .research-section {
+        padding: 24px;
+      }
+
+      .photo-card img {
+        height: 240px;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -30,362 +284,207 @@
     </div>
   </header>
 
-  <main class="section">
+  <main class="section users-research-page">
     <div class="container">
       <div class="section-heading">
-        <p class="section-label">User Requirements</p>
-        <h2>User Personas </h2>
+        <p class="section-label">Users</p>
+        <h2>Users and Requirements</h2>
+        <p class="section-copy">From field observation and survey evidence to ClimbQuest's core user requirements.</p>
       </div>
 
-      <!-- <div class="card">
-        <p>Coverage rule for this project: 10% edge users + 80% mainstream users + 10% advanced users.</p>
-      </div> -->
-
-      <article class="card persona-magazine" style="margin-top: 24px;">
-        <div class="persona-magazine-cover">
-          <p class="persona-kicker">Featured Persona</p>
-          <img class="persona-pic virtual-avatar magazine-avatar" src="https://api.dicebear.com/9.x/notionists/svg?seed=Rin&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf" alt="Virtual avatar for Rin" />
-          <!-- <h3>Rin Zhao 路 Mainstream 80%</h3> -->
-          <p class="persona-quote">鈥淚f I can clearly see the next route challenge, I feel motivated to come back every week.鈥?/p>
+      <section class="card research-section">
+        <span class="section-kicker">R01</span>
+        <h3>Evidence of Life: Field Observation</h3>
+        <p>We visited indoor climbing spaces to observe real route layouts, wall density, and how climbers interact with route choices.</p>
+        <div class="photo-gallery" aria-label="Field observation photos">
+          <figure class="photo-card">
+            <img src="../assets/motivation/field-observation-01.jpg" alt="Indoor climbing wall field observation 1" />
+          </figure>
+          <figure class="photo-card">
+            <img src="../assets/motivation/field-observation-02.jpg" alt="Indoor climbing wall field observation 2" />
+          </figure>
+          <figure class="photo-card">
+            <img src="../assets/motivation/field-observation-03.jpg" alt="Indoor climbing wall field observation 3" />
+          </figure>
+          <figure class="photo-card">
+            <img src="../assets/motivation/field-observation-04.jpg" alt="Indoor climbing wall field observation 4" />
+          </figure>
         </div>
+        <div class="gallery-caption">On-site observation photos from indoor climbing spaces used to understand route density, wall layout, and real climbing behaviour.</div>
+      </section>
 
-        <div class="persona-magazine-body">
-          <div class="persona-chip-row">
-            <span class="persona-chip">Age 22</span>
-            <span class="persona-chip">University Student</span>
-            <span class="persona-chip">Indoor Climbing Beginner</span>
-          </div>
-          <p><strong>Name:</strong> Rin Zhao</p>
-          <p><strong>Background:</strong> Rin climbs 1-2 times per week and mostly uses mobile tools inside the gym to track progress.</p>
-
-          <div class="persona-columns">
-            <section class="persona-panel">
-              <h4>Goals</h4>
-              <ul>
-                <li>Choose routes that match current level without hesitation</li>
-                <li>See visible progress after each session</li>
-                <li>Build confidence through clear milestones</li>
-              </ul>
-            </section>
-
-            <section class="persona-panel">
-              <h4>Pain Points</h4>
-              <ul>
-                <li>Route difficulty labels feel inconsistent for beginners</li>
-                <li>After failure, next steps are not obvious</li>
-                <li>Feedback is fragmented and hard to remember</li>
-              </ul>
-            </section>
-          </div>
-
-          <section class="persona-panel persona-highlight">
-            <h4>Design Opportunity</h4>
-            <p>Provide a playful 鈥渘ext best route鈥?recommendation with confidence cues, mini-achievements, and coach-ready feedback cards in one view.</p>
-          </section>
+      <section class="card research-section">
+        <span class="section-kicker">R02</span>
+        <h3>Survey Overview</h3>
+        <p>We used the poster survey data consistently to define the clearest user problems and expected product functions.</p>
+        <div class="data-grid">
+          <div class="data-card"><strong>33</strong><span>participants aged 19-22</span></div>
+          <div class="data-card"><strong>25</strong><span>reported route selection problems</span></div>
+          <div class="data-card"><strong>20</strong><span>reported recording method problems</span></div>
+          <div class="data-card"><strong>28</strong><span>expected personalized route recommendation</span></div>
+          <div class="data-card"><strong>26</strong><span>expected share / record route functions</span></div>
+          <div class="data-card"><strong>21</strong><span>preferred a mobile app format</span></div>
         </div>
-      </article>
+      </section>
 
-      <article class="card persona-magazine" style="margin-top: 24px;">
-        <div class="persona-magazine-cover">
-          <p class="persona-kicker">Edge Persona</p>
-          <img class="persona-pic virtual-avatar magazine-avatar" src="https://api.dicebear.com/9.x/notionists/svg?seed=Leo&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf" alt="Virtual avatar for Leo" />
-          <!-- <h3>Leo Sun 路 Edge 10%</h3> -->
-          <p class="persona-quote">鈥淚 only climb occasionally, so I need very clear guidance and fast feedback every single time.鈥?/p>
+      <section class="card research-section">
+        <span class="section-kicker">R03</span>
+        <h3>Key User Findings</h3>
+        <div class="finding-grid">
+          <article class="finding-card">
+            <h4>Finding 1 - Route selection is the clearest pain point</h4>
+            <div class="evidence-line">Evidence: 25 users reported route selection problems.</div>
+          </article>
+          <article class="finding-card">
+            <h4>Finding 2 - Users need better route recording and creation</h4>
+            <div class="evidence-line">Evidence: 20 users reported recording method problems, and 26 expected share / record route functions.</div>
+          </article>
+          <article class="finding-card">
+            <h4>Finding 3 - Mobile-first support is appropriate</h4>
+            <div class="evidence-line">Evidence: 21 users preferred a mobile app format.</div>
+          </article>
         </div>
+      </section>
 
-        <div class="persona-magazine-body">
-          <div class="persona-chip-row">
-            <span class="persona-chip">Age 27</span>
-            <span class="persona-chip">Working Professional</span>
-            <span class="persona-chip">Low-frequency Visitor</span>
-          </div>
-          <p><strong>Name:</strong> Leo Sun</p>
-          <p><strong>Background:</strong> Leo visits the gym once or twice a month and often feels unfamiliar with route choices after a long break.</p>
+      <section class="card research-section">
+        <span class="section-kicker">R04</span>
+        <h3>User Personas</h3>
+        <p>The personas connect survey evidence to the users ClimbQuest needs to support: regular beginners who need confidence and low-frequency climbers who need fast re-entry.</p>
+        <div class="persona-grid">
+          <article class="persona-card">
+            <div class="persona-header">
+              <img class="persona-avatar-small" src="https://api.dicebear.com/9.x/notionists/svg?seed=Rin&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf" alt="Virtual avatar for Rin Zhao" />
+              <div>
+                <span class="persona-role">Featured Persona</span>
+                <h4>Rin Zhao</h4>
+                <p>Age 22, university student, indoor beginner.</p>
+              </div>
+            </div>
+            <ul>
+              <li>Needs route guidance that matches her current level.</li>
+              <li>Needs confidence-building support when route labels feel unclear.</li>
+              <li>Needs visible progress so repeated climbing feels meaningful.</li>
+            </ul>
+            <div class="persona-link">User need link: Rin reflects R1 personalized route guidance and R2 route recording / creation needs.</div>
+          </article>
 
-          <div class="persona-columns">
-            <section class="persona-panel">
-              <h4>Goals</h4>
-              <ul>
-                <li>Get a quick route suggestion based on current condition</li>
-                <li>Avoid spending time guessing what to try first</li>
-                <li>Leave each session with at least one small achievement</li>
-              </ul>
-            </section>
-
-            <section class="persona-panel">
-              <h4>Pain Points</h4>
-              <ul>
-                <li>Forgets previous progress between sessions</li>
-                <li>Feels lost when route labels are too technical</li>
-                <li>Needs lightweight guidance without complex setup</li>
-              </ul>
-            </section>
-          </div>
-
-          <section class="persona-panel persona-highlight">
-            <h4>Design Opportunity</h4>
-            <p>Add a 鈥渞eturning climber mode鈥?that restores past progress, suggests one starter route, and gives a one-screen action plan.</p>
-          </section>
+          <article class="persona-card">
+            <div class="persona-header">
+              <img class="persona-avatar-small" src="https://api.dicebear.com/9.x/notionists/svg?seed=Leo&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf" alt="Virtual avatar for Leo Sun" />
+              <div>
+                <span class="persona-role">Edge Persona</span>
+                <h4>Leo Sun</h4>
+                <p>Age 27, working professional, low-frequency climber.</p>
+              </div>
+            </div>
+            <ul>
+              <li>Needs quick route suggestions after long breaks.</li>
+              <li>Needs low setup effort inside the gym.</li>
+              <li>Needs a clear next action instead of guessing where to start.</li>
+            </ul>
+            <div class="persona-link">User need link: Leo reflects R1 personalized route guidance and DG1 route-selection uncertainty.</div>
+          </article>
         </div>
-      </article>
+      </section>
 
-      <article class="card research-card" style="margin-top: 32px;">
-        <div class="section-heading">
-          <p class="section-label">User Research</p>
-          <h2>Survey Respondent Profile</h2>
-          <p class="section-copy">Exploratory user research sample for ClimbQuest</p>
+      <section class="card research-section">
+        <span class="section-kicker">R05</span>
+        <h3>User Journey Map</h3>
+        <p>The journey map helped identify moments of hesitation, route confusion, and post-climb drop-off, which informed our three core requirements.</p>
+        <div class="journey-image-card">
+          <img src="../assets/User%20Journey%20Map.png" alt="User journey map for the current climbing experience" />
         </div>
+        <div class="journey-note">Key journey moments: choosing a route, understanding route fit, attempting the route, recording the result, and deciding whether to continue or share.</div>
+      </section>
 
-        <div class="summary-grid" id="survey-summary"></div>
+      <section class="card research-section">
+        <span class="section-kicker">R06</span>
+        <h3>Requirements: What Makes ClimbQuest Playful?</h3>
+        <div class="requirement-grid">
+          <article class="requirement-card">
+            <h4>R1 Personalized Route Guidance</h4>
+            <p>Users should receive route suggestions that match their climbing ability, preference, confidence, and goals.</p>
+            <div class="feature-label">Key Characteristics</div>
+            <ul>
+              <li>quiz-based input</li>
+              <li>climbing type result</li>
+              <li>recommended route list</li>
+              <li>route detail entry point</li>
+            </ul>
+          </article>
 
-        <div class="survey-metrics-grid" id="survey-charts"></div>
+          <article class="requirement-card">
+            <h4>R2 DIY Route Creation</h4>
+            <p>Users should be able to create and record custom routes by selecting holds on a wall image.</p>
+            <div class="feature-label">Key Characteristics</div>
+            <ul>
+              <li>wall image</li>
+              <li>selected holds</li>
+              <li>route path</li>
+              <li>route metadata</li>
+              <li>save / upload action</li>
+            </ul>
+          </article>
 
-        <p class="chart-copy">Exploratory sample 鈥?replace with final survey totals if needed.</p>
-      </article>
-
-      <div class="section-heading" style="margin-top: 50px;">
-        <p class="section-label">User Journey</p>
-        <h2>Current Climbing Experience</h2>
-      </div>
-
-      <div class="card">
-        <h3> User Journey Map</h3>
-        <img src="../assets/User Journey Map.png" alt="User Journey Map - Rin's climbing experience" style="width: 100%; height: auto; margin-top: 16px; border-radius: 14px;">
-      </div>
-
-      <div class="card research-card" style="margin-top: 32px;">
-        <div class="card-headline-row">
-          <div>
-            <h3>Top Pain Points Reported by Climbers</h3>
-            <p class="section-copy">5-point scale: 1 = not a problem, 5 = major friction</p>
-          </div>
-          <span class="badge">n = 24 respondents</span>
+          <article class="requirement-card">
+            <h4>R3 Community Sharing and Interaction</h4>
+            <p>Users should be able to share, browse, like, comment on, and try community-created routes.</p>
+            <div class="feature-label">Key Characteristics</div>
+            <ul>
+              <li>community feed</li>
+              <li>route detail card</li>
+              <li>like/comment interaction</li>
+              <li>try route action</li>
+              <li>shared route upload</li>
+            </ul>
+          </article>
         </div>
-        <div class="pain-row" id="pain-points"></div>
-        <div class="takeaway-strip">Takeaway: Route selection is the clearest friction point, especially for beginners and returning climbers.</div>
-      </div>
+      </section>
 
-      <div class="card" style="margin-top: 24px;">
-        <h3>User Requirements: Must-Haves for "Playful"</h3>
-        <ol style="line-height: 1.8;">
-          <li><strong>Guided Route Selection:</strong> The system must recommend routes based on user level and past performance, transforming selection from random guessing into a structured, guided journey that feels supportive rather than judgmental.</li>
-          <li><strong>Visible Progress and Achievement:</strong> Users must see immediate, tangible progress through badges, challenge milestones, or streak counters, so they feel motivated to return and can easily celebrate small wins during or after each session.</li>
-          <li><strong>Coach-Ready Feedback Integration:</strong> The system must enable coaches to quickly provide lightweight, contextual feedback (e.g., "nice footwork on that move") linked to specific attempts, making users feel seen, supported, and more confident in future attempts.</li>
-        </ol>
-      </div>
-
-      <div class="card research-card" style="margin-top: 32px;">
-        <div class="card-headline-row">
-          <div>
-            <h3>Feature Priority Based on User Feedback</h3>
-            <p class="section-copy">Which product ideas best respond to the research findings?</p>
-          </div>
-          <span class="badge">Priority score / 5</span>
+      <section class="card research-section">
+        <span class="section-kicker">R07</span>
+        <h3>Requirement Traceability</h3>
+        <p>This traceability table makes the Week 9 alignment explicit: user evidence connects to requirements, design goals, and implemented system features.</p>
+        <div class="trace-table-wrap">
+          <table class="trace-table">
+            <thead>
+              <tr>
+                <th>User Evidence</th>
+                <th>Requirement</th>
+                <th>Design Goal</th>
+                <th>System Feature</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>25 users reported route selection problems</td>
+                <td>R1 Personalized route guidance</td>
+                <td>DG1 Reduce route-selection uncertainty</td>
+                <td>SF1 Personalized Route Recommendation</td>
+              </tr>
+              <tr>
+                <td>20 users reported recording method problems; 26 expected share / record route functions</td>
+                <td>R2 DIY route creation</td>
+                <td>DG2 Increase creative ownership</td>
+                <td>SF2 DIY Route Creation</td>
+              </tr>
+              <tr>
+                <td>Users showed interest in sharing routes and community interaction</td>
+                <td>R3 Community sharing</td>
+                <td>DG3 Support social motivation</td>
+                <td>SF3 Community Sharing & Interaction</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="priority-grid" id="feature-priority"></div>
-        <div class="priority-strip">Priority focus: make route choice easier, progress more visible, and feedback easier to reuse.</div>
-      </div>
+      </section>
 
-      <div class="card research-card" style="margin-top: 32px;">
-        <div class="section-heading">
-          <p class="section-label">Design Opportunities</p>
-          <h2>From Research Insights to Design Opportunities</h2>
-          <p class="section-copy">How user findings shaped ClimbQuest's three core feature directions</p>
-        </div>
-        <div class="mapping-figure" id="insight-mapping"></div>
-        <div class="mapping-footer">Design principle: Through recommendation, creation, and community interaction, ClimbQuest turns climbing routes from one-time challenges into an ongoing exploration experience.</div>
-      </div>
-
-      <div class="card" style="margin-top: 24px;">
-        <h3>Evidence of Life: User Observations</h3>
-        <p>
-          We conducted informal observations and interviews with climbers at the gym to validate our assumptions. Key findings confirmed that:
-        </p>
-        <ul style="line-height: 1.8;">
-          <li>Beginner climbers spend 5-10 minutes choosing routes without a clear strategy</li>
-          <li>Regular climbers rely on memory or coach suggestions to know what to try next</li>
-          <li>Climbers rarely remember past attempts or see tangible progress over weeks</li>
-          <li>Coaching feedback is often verbal and quickly forgotten after the session</li>
-          <li>Many climbers climb solo and lack motivation or accountability</li>
-        </ul>
-        <p style="margin-top: 12px; font-style: italic; color: #666;">
-          Note: Photos and videos from onsite observations will be uploaded in the final submission.
-        </p>
-      </div>    </div>
+    </div>
   </main>
-
-  <script>
-    const surveyCards = [
-      { value: 24, label: "survey responses" },
-      { value: 6, label: "informal interviews" },
-      { value: 3, label: "observed gym sessions" }
-    ];
-
-    const experienceData = [
-      { label: "Beginner", value: 12 },
-      { label: "Intermediate", value: 9 },
-      { label: "Advanced", value: 3 }
-    ];
-
-    const visitFrequencyData = [
-      { label: "Weekly+", value: 10 },
-      { label: "Monthly", value: 8 },
-      { label: "Occasional", value: 6 }
-    ];
-
-    const climbingModeData = [
-      { label: "With friends", value: 11 },
-      { label: "Alone", value: 9 },
-      { label: "With coach", value: 4 }
-    ];
-
-    const surveyCharts = [
-      { title: "Experience Level", data: experienceData, insight: "Most respondents are early learners or intermediate climbers." },
-      { title: "Visit Frequency", data: visitFrequencyData, insight: "The majority climb at least once a month." },
-      { title: "Climbing Mode", data: climbingModeData, insight: "Most respondents climb socially or independently, with fewer coach-supported sessions." }
-    ];
-
-    const painPoints = [
-      { rank: 1, label: "Hard to choose the next suitable route", score: 4.6, color: "orange" },
-      { rank: 2, label: "Difficulty labels feel inconsistent", score: 4.2, color: "blue" },
-      { rank: 3, label: "Progress is hard to see over weeks", score: 4.0, color: "mint" },
-      { rank: 4, label: "Feedback is verbal and easy to forget", score: 3.8, color: "yellow" },
-      { rank: 5, label: "Low motivation when climbing alone", score: 3.5, color: "purple" }
-    ];
-
-    const featurePriority = [
-      { label: "Next best route recommendation", score: 4.8, color: "orange" },
-      { label: "Visible progress / milestones", score: 4.5, color: "blue" },
-      { label: "Session summary after climbing", score: 4.2, color: "mint" },
-      { label: "Coach-ready feedback card", score: 3.9, color: "yellow" },
-      { label: "Returning climber mode", score: 3.7, color: "purple" },
-      { label: "Playful badges and streaks", score: 3.5, color: "orange" }
-    ];
-
-    const featureOpportunityMapping = [
-      {
-        insight: "Users do not know which route best fits them.",
-        opportunity: "Use a playful questionnaire to reduce choice pressure.",
-        feature: "Personalized Route Recommendation"
-      },
-      {
-        insight: "Users want more autonomy and creative involvement.",
-        opportunity: "Let users move from completing routes to designing routes.",
-        feature: "DIY Route Creation"
-      },
-      {
-        insight: "Users lack ongoing motivation and peer feedback.",
-        opportunity: "Make routes shareable, discoverable, and discussable.",
-        feature: "Community Sharing & Interaction"
-      },
-      {
-        insight: "A single climbing session often lacks follow-up engagement.",
-        opportunity: "Create a loop from recommendation to creation to sharing.",
-        feature: "Route Experience Loop"
-      }
-    ];
-    const fillColor = {
-      orange: "linear-gradient(135deg, var(--orange), #f9a16d)",
-      blue: "linear-gradient(135deg, var(--blue), #a3c8f9)",
-      mint: "linear-gradient(135deg, var(--mint), #9de1cb)",
-      yellow: "linear-gradient(135deg, var(--yellow), #fce3a3)",
-      purple: "linear-gradient(135deg, var(--purple), #d6bdf6)"
-    };
-
-    const renderSummary = () => {
-      const container = document.getElementById("survey-summary");
-      container.innerHTML = surveyCards.map(card => `
-        <div class="summary-card">
-          <strong>${card.value}</strong>
-          <span>${card.label}</span>
-        </div>
-      `).join("");
-    };
-
-    const renderSurveyCharts = () => {
-      const container = document.getElementById("survey-charts");
-      const maxValue = Math.max(
-        ...experienceData.map(item => item.value),
-        ...visitFrequencyData.map(item => item.value),
-        ...climbingModeData.map(item => item.value)
-      );
-      const chartColors = ["orange", "blue", "mint"];
-      container.innerHTML = surveyCharts.map((chart, index) => `
-        <div class="chart-card">
-          <h4>${chart.title}</h4>
-          ${chart.data.map(item => `
-            <div class="chart-row">
-              <div class="chart-label">${item.label}</div>
-              <div class="bar-track"><div class="bar-fill" style="width: ${Math.round((item.value / maxValue) * 100)}%; background: ${fillColor[chartColors[index]]};"></div></div>
-              <div class="chart-value">${item.value}</div>
-            </div>
-          `).join("")}
-          <p class="chart-insight">${chart.insight}</p>
-        </div>
-      `).join("");
-    };
-
-    const renderPainPoints = () => {
-      const container = document.getElementById("pain-points");
-      const maxScore = 5;
-      container.innerHTML = painPoints.map(point => `
-        <div class="pain-item">
-          <div class="pain-rank">${point.rank}</div>
-          <div class="pain-icon" style="background: rgba(23, 35, 59, 0.06); color: var(--${point.color});">!</div>
-          <div class="pain-desc">
-            <div class="pain-label">${point.label}</div>
-            <div class="pain-progress"><div class="pain-fill" style="width: ${Math.round((point.score / maxScore) * 100)}%; background: ${fillColor[point.color]};"></div></div>
-          </div>
-          <div class="pain-score">${point.score.toFixed(1)}</div>
-        </div>
-      `).join("");
-    };
-
-    const renderFeaturePriority = () => {
-      const container = document.getElementById("feature-priority");
-      container.innerHTML = featurePriority.map((item, index) => `
-        <div class="priority-card">
-          <div class="priority-icon" style="background: ${fillColor[item.color]};">${index + 1}</div>
-          <div class="priority-meta">
-            <div class="priority-title">${item.label}</div>
-            <div class="priority-score">${item.score.toFixed(1)}</div>
-          </div>
-          <div class="priority-progress"><div class="priority-fill" style="width: ${Math.round((item.score / 5) * 100)}%; background: ${fillColor[item.color]};"></div></div>
-        </div>
-      `).join("");
-    };
-
-    const renderInsightMapping = () => {
-      const container = document.getElementById("insight-mapping");
-      container.innerHTML = `
-        <div class="mapping-head">
-          <div class="mapping-col">User Insight</div>
-          <div class="mapping-col">Design Opportunity</div>
-          <div class="mapping-col">Related Feature</div>
-        </div>
-        <div class="mapping-rows">
-          ${featureOpportunityMapping.map(item => `
-            <div class="mapping-row">
-              <div class="mapping-cell">${item.insight}</div>
-              <div class="mapping-arrow">&rarr;</div>
-              <div class="mapping-cell">${item.opportunity}</div>
-              <div class="mapping-arrow">&rarr;</div>
-              <div class="mapping-cell mapping-feature-cell">${item.feature}</div>
-            </div>
-          `).join("")}
-        </div>
-      `;
-    };
-    renderSummary();
-    renderSurveyCharts();
-    renderPainPoints();
-    renderFeaturePriority();
-    renderInsightMapping();
-  </script>
 
   <footer class="site-footer">
     <div class="container">
-      <p>漏 2026 ClimbQuest Team 路 CPT208 Coursework Portfolio</p>
+      <p>&copy; 2026 ClimbQuest Team &middot; CPT208 Coursework Portfolio</p>
     </div>
   </footer>
 </body>

@@ -107,6 +107,55 @@
       line-height: 1.45;
     }
 
+    .motivation-section .data-grid .data-card:first-child span {
+      font-size: 0;
+    }
+
+    .motivation-section .data-grid .data-card:first-child span::after {
+      content: "participants aged 19-22 informed the project direction";
+      font-size: 0.95rem;
+    }
+
+    .observation-gallery {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .observation-photo {
+      overflow: hidden;
+      border-radius: 20px;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
+    }
+
+    .observation-photo img {
+      display: block;
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+    }
+
+    .observation-caption {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(23, 35, 59, 0.05);
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      color: var(--navy);
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
+    .privacy-note {
+      margin-top: 10px;
+      color: #5f6b80;
+      font-size: 0.92rem;
+      font-style: italic;
+    }
+
     .motivation-card {
       padding: 22px;
     }
@@ -191,7 +240,8 @@
       .data-grid,
       .gap-grid,
       .target-grid,
-      .value-grid {
+      .value-grid,
+      .observation-gallery {
         grid-template-columns: 1fr;
       }
     }
@@ -261,7 +311,7 @@
       <section class="card motivation-section opening-card">
         <h3>Why ClimbQuest Matters</h3>
         <p>
-          ClimbQuest was motivated by a recurring problem in indoor climbing: many climbers do not only need more routes — they need clearer guidance, easier route recording, and more engaging ways to continue their climbing journey.
+          ClimbQuest was motivated by a recurring problem in indoor climbing: many climbers do not only need more routes 鈥?they need clearer guidance, easier route recording, and more engaging ways to continue their climbing journey.
         </p>
       </section>
 
@@ -278,14 +328,14 @@
       </section>
 
       <section class="card motivation-section">
-        <h3>What Our Preliminary Research Showed</h3>
+        <h3>Evidence Snapshot</h3>
+        <p>
+          Early field and survey evidence pointed to three connected needs: clearer route choice, easier route recording, and lightweight mobile support. The full field observation gallery and detailed user evidence are documented on the Users page.
+        </p>
         <div class="data-grid">
-          <div class="data-card"><strong>33</strong><span>participants aged 19–22</span></div>
-          <div class="data-card"><strong>25</strong><span>users reported route selection problems</span></div>
-          <div class="data-card"><strong>20</strong><span>users reported recording method problems</span></div>
-          <div class="data-card"><strong>28</strong><span>users expected personalized route recommendation</span></div>
-          <div class="data-card"><strong>26</strong><span>users expected share / record route functions</span></div>
-          <div class="data-card"><strong>21</strong><span>users preferred a mobile app format</span></div>
+          <div class="data-card"><strong>33</strong><span>participants aged 19鈥?2</span></div>
+          <div class="data-card"><strong>25 / 20</strong><span>reported route selection and recording method problems</span></div>
+          <div class="data-card"><strong>28 / 26 / 21</strong><span>expected recommendation, share / record functions, and mobile support</span></div>
         </div>
       </section>
 
@@ -293,15 +343,15 @@
         <h3>What Is Missing in Current Climbing Support</h3>
         <div class="gap-grid">
           <article class="motivation-card">
-            <h4>Gap 1 — Route labels do not explain personal fit</h4>
-            <p>Existing route labels usually show difficulty, but they do not explain whether a route fits a climber’s current confidence, style, or goal.</p>
+            <h4>Gap 1 鈥?Route labels do not explain personal fit</h4>
+            <p>Existing route labels usually show difficulty, but they do not explain whether a route fits a climber鈥檚 current confidence, style, or goal.</p>
           </article>
           <article class="motivation-card">
-            <h4>Gap 2 — Recording routes is still inconvenient</h4>
+            <h4>Gap 2 鈥?Recording routes is still inconvenient</h4>
             <p>Many climbers rely on memory, photos, or notes. This makes it hard to revisit attempts, compare progress, or share routes clearly.</p>
           </article>
           <article class="motivation-card">
-            <h4>Gap 3 — Social motivation is under-supported</h4>
+            <h4>Gap 3 鈥?Social motivation is under-supported</h4>
             <p>Climbers may want to discover what others are trying, but there is often no lightweight platform for sharing custom routes, comments, or route attempts.</p>
           </article>
         </div>
@@ -391,7 +441,7 @@
 
   <footer class="site-footer">
     <div class="container">
-      <p>漏 2026 ClimbQuest Team 路 CPT208 Coursework Portfolio</p>
+      <p>&copy; 2026 ClimbQuest Team &middot; CPT208 Coursework Portfolio</p>
     </div>
   </footer>
 </body>
