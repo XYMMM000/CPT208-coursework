@@ -621,6 +621,9 @@ export default function RouteDetailPage() {
   const isImpact = mode === EXPERIENCE_MODES.IMPACT;
   const location = useLocation();
   const routeFromState = location.state?.route;
+  const fromPage = location.state?.fromPage;
+  const backTarget = fromPage === "discover" ? "/discover" : "/community";
+  const backLabel = fromPage === "discover" ? "Back to Discover" : "Back to Community";
 
   const resolvedInitialRoute = {
     ...initialRoute,
@@ -945,8 +948,8 @@ export default function RouteDetailPage() {
 
   return (
     <section className={`cq-detail-page ${isImpact ? "cq-detail-page-impact" : ""}`}>
-      <Link className="cq-secondary-btn cq-detail-back-btn" to="/community">
-        Back to Community
+      <Link className="cq-secondary-btn cq-detail-back-btn" to={backTarget}>
+        {backLabel}
       </Link>
 
       <header className="cq-detail-header">

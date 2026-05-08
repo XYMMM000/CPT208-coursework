@@ -891,7 +891,8 @@ export default function DiscoverPage() {
   function openRecommendedRoute(route) {
     navigate("/route-detail", {
       state: {
-        route: buildRouteDetailState(route, result)
+        route: buildRouteDetailState(route, result),
+        fromPage: "discover"
       }
     });
   }
@@ -1018,7 +1019,8 @@ export default function DiscoverPage() {
                 className="cq-discover-reco-link cq-discover-reco-card"
                 to="/route-detail"
                 state={{
-                  route: buildRouteDetailState(route, result)
+                  route: buildRouteDetailState(route, result),
+                  fromPage: "discover"
                 }}
               >
                 <div className="cq-route-top-row">
