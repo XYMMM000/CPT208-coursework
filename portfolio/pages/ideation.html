@@ -127,17 +127,18 @@
 
     .alternatives-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-      margin-top: 22px;
+      grid-template-columns: minmax(0, 0.96fr) minmax(0, 0.96fr) minmax(0, 1.12fr);
+      gap: 24px;
+      margin-top: 26px;
+      align-items: stretch;
     }
 
     .concept-card {
       position: relative;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      padding: 24px;
+      gap: 18px;
+      padding: 26px;
       border: 1px solid rgba(23, 35, 59, 0.08);
       border-radius: 22px;
       background: rgba(255, 255, 255, 0.96);
@@ -145,16 +146,17 @@
     }
 
     .concept-card.selected {
-      border-color: rgba(111, 205, 181, 0.55);
-      box-shadow: 0 18px 42px rgba(23, 35, 59, 0.12);
-      background: linear-gradient(180deg, rgba(236, 253, 245, 0.88), rgba(255, 255, 255, 0.98));
+      border-color: rgba(23, 35, 59, 0.08);
+      box-shadow: 0 12px 26px rgba(23, 35, 59, 0.06);
+      background: rgba(255, 255, 255, 0.96);
     }
 
     .concept-topline {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 12px;
+      gap: 16px;
+      min-height: 76px;
     }
 
     .concept-label {
@@ -201,21 +203,22 @@
 
     .concept-card h4 {
       color: var(--navy);
-      font-size: 1.35rem;
+      font-size: 1.45rem;
       margin: 0;
+      line-height: 1.22;
     }
 
     .concept-field {
-      padding-top: 12px;
+      padding-top: 16px;
       border-top: 1px solid rgba(23, 35, 59, 0.08);
       color: #475569;
-      line-height: 1.6;
+      line-height: 1.72;
     }
 
     .concept-field strong {
-      display: inline-flex;
+      display: flex;
       width: fit-content;
-      margin-bottom: 7px;
+      margin-bottom: 9px;
       padding: 4px 9px;
       border-radius: 999px;
       background: rgba(244, 124, 47, 0.1);
@@ -227,10 +230,18 @@
       text-transform: uppercase;
     }
 
+    .concept-card:not(.selected) .concept-field {
+      color: #5f6b80;
+    }
+
     .concept-card.selected .concept-field strong {
-      background: rgba(111, 205, 181, 0.18);
-      border-color: rgba(111, 205, 181, 0.36);
-      color: #0f3f3a;
+      background: rgba(244, 124, 47, 0.1);
+      border-color: rgba(244, 124, 47, 0.16);
+      color: #9a3412;
+    }
+
+    .concept-card.selected h4 {
+      font-weight: 800;
     }
 
     .experience-loop {

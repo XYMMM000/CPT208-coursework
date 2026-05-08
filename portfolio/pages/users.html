@@ -11,7 +11,7 @@
     }
 
     .research-section {
-      margin-top: 30px;
+      margin-top: 42px;
       padding: 32px;
     }
 
@@ -110,7 +110,7 @@
     .data-card strong {
       display: block;
       color: var(--navy);
-      font-size: 2.1rem;
+      font-size: 3rem;
       line-height: 1;
     }
 
@@ -124,6 +124,26 @@
 
     .finding-card {
       border-top: 5px solid rgba(244, 124, 47, 0.76);
+    }
+
+    .requirement-card {
+      padding: 28px;
+      border-radius: 26px;
+    }
+
+    .requirement-card h4 {
+      font-size: 1.35rem;
+      line-height: 1.25;
+    }
+
+    .requirement-mapping {
+      margin-top: 14px;
+      padding: 13px 15px;
+      border-radius: 18px;
+      background: rgba(111, 205, 181, 0.12);
+      border: 1px solid rgba(111, 205, 181, 0.24);
+      color: #0f3f3a;
+      font-weight: 800;
     }
 
     .finding-card:nth-child(2) {
@@ -286,11 +306,16 @@
 
   <main class="section users-research-page">
     <div class="container">
-      <div class="section-heading">
+      <section class="ux-page-hero">
         <p class="section-label">Users</p>
         <h2>Users and Requirements</h2>
-        <p class="section-copy">From field observation and survey evidence to ClimbQuest's core user requirements.</p>
-      </div>
+        <p class="ux-hero-summary">From field observation and survey evidence to ClimbQuest's core user requirements.</p>
+        <div class="ux-hero-chips">
+          <span class="ux-hero-chip"><strong>33</strong> participants</span>
+          <span class="ux-hero-chip"><strong>25</strong> route-choice issues</span>
+          <span class="ux-hero-chip"><strong>3</strong> core requirements</span>
+        </div>
+      </section>
 
       <section class="card research-section">
         <span class="section-kicker">R01</span>
@@ -397,12 +422,13 @@
         <div class="journey-note">Key journey moments: choosing a route, understanding route fit, attempting the route, recording the result, and deciding whether to continue or share.</div>
       </section>
 
-      <section class="card research-section">
+      <section class="card research-section case-highlight-panel">
         <span class="section-kicker">R06</span>
         <h3>Requirements: What Makes ClimbQuest Playful?</h3>
         <div class="requirement-grid">
           <article class="requirement-card">
-            <h4>R1 Personalized Route Guidance</h4>
+            <h4>R1 - Confidence through Personal Guidance</h4>
+            <div class="requirement-mapping">Feature mapping: Personalized Route Guidance -> Personalized Route Recommendation</div>
             <p>Users should receive route suggestions that match their climbing ability, preference, confidence, and goals.</p>
             <div class="feature-label">Key Characteristics</div>
             <ul>
@@ -414,7 +440,8 @@
           </article>
 
           <article class="requirement-card">
-            <h4>R2 DIY Route Creation</h4>
+            <h4>R2 - Creativity through DIY Route Making</h4>
+            <div class="requirement-mapping">Feature mapping: DIY Route Creation -> DIY Route Creation</div>
             <p>Users should be able to create and record custom routes by selecting holds on a wall image.</p>
             <div class="feature-label">Key Characteristics</div>
             <ul>
@@ -427,7 +454,8 @@
           </article>
 
           <article class="requirement-card">
-            <h4>R3 Community Sharing and Interaction</h4>
+            <h4>R3 - Motivation through Community Sharing</h4>
+            <div class="requirement-mapping">Feature mapping: Community Sharing and Interaction -> Community Sharing & Interaction</div>
             <p>Users should be able to share, browse, like, comment on, and try community-created routes.</p>
             <div class="feature-label">Key Characteristics</div>
             <ul>
