@@ -43,11 +43,55 @@ const initialRoute = {
 };
 
 const WALL_GALLERY_PHOTOS = [wallPhotoA, wallPhotoB, wallPhotoC];
-const AI_SEED_COMMENTS = [
-  "Try keeping your hips close to the wall on the middle section to reduce pump.",
-  "For the last move, look for a quiet foot swap before reaching the top hold.",
-  "If this feels hard, downclimb once and retry with slower pacing on each hand move."
-];
+
+function hashStringToInt(value) {
+  return String(value || "")
+    .split("")
+    .reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) % 100000, 7);
+}
+
+function buildAiSeedComments(route) {
+  const title = route?.title || "This route";
+  const difficulty = String(route?.difficulty || "Medium");
+  const tags = Array.isArray(route?.tags) ? route.tags : [];
+  const primaryTag = tags[0] || "Flow";
+  const seed = hashStringToInt(`${title}-${difficulty}-${primaryTag}`);
+
+  const openingTemplates = [
+    `${title} has a clear rhythm if you pause and read the first two moves before pulling on.`,
+    `The crux on ${title} feels cleaner when you commit to the body position early.`,
+    `${title} climbs best when you keep tension through the middle section instead of rushing.`
+  ];
+  const footworkTemplates = [
+    "Keep your hips close to the wall and use quiet feet to save energy for the top.",
+    "A small foot swap before the final reach makes the finish much more controlled.",
+    "Trust the lower footholds and avoid over-gripping with your hands in the first half."
+  ];
+  const pacingTemplatesByDifficulty = {
+    Easy: [
+      "If a move feels awkward, step down and retry with slower pacing.",
+      "Focus on smooth sequencing over speed, then increase flow on the next attempt.",
+      "Treat this as a confidence route and prioritize clean movement."
+    ],
+    Medium: [
+      "Break the route into two chunks and recover your breathing between them.",
+      "The mid-section rewards steady pacing more than raw strength.",
+      "Two calm shakes in the middle can prevent pump before the top move."
+    ],
+    Hard: [
+      "Try one move at a time in the crux zone before linking full attempts.",
+      "Conserve energy in the opener so you can commit harder near the top.",
+      "Short high-quality attempts work better than long fatigued burns here."
+    ]
+  };
+  const pacingTemplates = pacingTemplatesByDifficulty[difficulty] || pacingTemplatesByDifficulty.Medium;
+
+  const opening = openingTemplates[seed % openingTemplates.length];
+  const footwork = footworkTemplates[(seed + 1) % footworkTemplates.length];
+  const pacing = pacingTemplates[(seed + 2) % pacingTemplates.length];
+
+  return [opening, footwork, pacing];
+}
 
 function buildRouteThreadId(title, creatorName) {
   const raw = `${title || "untitled"}::${creatorName || "unknown"}`.toLowerCase();
@@ -662,6 +706,11 @@ export default function RouteDetailPage() {
   const [replyInputs, setReplyInputs] = useState({});
   const [replyingToId, setReplyingToId] = useState(null);
   const [showAdvancedDetails, setShowAdvancedDetails] = useState(() => !(isLite || isGuided));
+  const aiSeedComments = useMemo(() => buildAiSeedComments(routeState), [
+    routeState.title,
+    routeState.difficulty,
+    routeState.tags
+  ]);
 
   useEffect(() => {
     if (isLite || isGuided) {
@@ -673,7 +722,7 @@ export default function RouteDetailPage() {
 
   useEffect(() => {
     async function ensureAiSeedComments() {
-      const checks = AI_SEED_COMMENTS.map(async (text, index) => {
+      const checks = aiSeedComments.map(async (text, index) => {
         const aiDocRef = doc(
           firestoreDb,
           "routeThreads",
@@ -718,7 +767,7 @@ export default function RouteDetailPage() {
     });
 
     return unsubscribe;
-  }, [routeThreadId]);
+  }, [routeThreadId, aiSeedComments]);
 
   const difficultyMeta = getDifficultyMeta(routeState.difficulty);
   const hasOriginalDIYData = useMemo(() => {
@@ -924,14 +973,14 @@ export default function RouteDetailPage() {
   }, [comments]);
 
   const aiFallbackTopLevelComments = useMemo(() => {
-    return AI_SEED_COMMENTS.map((text, index) => ({
+    return aiSeedComments.map((text, index) => ({
       id: `ai-fallback-${index + 1}`,
       author: "ClimbQuest AI",
       text,
       isAi: true,
       parentId: null
     }));
-  }, []);
+  }, [aiSeedComments]);
 
   const displayedTopLevelComments = useMemo(() => {
     return topLevelComments.length > 0 ? topLevelComments : aiFallbackTopLevelComments;
