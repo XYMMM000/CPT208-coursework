@@ -1,4 +1,21 @@
-﻿# ClimbQuest - CPT208 Coursework
+﻿<div align="center">
+
+# ClimbQuest - CPT208 Coursework
+
+### Human-Centered Design Project for Indoor Climbing Experience
+
+[![Demo](https://img.shields.io/badge/Open-Demo_App-2ea44f?style=for-the-badge&logo=react&logoColor=white)](./demo)
+[![Portfolio](https://img.shields.io/badge/Open-Portfolio_Site-0969da?style=for-the-badge&logo=html5&logoColor=white)](./portfolio)
+[![Repository](https://img.shields.io/badge/View-GitHub_Repo-24292f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/XYMMM000/CPT208-coursework)
+
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Firebase](https://img.shields.io/badge/Firebase-Auth%20%26%20Firestore-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-Optional-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
+
+</div>
+
+## Project Overview
 
 ClimbQuest is a coursework project focused on human-centered design for indoor climbing experiences.
 This repository includes:
@@ -6,9 +23,16 @@ This repository includes:
 - `demo/`: React mobile-first web app prototype (interactive product demo)
 - `portfolio/`: static HTML/CSS design portfolio (research, ideation, prototype, evaluation)
 
+## Quick Access
+
+- [Run Demo Locally](#run-demo-app)
+- [View Portfolio](#view-portfolio)
+- [Environment Setup](#environment-variables-demo)
+- [Project Structure](#repository-structure)
+
 ## Project Highlights
 
-### Demo App (`demo/`)
+### Demo App
 
 - Landing page and onboarding flow
 - Email/password login and signup (Firebase Auth)
@@ -17,7 +41,7 @@ This repository includes:
 - DIY route creation with wall selection and editor flow
 - Profile page with progress and activity summary
 
-### Portfolio Site (`portfolio/`)
+### Portfolio Site
 
 - Human-centered computing process documentation
 - Motivation, research, personas, ideation, prototype, evaluation, references, and team pages
@@ -41,14 +65,14 @@ This repository includes:
 
 ## Quick Start
 
-### 1. Clone Repository
+### Clone Repository
 
 ```bash
 git clone https://github.com/XYMMM000/CPT208-coursework.git
 cd CPT208-coursework
 ```
 
-### 2. Run Demo App
+### Run Demo App
 
 ```bash
 cd demo
@@ -65,7 +89,7 @@ npm run build
 npm run preview
 ```
 
-### 3. View Portfolio
+### View Portfolio
 
 Open `portfolio/index.html` directly in your browser, or use Live Server in VS Code.
 
@@ -106,8 +130,6 @@ CPT208-coursework/
 ```
 
 ## Team Collaboration
-
-Typical workflow:
 
 ```bash
 git pull origin main
