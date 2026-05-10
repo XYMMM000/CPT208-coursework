@@ -143,7 +143,3 @@ git add .
 git commit -m "Describe your update"
 git push origin main
 ```
-
-## 📄 License
-
-This project is for coursework and team learning purposes. Add a formal license file if you plan to open-source it publicly.
