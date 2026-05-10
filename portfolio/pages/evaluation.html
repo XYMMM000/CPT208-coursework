@@ -50,6 +50,7 @@
     .persona-grid,
     .score-grid,
     .findings-grid,
+    .iteration-comparison-grid,
     .refinement-grid,
     .future-grid {
       display: grid;
@@ -98,6 +99,34 @@
     .persona-grid,
     .findings-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .iteration-comparison-grid {
+      position: relative;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 0;
+    }
+
+    .iteration-comparison-grid::after {
+      content: "\2192";
+      position: absolute;
+      left: 50%;
+      top: 42%;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid rgba(244, 124, 47, 0.2);
+      color: var(--orange);
+      font-family: "Source Sans 3", "Segoe UI", Arial, sans-serif;
+      font-size: 1rem;
+      font-weight: 900;
+      box-shadow: 0 10px 20px rgba(23, 35, 59, 0.1);
+      transform: translate(-50%, -50%);
+      z-index: 2;
     }
 
     .future-grid {
@@ -267,6 +296,163 @@
       color: var(--navy);
     }
 
+    .iteration-example-section {
+      padding: 26px;
+    }
+
+    .iteration-example-section > p {
+      max-width: 760px;
+      margin-bottom: 18px;
+    }
+
+    .iteration-case-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .iteration-case-card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      background: rgba(248, 250, 252, 0.68);
+      box-shadow: 0 10px 24px rgba(23, 35, 59, 0.05);
+    }
+
+    .iteration-case-title {
+      margin: 0 0 14px;
+      color: var(--navy);
+      font-size: 1.16rem;
+    }
+
+    .iteration-case-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.85fr) minmax(240px, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .iteration-screens-panel,
+    .iteration-insight-card {
+      border: 1px solid rgba(23, 35, 59, 0.08);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 14px 30px rgba(23, 35, 59, 0.08);
+    }
+
+    .iteration-screens-panel {
+      padding: 16px;
+    }
+
+    .iteration-shot-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      min-height: 100%;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(248, 250, 252, 0.78);
+      text-align: center;
+    }
+
+    .iteration-label {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      min-width: 0;
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--navy);
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .iteration-label span {
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .iteration-label strong {
+      font-size: 0.82rem;
+    }
+
+    .iteration-label.before {
+      background: rgba(244, 124, 47, 0.12);
+      border: 1px solid rgba(244, 124, 47, 0.14);
+    }
+
+    .iteration-label.after {
+      background: rgba(111, 205, 181, 0.16);
+      border: 1px solid rgba(111, 205, 181, 0.28);
+    }
+
+    .iteration-phone-frame {
+      width: min(100%, 230px);
+      padding: 8px;
+      border-radius: 26px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      border: 1px solid rgba(23, 35, 59, 0.14);
+      box-shadow: 0 14px 28px rgba(23, 35, 59, 0.12);
+    }
+
+    .iteration-phone-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 390px;
+      object-fit: contain;
+      border-radius: 19px;
+      background: #ffffff;
+      border: 1px solid rgba(23, 35, 59, 0.08);
+    }
+
+    .iteration-shot-card p {
+      max-width: 240px;
+      margin: 0;
+      color: #475569;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .iteration-insight-stack {
+      display: grid;
+      gap: 24px;
+      align-content: center;
+      height: 100%;
+    }
+
+    .iteration-insight-card {
+      height: auto;
+      min-height: unset;
+      padding: 22px 24px;
+      border-left: 4px solid var(--orange);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 10px 22px rgba(23, 35, 59, 0.06);
+    }
+
+    .iteration-insight-card:nth-child(2) {
+      border-left-color: var(--mint);
+    }
+
+    .iteration-insight-card:nth-child(3) {
+      border-left-color: var(--blue);
+    }
+
+    .iteration-insight-card h4 {
+      margin: 0 0 6px;
+      color: var(--navy);
+      font-size: 1rem;
+    }
+
+    .iteration-insight-card p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.48;
+    }
+
     .future-card {
       min-height: 160px;
     }
@@ -289,9 +475,24 @@
       .persona-grid,
       .score-grid,
       .findings-grid,
+      .iteration-case-layout,
       .refinement-grid,
       .future-grid {
         grid-template-columns: 1fr;
+      }
+
+      .iteration-comparison-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .iteration-insight-stack {
+        gap: 16px;
+        align-content: start;
+        height: auto;
+      }
+
+      .iteration-comparison-grid::after {
+        display: none;
       }
     }
 
@@ -304,6 +505,31 @@
       .future-card,
       .process-step {
         padding: 20px;
+      }
+
+      .iteration-example-section {
+        padding: 20px;
+      }
+
+      .iteration-case-card {
+        padding: 14px;
+      }
+
+      .iteration-screens-panel {
+        padding: 12px;
+      }
+
+      .iteration-phone-frame {
+        width: min(100%, 220px);
+      }
+
+      .iteration-comparison-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .iteration-shot-card {
+        padding: 12px;
       }
 
       .validation-table,
@@ -344,7 +570,7 @@
         <a href="references.html">References</a>
         <a href="team.html">Team</a>
       </nav>
-      <a class="github-btn" href="https://github.com/YimingXie040914/CPT208-coursework" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub Repository">
+      <a class="github-btn" href="https://github.com/XYMMM000/CPT208-coursework" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub Repository">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4a3.2 3.2 0 0 0-1.3-1.8c-1.1-.8.1-.8.1-.8a2.5 2.5 0 0 1 1.8 1.2 2.5 2.5 0 0 0 3.4 1 2.5 2.5 0 0 1 .8-1.6c-2.7-.3-5.5-1.3-5.5-6a4.6 4.6 0 0 1 1.2-3.2 4.3 4.3 0 0 1 .1-3.2s1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0C17.3 5 18.3 5.3 18.3 5.3a4.3 4.3 0 0 1 .1 3.2 4.6 4.6 0 0 1 1.2 3.2c0 4.7-2.8 5.7-5.5 6a2.8 2.8 0 0 1 .8 2.1v3.1c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z" />
         </svg>
@@ -573,26 +799,101 @@
         </div>
       </section>
 
-      <section class="card eval-section">
-        <span class="eval-kicker">Mini Iteration Evidence</span>
+      <section class="card eval-section iteration-example-section">
+        <span class="eval-kicker">E08 Mini Iteration Evidence</span>
         <h3>Mini Iteration Evidence</h3>
         <p>
-          To connect evaluation findings with refinement, we compared an earlier interface structure with the refined prototype direction.
+          To show how user feedback informed refinement, we compared earlier interface versions with refined prototype screens.
         </p>
-        <div class="refinement-grid">
-          <article class="refinement-card">
-            <h4>Earlier Version</h4>
-            <div class="card-block"><strong>Structure</strong>Low-fi route recommendation and route creation structure focused mainly on screen layout and core interaction steps.</div>
+        <div class="iteration-case-stack">
+          <article class="iteration-case-card">
+            <h4 class="iteration-case-title">Iteration A &mdash; Customized Route Recommendation</h4>
+            <div class="iteration-case-layout">
+              <div class="iteration-screens-panel">
+                <div class="iteration-comparison-grid">
+                  <article class="iteration-shot-card">
+                    <div class="iteration-label before">
+                      <strong>Before &mdash; Direct Recommendation List</strong>
+                    </div>
+                    <div class="iteration-phone-frame">
+                      <img src="../assets/evaluation/before-customized-recommendation.jpg" alt="Before version showing a direct personalized route recommendation list" />
+                    </div>
+                    <p>Routes appeared without enough recommendation logic.</p>
+                  </article>
+                  <article class="iteration-shot-card">
+                    <div class="iteration-label after">
+                      <strong>After &mdash; Quiz Result and Route Match</strong>
+                    </div>
+                    <div class="iteration-phone-frame">
+                      <img src="../assets/evaluation/after-customized-recommendation.jpg" alt="After version showing a quiz result, climbing persona, and route match" />
+                    </div>
+                    <p>Persona and route vibe explain the match first.</p>
+                  </article>
+                </div>
+              </div>
+              <aside class="iteration-insight-stack" aria-label="Route recommendation refinement feedback, response, and impact">
+                <article class="iteration-insight-card">
+                  <h4>Feedback</h4>
+                  <p>Users wanted clearer explanation after the quiz.</p>
+                </article>
+                <article class="iteration-insight-card">
+                  <h4>Response</h4>
+                  <p>We connected quiz answers, climbing style, and route suggestions.</p>
+                </article>
+                <article class="iteration-insight-card">
+                  <h4>Impact</h4>
+                  <p>Users could choose routes with more confidence.</p>
+                </article>
+              </aside>
+            </div>
           </article>
-          <article class="refinement-card">
-            <h4>Refined Version</h4>
-            <div class="card-block"><strong>Direction</strong>Current prototype direction improves recommendation explanation, interaction feedback, and community route decision cues.</div>
+
+          <article class="iteration-case-card">
+            <h4 class="iteration-case-title">Iteration B &mdash; Profile Progress Visibility</h4>
+            <div class="iteration-case-layout">
+              <div class="iteration-screens-panel">
+                <div class="iteration-comparison-grid">
+                  <article class="iteration-shot-card">
+                    <div class="iteration-label before">
+                      <strong>Before &mdash; Basic Profile and Routes</strong>
+                    </div>
+                    <div class="iteration-phone-frame">
+                      <img src="../assets/evaluation/before-profile-progress.jpg" alt="Before version showing a basic profile and saved routes" />
+                    </div>
+                    <p>Profile information was shown, but progress and achievements were not clear.</p>
+                  </article>
+                  <article class="iteration-shot-card">
+                    <div class="iteration-label after">
+                      <strong>After &mdash; Progress and Achievement Dashboard</strong>
+                    </div>
+                    <div class="iteration-phone-frame">
+                      <img src="../assets/evaluation/after-profile-progress.jpg" alt="After version showing progress stats, badges, and achievement indicators" />
+                    </div>
+                    <p>Progress stats, badges, and growth indicators make achievements easier to see.</p>
+                  </article>
+                </div>
+              </div>
+              <aside class="iteration-insight-stack" aria-label="Profile progress refinement feedback, response, and impact">
+                <article class="iteration-insight-card">
+                  <h4>Feedback</h4>
+                  <p>Users wanted visible progress after each session.</p>
+                </article>
+                <article class="iteration-insight-card">
+                  <h4>Response</h4>
+                  <p>We added stats, badges, saved routes, and climbing growth indicators.</p>
+                </article>
+                <article class="iteration-insight-card">
+                  <h4>Impact</h4>
+                  <p>Users can see progress more clearly and feel more motivated to return.</p>
+                </article>
+              </aside>
+            </div>
           </article>
         </div>
       </section>
 
       <section class="card eval-section">
-        <span class="eval-kicker">E08 Future Development</span>
+        <span class="eval-kicker">E09 Future Development</span>
         <h3>Future Development Plan</h3>
         <div class="future-grid">
           <article class="future-card"><span class="number">1</span><h4>Improve Rock Point Identification</h4><p>Improve rock point identification during AI-assisted route generation.</p></article>
@@ -604,7 +905,7 @@
       </section>
 
       <section class="card eval-section">
-        <span class="eval-kicker">E09 Final Reflection</span>
+        <span class="eval-kicker">E10 Final Reflection</span>
         <h3>Final Evaluation Reflection</h3>
         <div class="reflection-callout">
           The evaluation suggests that ClimbQuest improves the perceived climbing experience, especially in personalization and usability. Users responded positively to route guidance that felt relevant to their needs, and the mobile-first flow was easy to use. However, the lower scores for AI assistance accuracy and engagement show that the system should better explain recommendations and strengthen community-based motivation. Overall, the evaluation supports the value of ClimbQuest while identifying clear directions for future refinement.
