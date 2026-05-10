@@ -1018,6 +1018,99 @@ main {
   border-top-color: #ef4444;
 }
 
+.project-timeline {
+  position: relative;
+  display: grid;
+  gap: 18px;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 8px 0;
+}
+
+.project-timeline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--orange), var(--mint));
+  transform: translateX(-50%);
+  opacity: 0.55;
+}
+
+.timeline-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 34px;
+}
+
+.timeline-item:nth-child(even) .timeline-card {
+  grid-column: 2;
+}
+
+.timeline-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: 18px;
+  height: 18px;
+  border: 4px solid #ffffff;
+  border-radius: 999px;
+  background: var(--orange);
+  box-shadow: 0 8px 18px rgba(23, 35, 59, 0.18);
+  transform: translate(-50%, -50%);
+}
+
+.timeline-item:nth-child(even) .timeline-dot {
+  background: var(--mint);
+}
+
+.timeline-card {
+  padding: 20px 22px;
+  border-top: 4px solid var(--orange);
+}
+
+.timeline-item:nth-child(even) .timeline-card {
+  border-top-color: var(--mint);
+}
+
+.timeline-week {
+  display: inline-flex;
+  margin-bottom: 10px;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: #c2410c;
+  font-family: "Source Sans 3", "Segoe UI", Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 5px 10px;
+}
+
+.timeline-item:nth-child(even) .timeline-week {
+  background: #ecfdf5;
+  color: #0f766e;
+}
+
+.timeline-card h3 {
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.timeline-card h3::before {
+  content: none;
+  display: none;
+}
+
+.timeline-card p {
+  color: #5f6b80;
+}
+
 .card p + p {
   margin-top: 12px;
   padding-top: 12px;
@@ -1353,6 +1446,33 @@ main {
   .grid-3,
   .qr-access-grid {
     grid-template-columns: 1fr;
+  }
+
+  .project-timeline {
+    gap: 16px;
+    max-width: 640px;
+    padding-left: 24px;
+  }
+
+  .project-timeline::before {
+    left: 8px;
+    transform: none;
+  }
+
+  .timeline-item,
+  .timeline-item:nth-child(even) {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .timeline-item:nth-child(even) .timeline-card {
+    grid-column: auto;
+  }
+
+  .timeline-dot,
+  .timeline-item:nth-child(even) .timeline-dot {
+    top: 28px;
+    left: 8px;
   }
 
   .persona-magazine {
