@@ -1,0 +1,314 @@
+127.0.0.1 - - [09/May/2026 16:53:20] "GET /pages/motivation.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 16:53:36] "GET /pages/motivation.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 16:59:16] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 16:59:16] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 16:59:16] "GET /assets/qr/portfolio-prototype-qr.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 16:59:16] "GET /assets/qr/webapp-entry-qr.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 16:59:16] "GET /assets/header-logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 16:59:19] "GET /pages/motivation.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:46:02] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:46:02] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:48:46] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:57:38] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:00] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:01] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:02] "GET /pages/prototype.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:02] "GET /assets/low-fi-wireframe.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:02] "GET /assets/prototype/climbquest-qr-code.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:02] "GET /pages/ideation.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:02] "GET /assets/Crazy%20Eights_01.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:02] "GET /assets/Crazy%20Eights_02.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:02] "GET /assets/Crazy%20Eights_03.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:02] "GET /assets/Crazy%20Eights_04.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:02] "GET /assets/Crazy%20Eights_05.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:02] "GET /assets/Crazy%20Eights_06.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:02] "GET /assets/Crazy%20Eights_07.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:02] "GET /assets/Crazy%20Eights_08.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:02] "GET /assets/Low-Fidelity%20Prototype.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:05] "GET /pages/users.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:05] "GET /assets/motivation/field-observation-01.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:05] "GET /assets/motivation/field-observation-02.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:05] "GET /assets/motivation/field-observation-03.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:05] "GET /assets/motivation/field-observation-04.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:05] "GET /assets/User%20Journey%20Map.png HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:06] "GET /pages/research.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:07] "GET /pages/motivation.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 19:59:08] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 20:01:09] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 20:01:18] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 20:01:42] "GET /pages/ideation.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 20:01:43] "GET /pages/ideation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:48:59] "GET /pages/ideation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:48:59] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:48:59] "GET /assets/Crazy%20Eights_01.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:48:59] "GET /assets/Crazy%20Eights_02.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:48:59] "GET /assets/Crazy%20Eights_03.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:48:59] "GET /assets/Crazy%20Eights_04.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:48:59] "GET /assets/Crazy%20Eights_05.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:48:59] "GET /assets/Crazy%20Eights_06.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:48:59] "GET /assets/Crazy%20Eights_07.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:48:59] "GET /assets/Crazy%20Eights_08.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:49:00] "GET /assets/Low-Fidelity%20Prototype.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:49:00] "GET /assets/header-logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:59:37] "GET /pages/ideation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 13:59:44] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:00:49] "GET /pages/team.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:00:49] "GET /assets/team/4c34a523e55617eb29280b381535f224.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:00:49] "GET /assets/team/a76faccbf29228a6b11f33fdef0a02bf.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:00:49] "GET /assets/team/5cbf0f9f37ab214acfcc045c53bfd11e.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:00:49] "GET /assets/team/f807d3eaf2c1d9b7b6e585cce0e5b7ab.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:00:55] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:01:19] "GET /pages/users.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:01:19] "GET /assets/motivation/field-observation-01.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:01:19] "GET /assets/motivation/field-observation-02.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:01:19] "GET /assets/motivation/field-observation-03.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:01:19] "GET /assets/motivation/field-observation-04.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:01:19] "GET /assets/User%20Journey%20Map.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:01:20] "GET /pages/motivation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:01:20] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:01:20] "GET /assets/qr/portfolio-prototype-qr.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:01:20] "GET /assets/qr/webapp-entry-qr.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:01:53] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:02:07] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:04:26] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:04:26] "GET /assets/prototype/Screenshot%20placeholder%20feature1-recommendation-screen.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:04:26] "GET /assets/prototype/Screenshot%20placeholder%20feature1-result-screen.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:08:28] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:09:17] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:10:46] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:10:46] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:10:47] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:10:57] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:10:57] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:10:57] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:10:57] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:10:58] "GET /assets/header-logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:10:58] code 404, message File not found
+127.0.0.1 - - [10/May/2026 14:10:58] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [10/May/2026 14:15:34] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:15:34] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:15:34] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:15:43] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:15:43] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:15:43] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:28:29] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:28:29] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:28:29] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:28:34] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:28:34] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:28:34] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:31:29] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:31:29] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:31:29] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:31:32] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:31:32] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:31:32] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:34:38] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:34:38] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:34:38] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:34:42] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:34:42] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:34:42] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:11:28] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:11:28] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:11:28] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:11:28] "GET /assets/evaluation/before-profile-progress.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:11:28] "GET /assets/evaluation/after-profile-progress.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:11:35] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:11:35] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:11:35] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:11:35] "GET /assets/evaluation/before-profile-progress.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:11:35] "GET /assets/evaluation/after-profile-progress.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:15:13] "GET /pages/team.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:15:15] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:15:15] "GET /assets/evaluation/before-profile-progress.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:15:15] "GET /assets/evaluation/after-profile-progress.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:18:41] "GET /pages/team.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:18:41] "GET /assets/team/4c34a523e55617eb29280b381535f224.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:18:41] "GET /assets/team/a76faccbf29228a6b11f33fdef0a02bf.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:18:41] "GET /assets/team/5cbf0f9f37ab214acfcc045c53bfd11e.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:18:41] "GET /assets/team/f807d3eaf2c1d9b7b6e585cce0e5b7ab.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:21:36] "GET /pages/team.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:22:08] "GET /pages/team.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:29:17] "GET /pages/team.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:21] "GET /pages/team.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:44] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:46] "GET /pages/team.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:48] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:48] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:48] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:48] "GET /assets/evaluation/before-profile-progress.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:48] "GET /assets/evaluation/after-profile-progress.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:49] "GET /pages/prototype.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:49] "GET /assets/low-fi-wireframe.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:49] "GET /assets/prototype/climbquest-qr-code.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:50] "GET /pages/ideation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:50] "GET /assets/Crazy%20Eights_01.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:50] "GET /assets/Crazy%20Eights_02.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:50] "GET /assets/Crazy%20Eights_03.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:50] "GET /assets/Crazy%20Eights_04.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:50] "GET /assets/Crazy%20Eights_05.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:50] "GET /assets/Crazy%20Eights_06.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:50] "GET /assets/Crazy%20Eights_07.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:50] "GET /assets/Crazy%20Eights_08.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:31:50] "GET /assets/Low-Fidelity%20Prototype.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:32:06] "GET /pages/users.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:32:06] "GET /assets/motivation/field-observation-01.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:32:06] "GET /assets/motivation/field-observation-02.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:32:06] "GET /assets/motivation/field-observation-03.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:32:06] "GET /assets/motivation/field-observation-04.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:32:06] "GET /assets/User%20Journey%20Map.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:32:08] "GET /pages/research.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:32:08] "GET /pages/motivation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:32:10] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:32:10] "GET /assets/qr/portfolio-prototype-qr.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:32:10] "GET /assets/qr/webapp-entry-qr.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:32:23] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:32:25] "GET /pages/team.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:40:49] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:40:49] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:40:49] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:40:49] "GET /assets/evaluation/before-profile-progress.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:40:49] "GET /assets/evaluation/after-profile-progress.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:43:45] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:44:49] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:46:33] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:49:01] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:52:04] "GET /pages/team.html HTTP/1.1" 200 -
+----------------------------------------
+Exception happened during processing of request from ('127.0.0.1', 1984)
+Traceback (most recent call last):
+  File "D:\python\3.6.8\lib\socketserver.py", line 320, in _handle_request_noblock
+    self.process_request(request, client_address)
+  File "D:\python\3.6.8\lib\socketserver.py", line 351, in process_request
+    self.finish_request(request, client_address)
+  File "D:\python\3.6.8\lib\socketserver.py", line 364, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "D:\python\3.6.8\lib\socketserver.py", line 724, in __init__
+    self.handle()
+  File "D:\python\3.6.8\lib\http\server.py", line 418, in handle
+    self.handle_one_request()
+  File "D:\python\3.6.8\lib\http\server.py", line 406, in handle_one_request
+    method()
+  File "D:\python\3.6.8\lib\http\server.py", line 639, in do_GET
+    self.copyfile(f, self.wfile)
+  File "D:\python\3.6.8\lib\http\server.py", line 800, in copyfile
+    shutil.copyfileobj(source, outputfile)
+  File "D:\python\3.6.8\lib\shutil.py", line 82, in copyfileobj
+    fdst.write(buf)
+  File "D:\python\3.6.8\lib\socketserver.py", line 803, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+----------------------------------------
+127.0.0.1 - - [10/May/2026 15:52:04] "GET /pages/references.html HTTP/1.1" 200 -
+----------------------------------------
+Exception happened during processing of request from ('127.0.0.1', 49670)
+Traceback (most recent call last):
+  File "D:\python\3.6.8\lib\socketserver.py", line 320, in _handle_request_noblock
+    self.process_request(request, client_address)
+  File "D:\python\3.6.8\lib\socketserver.py", line 351, in process_request
+    self.finish_request(request, client_address)
+  File "D:\python\3.6.8\lib\socketserver.py", line 364, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "D:\python\3.6.8\lib\socketserver.py", line 724, in __init__
+    self.handle()
+  File "D:\python\3.6.8\lib\http\server.py", line 418, in handle
+    self.handle_one_request()
+  File "D:\python\3.6.8\lib\http\server.py", line 406, in handle_one_request
+    method()
+  File "D:\python\3.6.8\lib\http\server.py", line 639, in do_GET
+    self.copyfile(f, self.wfile)
+  File "D:\python\3.6.8\lib\http\server.py", line 800, in copyfile
+    shutil.copyfileobj(source, outputfile)
+  File "D:\python\3.6.8\lib\shutil.py", line 82, in copyfileobj
+    fdst.write(buf)
+  File "D:\python\3.6.8\lib\socketserver.py", line 803, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+----------------------------------------
+127.0.0.1 - - [10/May/2026 15:52:04] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:52:05] "GET /pages/research.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 15:52:08] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:06:11] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:07:59] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:11:24] "GET /pages/team.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:11:28] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:11:30] "GET /pages/evaluation.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:11:30] "GET /assets/evaluation/before-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:11:30] "GET /assets/evaluation/after-customized-recommendation.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:11:30] "GET /assets/evaluation/before-profile-progress.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:11:30] "GET /assets/evaluation/after-profile-progress.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:11:52] "GET /pages/research.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:12:29] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:17:52] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:25:12] "GET /pages/references.html HTTP/1.1" 200 -
+----------------------------------------
+Exception happened during processing of request from ('127.0.0.1', 22249)
+Traceback (most recent call last):
+  File "D:\python\3.6.8\lib\socketserver.py", line 320, in _handle_request_noblock
+    self.process_request(request, client_address)
+  File "D:\python\3.6.8\lib\socketserver.py", line 351, in process_request
+    self.finish_request(request, client_address)
+  File "D:\python\3.6.8\lib\socketserver.py", line 364, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "D:\python\3.6.8\lib\socketserver.py", line 724, in __init__
+    self.handle()
+  File "D:\python\3.6.8\lib\http\server.py", line 418, in handle
+    self.handle_one_request()
+  File "D:\python\3.6.8\lib\http\server.py", line 406, in handle_one_request
+    method()
+  File "D:\python\3.6.8\lib\http\server.py", line 639, in do_GET
+    self.copyfile(f, self.wfile)
+  File "D:\python\3.6.8\lib\http\server.py", line 800, in copyfile
+    shutil.copyfileobj(source, outputfile)
+  File "D:\python\3.6.8\lib\shutil.py", line 82, in copyfileobj
+    fdst.write(buf)
+  File "D:\python\3.6.8\lib\socketserver.py", line 803, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+----------------------------------------
+127.0.0.1 - - [10/May/2026 16:25:12] "GET /pages/references.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:25:12] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:32:22] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:32:28] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:33:52] "GET /pages/references.html HTTP/1.1" 200 -
+----------------------------------------
+Exception happened during processing of request from ('127.0.0.1', 2189)
+Traceback (most recent call last):
+  File "D:\python\3.6.8\lib\socketserver.py", line 320, in _handle_request_noblock
+    self.process_request(request, client_address)
+  File "D:\python\3.6.8\lib\socketserver.py", line 351, in process_request
+    self.finish_request(request, client_address)
+  File "D:\python\3.6.8\lib\socketserver.py", line 364, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "D:\python\3.6.8\lib\socketserver.py", line 724, in __init__
+    self.handle()
+  File "D:\python\3.6.8\lib\http\server.py", line 418, in handle
+    self.handle_one_request()
+  File "D:\python\3.6.8\lib\http\server.py", line 406, in handle_one_request
+    method()
+  File "D:\python\3.6.8\lib\http\server.py", line 639, in do_GET
+    self.copyfile(f, self.wfile)
+  File "D:\python\3.6.8\lib\http\server.py", line 800, in copyfile
+    shutil.copyfileobj(source, outputfile)
+  File "D:\python\3.6.8\lib\shutil.py", line 82, in copyfileobj
+    fdst.write(buf)
+  File "D:\python\3.6.8\lib\socketserver.py", line 803, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+----------------------------------------
+127.0.0.1 - - [10/May/2026 16:33:52] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:33:52] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:33:57] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:33:57] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:33:58] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:33:58] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:38:07] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:38:07] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:38:07] "GET /style.css?v=final-features HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:38:07] "GET /style.css?v=final-features HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 16:53:05] "GET /pages/team.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 17:01:22] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 17:01:22] "GET /style.css?v=final-features HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 17:04:08] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 17:04:08] "GET /style.css?v=final-features HTTP/1.1" 200 -
