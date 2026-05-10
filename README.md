@@ -8,60 +8,66 @@
 [![Portfolio](https://img.shields.io/badge/Open-Portfolio_Site-0969da?style=for-the-badge&logo=html5&logoColor=white)](https://xymmm000.github.io/CPT208-coursework/portfolio/index.html)
 [![Repository](https://img.shields.io/badge/View-GitHub_Repo-24292f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/XYMMM000/CPT208-coursework)
 
-[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Firebase](https://img.shields.io/badge/Firebase-Auth%20%26%20Firestore-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
-[![Supabase](https://img.shields.io/badge/Supabase-Optional-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
-
 </div>
 
-## Project Overview
+---
 
-ClimbQuest is a coursework project focused on human-centered design for indoor climbing experiences.
-This repository includes:
+## 📸 Project Preview
 
-- `demo/`: React mobile-first web app prototype (interactive product demo)
-- `portfolio/`: static HTML/CSS design portfolio (research, ideation, prototype, evaluation)
+<table>
+<tr>
+<td width="50%">
 
-## Quick Access
+### 🎮 The Demo App
 
-- [Run Demo Locally](#run-demo-app)
-- [View Portfolio](#view-portfolio)
-- [Environment Setup](#environment-variables-demo)
-- [Project Structure](#repository-structure)
+A mobile-first climbing product prototype with interactive flows for onboarding, discovery, creation, and community.
 
-## Project Highlights
+- ⚡ Personalized onboarding flow
+- 🔐 Firebase email/password authentication
+- 🧗 Route discovery and recommendation experience
+- 🛠 DIY route creation with wall selection/editor
+- 👥 Community interaction and feedback features
 
-### Demo App
+</td>
+<td width="50%">
 
-- Landing page and onboarding flow
-- Email/password login and signup (Firebase Auth)
-- Personalized climbing preferences onboarding
-- Route discovery and community browsing
-- DIY route creation with wall selection and editor flow
-- Profile page with progress and activity summary
+### 📚 The Portfolio
 
-### Portfolio Site
+A complete HCI coursework website documenting the full design process from motivation to evaluation.
 
-- Human-centered computing process documentation
-- Motivation, research, personas, ideation, prototype, evaluation, references, and team pages
-- Static multi-page site for coursework submission and presentation
+- 🔎 User research and needs analysis
+- 🎨 Ideation, structure, and interaction design
+- 🧩 Prototype presentation and iteration records
+- ✅ Evaluation, reflection, and references
+- 👨‍👩‍👧‍👦 Team contributions and responsibilities
 
-## Tech Stack
+</td>
+</tr>
+</table>
 
-### Demo App
+---
 
-- React 18
-- Vite 5
-- React Router 6
-- Firebase Authentication + Firestore
-- Supabase (optional modules / schema support)
-- CSS (mobile-first custom styles)
+## 🛠 Tech Stack
 
-### Portfolio
+### Frontend Demo
 
-- HTML5
-- CSS3
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white&style=flat)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white&style=flat)](https://vitejs.dev/)
+[![React Router](https://img.shields.io/badge/React_Router-6-CA4245?logo=react-router&logoColor=white&style=flat)](https://reactrouter.com/)
+[![CSS3](https://img.shields.io/badge/CSS3-Mobile--First-1572B6?logo=css3&logoColor=white&style=flat)](https://developer.mozilla.org/docs/Web/CSS)
+
+### Backend & Data Services
+
+[![Firebase Auth](https://img.shields.io/badge/Firebase-Auth-FFCA28?logo=firebase&logoColor=black&style=flat)](https://firebase.google.com/)
+[![Firestore](https://img.shields.io/badge/Firebase-Firestore-FFCA28?logo=firebase&logoColor=black&style=flat)](https://firebase.google.com/docs/firestore)
+[![Supabase](https://img.shields.io/badge/Supabase-Optional-3ECF8E?logo=supabase&logoColor=white&style=flat)](https://supabase.com/)
+
+### Documentation Site
+
+[![HTML5](https://img.shields.io/badge/HTML5-Static_Pages-E34F26?logo=html5&logoColor=white&style=flat)](https://developer.mozilla.org/docs/Web/HTML)
+[![CSS3](https://img.shields.io/badge/CSS3-Custom_Styles-1572B6?logo=css3&logoColor=white&style=flat)](https://developer.mozilla.org/docs/Web/CSS)
+
+---
 
 ## Quick Start
 
@@ -141,4 +147,3 @@ git push origin main
 ## License
 
 This project is for coursework and team learning purposes. Add a formal license file if you plan to open-source it publicly.
-
