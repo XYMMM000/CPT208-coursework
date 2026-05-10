@@ -15,10 +15,10 @@
 ## 📸 Project Preview
 
 <table>
-<tr>
-<td width="50%">
+  <tr>
+    <td width="50%" valign="top">
 
-### 🎮 The Demo App
+### 🎮 Demo App
 
 A mobile-first climbing product prototype with interactive flows for onboarding, discovery, creation, and community.
 
@@ -29,9 +29,9 @@ A mobile-first climbing product prototype with interactive flows for onboarding,
 - 👥 Community interaction and feedback features
 
 </td>
-<td width="50%">
+    <td width="50%" valign="top">
 
-### 📚 The Portfolio
+### 📚 Portfolio Site
 
 A complete HCI coursework website documenting the full design process from motivation to evaluation.
 
@@ -42,7 +42,7 @@ A complete HCI coursework website documenting the full design process from motiv
 - 👨‍👩‍👧‍👦 Team contributions and responsibilities
 
 </td>
-</tr>
+  </tr>
 </table>
 
 ---
@@ -71,14 +71,14 @@ A complete HCI coursework website documenting the full design process from motiv
 
 ## 🚀 Quick Start
 
-### 📥 Clone Repository
+### 1. 📥 Clone Repository
 
 ```bash
 git clone https://github.com/XYMMM000/CPT208-coursework.git
 cd CPT208-coursework
 ```
 
-### ▶️ Run Demo App
+### 2. ▶️ Run Demo App
 
 ```bash
 cd demo
@@ -95,9 +95,11 @@ npm run build
 npm run preview
 ```
 
-### 👀 View Portfolio
+### 3. 👀 View Portfolio
 
 Open `portfolio/index.html` directly in your browser, or use Live Server in VS Code.
+
+---
 
 ## 🔐 Environment Variables (Demo)
 
@@ -118,6 +120,8 @@ VITE_SUPABASE_ANON_KEY=...
 
 If you use Supabase features, see `demo/SUPABASE_SETUP.md` and execute `demo/supabase/schema.sql` in Supabase SQL Editor.
 
+---
+
 ## 🗂 Repository Structure
 
 ```text
@@ -135,6 +139,8 @@ CPT208-coursework/
     assets/              # Images, QR, prototype and team materials
 ```
 
+---
+
 ## 🤝 Team Collaboration
 
 ```bash
@@ -143,6 +149,8 @@ git add .
 git commit -m "Describe your update"
 git push origin main
 ```
+
+---
 
 ## 📄 License
 
