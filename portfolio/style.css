@@ -944,12 +944,35 @@ h3,
   gap: 22px;
 }
 
-.feature-card h3 {
-  color: #0f766e;
-}
-
 .feature-card {
   border-top: 4px solid #0f766e;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.feature-label {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 12px;
+  border: 1px solid #99f6e4;
+  border-radius: 999px;
+  background: #d1fae5;
+  color: #0f766e;
+  font-family: "Source Sans 3", "Segoe UI", Arial, sans-serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  line-height: 1;
+  text-transform: uppercase;
+  padding: 6px 10px;
+}
+
+.feature-card h3 {
+  color: #0f766e;
+  font-size: 1.18rem;
+  line-height: 1.25;
 }
 
 main {
@@ -977,40 +1000,22 @@ main {
   padding: 2px 8px;
 }
 
+.feature-card h3::before,
 .feature-card h3::after {
-  margin-left: auto;
-  font-family: "Source Sans 3", "Segoe UI", Arial, sans-serif;
-  font-size: 0.74rem;
-  letter-spacing: 0.3px;
-  color: #334155;
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  padding: 2px 8px;
+  display: none !important;
+  content: none !important;
 }
 
 .feature-card:nth-child(1) {
   border-top-color: #22c55e;
 }
 
-.feature-card:nth-child(1) h3::after {
-  content: "V1 · Easy";
-}
-
 .feature-card:nth-child(2) {
   border-top-color: #f59e0b;
 }
 
-.feature-card:nth-child(2) h3::after {
-  content: "V3 · Medium";
-}
-
 .feature-card:nth-child(3) {
   border-top-color: #ef4444;
-}
-
-.feature-card:nth-child(3) h3::after {
-  content: "V5 · Hard";
 }
 
 .card p + p {
@@ -1373,10 +1378,6 @@ main {
 
   .github-btn {
     margin-top: 4px;
-  }
-
-  .feature-card h3::after {
-    margin-left: 0;
   }
 
   .ux-page-hero {
