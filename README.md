@@ -4,8 +4,8 @@
 
 ### Human-Centered Design Project for Indoor Climbing Experience
 
-[![Demo](https://img.shields.io/badge/Open-Demo_App-2ea44f?style=for-the-badge&logo=react&logoColor=white)](./demo)
-[![Portfolio](https://img.shields.io/badge/Open-Portfolio_Site-0969da?style=for-the-badge&logo=html5&logoColor=white)](./portfolio)
+[![Demo](https://img.shields.io/badge/Open-Demo_App-2ea44f?style=for-the-badge&logo=react&logoColor=white)](https://climb-quest.vercel.app/)
+[![Portfolio](https://img.shields.io/badge/Open-Portfolio_Site-0969da?style=for-the-badge&logo=html5&logoColor=white)](https://xymmm000.github.io/CPT208-coursework/portfolio/index.html)
 [![Repository](https://img.shields.io/badge/View-GitHub_Repo-24292f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/XYMMM000/CPT208-coursework)
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev/)
@@ -141,3 +141,4 @@ git push origin main
 ## License
 
 This project is for coursework and team learning purposes. Add a formal license file if you plan to open-source it publicly.
+
