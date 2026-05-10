@@ -14,10 +14,6 @@
 
 ## 📸 Project Preview
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-
 ### 🎮 Demo App
 
 A mobile-first climbing product prototype with interactive flows for onboarding, discovery, creation, and community.
@@ -28,9 +24,6 @@ A mobile-first climbing product prototype with interactive flows for onboarding,
 - 🛠 DIY route creation with wall selection/editor
 - 👥 Community interaction and feedback features
 
-</td>
-    <td width="50%" valign="top">
-
 ### 📚 Portfolio Site
 
 A complete HCI coursework website documenting the full design process from motivation to evaluation.
@@ -40,10 +33,6 @@ A complete HCI coursework website documenting the full design process from motiv
 - 🧩 Prototype presentation and iteration records
 - ✅ Evaluation, reflection, and references
 - 👨‍👩‍👧‍👦 Team contributions and responsibilities
-
-</td>
-  </tr>
-</table>
 
 ---
 
@@ -149,13 +138,10 @@ git add .
 git commit -m "Describe your update"
 git push origin main
 ```
-<<<<<<< HEAD
 
 ---
 
 ## 📄 License
 
 This project is for coursework and team learning purposes. Add a formal license file if you plan to open-source it publicly.
-=======
->>>>>>> 88778efc4b3872a2b23f8ccb1c4f95544a388f27
 
